@@ -495,8 +495,8 @@ export const App: React.FC = () => {
           esMetrics={esMetrics}
         />
 
-        {/* PUSAT TANYA-JAWAB VISUAL & PANDUAN OBSERVASI 3D (JAWABAN LENGKAP PHENOMENA) */}
-        <VisualFAQ />
+        {/* PUSAT TANYA-JAWAB VISUAL & PANDUAN OBSERVASI 3D (JAWABAN SPESIFIK SESUAI ALGORITMA AKTIF) */}
+        <VisualFAQ algorithm={algorithm} />
 
         {/* DYNAMIC EDUCATIONAL CARDS (AOA vs ES) */}
         {algorithm === 'AOA' && <EducationalCards />}

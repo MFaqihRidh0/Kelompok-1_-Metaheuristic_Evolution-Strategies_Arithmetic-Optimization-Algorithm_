@@ -90,27 +90,61 @@ export const StepInspector: React.FC<StepInspectorProps> = ({
         <span>{stepLog.highlight}</span>
       </div>
 
-      {/* Educational Clarification Tips (Interactive Multi-Insights) */}
+      {/* Educational Clarification Tips (Strictly Algorithm-Specific Insights) */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 pt-1 text-[11px] font-sans">
-        <div className="p-3 rounded-xl bg-amber-50/90 border border-amber-300 text-coffee-800 space-y-1">
-          <div className="flex items-center gap-1.5 font-bold text-amber-950">
-            <span className="p-1 rounded bg-amber-200 text-amber-900 text-[10px]">💡 Insight 1</span>
-            <span>Mengapa Repetisi Kesekian di Titik Suar yang Sama Masih Bisa Pecah Rekor?</span>
-          </div>
-          <p className="text-coffee-700 leading-relaxed">
-            Secara visual di peta 3D tampak mendarat di tiang yang sama, namun <strong>nilai MOP menyusut mikro</strong> sehingga drone menyisir dengan presisi desimal tajam (seperti <em>bor tambang</em> yang mengebor lebih dalam 10 meter di koordinat emas yang sama). Di server awan riil, drone menemukan susunan antrean internal CPU/RAM yang lebih optimal tanpa waktu tunggu.
-          </p>
-        </div>
+        {algorithm === 'ES' ? (
+          <>
+            <div className="p-3 rounded-xl bg-purple-50/90 border border-purple-300 text-coffee-800 space-y-1">
+              <div className="flex items-center gap-1.5 font-bold text-purple-950">
+                <span className="p-1 rounded bg-purple-200 text-purple-900 text-[10px]">
+                  💡 Insight ES 1
+                </span>
+                <span>Mengapa Entitas di Data Center yang Sama Bisa Pecah Rekor Makespan?</span>
+              </div>
+              <p className="text-coffee-700 leading-relaxed">
+                Meskipun entitas keturunan tetap dialokasikan ke kluster server yang sama (misal DC-1 HPC), waktu <strong>Makespan terpangkas drastis</strong> berkat <strong>kebijakan antrean LJF (Longest Job First)</strong> yang menempatkan instruksi terberat (hingga 60.780 MI) ke prosesor tercepat lebih awal, ditambah <strong>mutasi acak 10%</strong> yang memindahkan tugas macet ke VM satelit yang menganggur. Ini menurunkan <em>Degree of Imbalance</em> (DI) secara signifikan.
+              </p>
+            </div>
 
-        <div className="p-3 rounded-xl bg-sand-100/90 border border-sand-300 text-coffee-800 space-y-1">
-          <div className="flex items-center gap-1.5 font-bold text-coffee-950">
-            <span className="p-1 rounded bg-sand-200 text-coffee-800 text-[10px]">💡 Insight 2</span>
-            <span>Mengapa Drone Dekat ke Suar Tidak Otomatis Memecahkan Rekor?</span>
-          </div>
-          <p className="text-coffee-700 leading-relaxed">
-            Rekor dihitung dari <strong>nilai latensi (ms)</strong>, bukan jarak visual (meter). Tiang suar berdiri di dasar lembah terendah; drone yang dekat dengannya masih berada di lereng bukit (latensinya sedikit lebih tinggi). Rekor <strong>hanya pecah jika latensi drone lebih kecil mutlak (&lt;)</strong>. Penanda rekor sejati adalah drone yang mengenakan <strong>Mahkota Emas (👑)</strong>.
-          </p>
-        </div>
+            <div className="p-3 rounded-xl bg-sand-100/90 border border-sand-300 text-coffee-800 space-y-1">
+              <div className="flex items-center gap-1.5 font-bold text-coffee-950">
+                <span className="p-1 rounded bg-sand-200 text-coffee-800 text-[10px]">
+                  💡 Insight ES 2
+                </span>
+                <span>Mengapa Keturunan Dekat ke Suar Tidak Otomatis Pecah Rekor S_best?</span>
+              </div>
+              <p className="text-coffee-700 leading-relaxed">
+                Di ES, rekor diukur dari <strong>durasi Makespan total (C_max)</strong> seluruh VM, bukan jarak visual 3D. Suar dipegang oleh jadwal terbaik sepanjang masa (S_best). Keturunan di dekatnya masih memiliki susunan tugas yang memicu waktu tunggu (idle time). Rekor <strong>hanya berpindah jika Makespan anak lebih cepat mutlak (&lt;)</strong>, dengan proteksi <strong>Elitisme</strong>. Penanda juara adalah entitas bermahkota emas (👑).
+              </p>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="p-3 rounded-xl bg-amber-50/90 border border-amber-300 text-coffee-800 space-y-1">
+              <div className="flex items-center gap-1.5 font-bold text-amber-950">
+                <span className="p-1 rounded bg-amber-200 text-amber-900 text-[10px]">
+                  💡 Insight AOA 1
+                </span>
+                <span>Mengapa Repetisi Kesekian di Titik Suar yang Sama Masih Bisa Pecah Rekor?</span>
+              </div>
+              <p className="text-coffee-700 leading-relaxed">
+                Secara visual di peta 3D tampak mendarat di tiang yang sama, namun <strong>nilai MOP menyusut mikro</strong> sehingga drone menyisir dengan presisi desimal tajam (seperti <em>bor tambang</em> yang mengebor lebih dalam 10 meter di koordinat emas yang sama). Di server awan riil, drone menemukan susunan antrean internal CPU/RAM yang lebih optimal tanpa waktu tunggu.
+              </p>
+            </div>
+
+            <div className="p-3 rounded-xl bg-sand-100/90 border border-sand-300 text-coffee-800 space-y-1">
+              <div className="flex items-center gap-1.5 font-bold text-coffee-950">
+                <span className="p-1 rounded bg-sand-200 text-coffee-800 text-[10px]">
+                  💡 Insight AOA 2
+                </span>
+                <span>Mengapa Drone Dekat ke Suar Tidak Otomatis Memecahkan Rekor?</span>
+              </div>
+              <p className="text-coffee-700 leading-relaxed">
+                Rekor dihitung dari <strong>nilai latensi (ms)</strong>, bukan jarak visual (meter). Tiang suar berdiri di dasar lembah terendah; drone yang dekat dengannya masih berada di lereng bukit (latensinya sedikit lebih tinggi). Rekor <strong>hanya pecah jika latensi drone lebih kecil mutlak (&lt;)</strong>. Penanda rekor sejati adalah drone yang mengenakan <strong>Mahkota Emas (👑)</strong>.
+              </p>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
