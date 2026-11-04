@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { Agent, AlgorithmType, GlobalBest } from '../types';
+import { HETEROGENEOUS_DATACENTERS } from '../algorithms/benchmarks';
 
 interface ThreeCanvasProps {
   algorithm: AlgorithmType;
@@ -9,6 +10,7 @@ interface ThreeCanvasProps {
   esOffspring: Agent[];
   globalBest: GlobalBest;
   isExploration: boolean;
+  stepPhase?: number;
 }
 
 export const ThreeCanvas: React.FC<ThreeCanvasProps> = ({
@@ -17,16 +19,19 @@ export const ThreeCanvas: React.FC<ThreeCanvasProps> = ({
   esOffspring,
   globalBest,
   isExploration,
+  stepPhase = 1,
 }) => {
   const mountRef = useRef<HTMLDivElement>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const controlsRef = useRef<OrbitControls | null>(null);
   const beaconRef = useRef<THREE.Group | null>(null);
+  const shockwaveRef = useRef<THREE.Mesh | null>(null);
+  const prevBestFitnessRef = useRef<number>(Infinity);
 
   // Mesh registries mapping agent ID to Three.js Object3D
   const agentMeshesRef = useRef<Map<number, THREE.Group>>(new Map());
-  const offspringMeshesRef = useRef<Map<number, THREE.Group>>(new Map());
+  const dataCubesRef = useRef<THREE.Mesh[]>([]);
 
   // 1. Initial Scene Setup
   useEffect(() => {
@@ -43,7 +48,7 @@ export const ThreeCanvas: React.FC<ThreeCanvasProps> = ({
 
     // Camera
     const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
-    camera.position.set(0, 48, 62);
+    camera.position.set(0, 52, 68);
 
     // Renderer
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
@@ -60,26 +65,26 @@ export const ThreeCanvas: React.FC<ThreeCanvasProps> = ({
     controls.dampingFactor = 0.05;
     controls.maxPolarAngle = Math.PI / 2 - 0.05;
     controls.minDistance = 15;
-    controls.maxDistance = 160;
+    controls.maxDistance = 170;
     controls.target.set(0, 0, 0);
     controlsRef.current = controls;
 
     // Lights
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.45);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
     scene.add(ambientLight);
 
     const dirLight = new THREE.DirectionalLight(0x38bdf8, 1.3);
-    dirLight.position.set(30, 60, 40);
+    dirLight.position.set(30, 65, 40);
     dirLight.castShadow = true;
     dirLight.shadow.mapSize.width = 1024;
     dirLight.shadow.mapSize.height = 1024;
     scene.add(dirLight);
 
-    const purpleLight = new THREE.PointLight(0x8b5cf6, 1.5, 90);
-    purpleLight.position.set(-30, 25, -20);
+    const purpleLight = new THREE.PointLight(0x8b5cf6, 1.6, 95);
+    purpleLight.position.set(-25, 28, -20);
     scene.add(purpleLight);
 
-    // Terrain: Cyber Datacenter Grid
+    // Cyber Datacenter Grid Floor
     const floorGeo = new THREE.PlaneGeometry(100, 100, 32, 32);
     const floorMat = new THREE.MeshStandardMaterial({
       color: 0x090d14,
@@ -95,43 +100,74 @@ export const ThreeCanvas: React.FC<ThreeCanvasProps> = ({
     gridHelper.position.y = 0.05;
     scene.add(gridHelper);
 
-    // 3D Server Racks representing compute clusters
-    const rackGeo = new THREE.BoxGeometry(2, 4, 2);
-    const rackMat = new THREE.MeshStandardMaterial({
-      color: 0x111827,
-      roughness: 0.4,
-      metalness: 0.8,
-    });
-    const ledCyan = new THREE.MeshBasicMaterial({ color: 0x06b6d4 });
-    const ledEmerald = new THREE.MeshBasicMaterial({ color: 0x10b981 });
+    // 5 Heterogeneous Datacenter Clusters (CERN ALICE Architecture)
+    HETEROGENEOUS_DATACENTERS.forEach((dc) => {
+      // Main Center Tower
+      const towerGeo = new THREE.BoxGeometry(3.5, dc.height, 3.5);
+      const towerMat = new THREE.MeshStandardMaterial({
+        color: 0x111827,
+        roughness: 0.35,
+        metalness: 0.85,
+      });
+      const tower = new THREE.Mesh(towerGeo, towerMat);
+      tower.position.set(dc.position[0], dc.height / 2, dc.position[1]);
+      tower.castShadow = true;
+      tower.receiveShadow = true;
 
-    const clusterPositions = [
-      [-25, -20], [-20, 25], [25, 20], [22, -22], [0, -32], [0, 32], [-35, 0], [35, 0],
-    ];
+      // Glow Beacon LED ring around top
+      const colorHex = parseInt(dc.color.replace('#', '0x'), 16);
+      const ledGeo = new THREE.BoxGeometry(3.6, 0.3, 3.6);
+      const ledMat = new THREE.MeshBasicMaterial({ color: colorHex });
+      const led = new THREE.Mesh(ledGeo, ledMat);
+      led.position.y = dc.height / 2;
+      tower.add(led);
 
-    clusterPositions.forEach(([cx, cz]) => {
-      for (let i = 0; i < 3; i++) {
-        const rack = new THREE.Mesh(rackGeo, rackMat);
-        const scaleH = 0.8 + Math.random() * 1.5;
-        rack.scale.set(1, scaleH, 1);
-        rack.position.set(cx + (Math.random() - 0.5) * 8, (4 * scaleH) / 2, cz + (Math.random() - 0.5) * 8);
-        rack.castShadow = true;
-        rack.receiveShadow = true;
+      scene.add(tower);
 
-        const led = new THREE.Mesh(
-          new THREE.BoxGeometry(1.8, 0.2, 1.8),
-          Math.random() > 0.5 ? ledCyan : ledEmerald
+      // Satellite secondary VM racks surrounding each datacenter
+      for (let s = 0; s < 3; s++) {
+        const satHeight = dc.height * (0.6 + Math.random() * 0.3);
+        const sat = new THREE.Mesh(
+          new THREE.BoxGeometry(1.8, satHeight, 1.8),
+          new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.7, roughness: 0.3 })
         );
-        led.position.y = 2 * scaleH;
-        rack.add(led);
-
-        scene.add(rack);
+        const ang = (s * (2 * Math.PI)) / 3;
+        sat.position.set(
+          dc.position[0] + Math.cos(ang) * 4.5,
+          satHeight / 2,
+          dc.position[1] + Math.sin(ang) * 4.5
+        );
+        sat.castShadow = true;
+        scene.add(sat);
       }
     });
 
-    // Golden Beacon Beam for Global Best
+    // Floating Data Cubes (Cloudlets)
+    const cubes: THREE.Mesh[] = [];
+    for (let c = 0; c < 12; c++) {
+      const size = 0.6 + (c % 3) * 0.4; // Varying instruction length MI
+      const cubeGeo = new THREE.BoxGeometry(size, size, size);
+      const cubeMat = new THREE.MeshStandardMaterial({
+        color: c % 2 === 0 ? 0x06b6d4 : 0xec4899,
+        emissive: c % 2 === 0 ? 0x06b6d4 : 0xec4899,
+        emissiveIntensity: 0.5,
+        roughness: 0.2,
+      });
+      const cube = new THREE.Mesh(cubeGeo, cubeMat);
+      const dcTarget = HETEROGENEOUS_DATACENTERS[c % HETEROGENEOUS_DATACENTERS.length];
+      cube.position.set(
+        dcTarget.position[0] + (Math.random() - 0.5) * 8,
+        dcTarget.height + 1.5 + Math.random() * 2,
+        dcTarget.position[1] + (Math.random() - 0.5) * 8
+      );
+      scene.add(cube);
+      cubes.push(cube);
+    }
+    dataCubesRef.current = cubes;
+
+    // Golden Beacon Beam for Global Best (S_best)
     const beacon = new THREE.Group();
-    const beamGeo = new THREE.CylinderGeometry(0.15, 0.15, 45, 16);
+    const beamGeo = new THREE.CylinderGeometry(0.18, 0.18, 45, 16);
     const beamMat = new THREE.MeshBasicMaterial({
       color: 0xf59e0b,
       transparent: true,
@@ -141,7 +177,7 @@ export const ThreeCanvas: React.FC<ThreeCanvasProps> = ({
     beam.position.y = 22.5;
     beacon.add(beam);
 
-    const ringGeo = new THREE.RingGeometry(1.5, 2.3, 32);
+    const ringGeo = new THREE.RingGeometry(1.6, 2.4, 32);
     const ringMat = new THREE.MeshBasicMaterial({
       color: 0xfbbf24,
       side: THREE.DoubleSide,
@@ -153,11 +189,25 @@ export const ThreeCanvas: React.FC<ThreeCanvasProps> = ({
     ring.position.y = 0.2;
     beacon.add(ring);
 
-    const diamondGeo = new THREE.OctahedronGeometry(1.2, 0);
+    // Shockwave pulse disk for S_best updates
+    const shockGeo = new THREE.RingGeometry(2.0, 3.2, 32);
+    const shockMat = new THREE.MeshBasicMaterial({
+      color: 0xf59e0b,
+      side: THREE.DoubleSide,
+      transparent: true,
+      opacity: 0,
+    });
+    const shockwave = new THREE.Mesh(shockGeo, shockMat);
+    shockwave.rotation.x = -Math.PI / 2;
+    shockwave.position.y = 0.25;
+    beacon.add(shockwave);
+    shockwaveRef.current = shockwave;
+
+    const diamondGeo = new THREE.OctahedronGeometry(1.3, 0);
     const diamondMat = new THREE.MeshStandardMaterial({
       color: 0xf59e0b,
       emissive: 0xf59e0b,
-      emissiveIntensity: 0.6,
+      emissiveIntensity: 0.65,
       roughness: 0.1,
       metalness: 0.9,
     });
@@ -182,32 +232,46 @@ export const ThreeCanvas: React.FC<ThreeCanvasProps> = ({
 
     // Continuous Animation Loop
     let animId: number;
+    let shockwaveScale = 1;
+
     const animate = () => {
       animId = requestAnimationFrame(animate);
 
-      // Rotate beacon diamond
+      // Rotate diamond
       if (diamond) {
         diamond.rotation.y += 0.025;
         diamond.rotation.x += 0.012;
       }
 
-      // Rotate drone rotors & smooth interpolation (lerp) for agent movement
+      // Shockwave expansion animation on new best
+      if (shockwave && (shockwave.material as THREE.MeshBasicMaterial).opacity > 0) {
+        shockwaveScale += 0.08;
+        shockwave.scale.set(shockwaveScale, shockwaveScale, shockwaveScale);
+        (shockwave.material as THREE.MeshBasicMaterial).opacity -= 0.025;
+      }
+
+      // Rotate data cubes floating over servers
+      dataCubesRef.current.forEach((cb, idx) => {
+        cb.rotation.y += 0.02 + idx * 0.003;
+        cb.position.y += Math.sin(Date.now() * 0.003 + idx) * 0.015;
+      });
+
+      // Rotate agent rotors / halos & smooth lerp
       agentMeshesRef.current.forEach((mesh) => {
         mesh.traverse((child) => {
           if (child.name === 'rotor') {
             child.rotation.z += 0.45;
           } else if (child.name === 'halo') {
-            child.rotation.z += 0.035;
+            child.rotation.z += 0.04;
           }
         });
 
-        // Lerp towards targetPosition
         const target = mesh.userData.targetPosition;
-        const targetAlt = mesh.userData.targetAltitude || 2.5;
+        const targetAlt = mesh.userData.targetAltitude || 2.2;
         if (target) {
-          mesh.position.x += (target[0] - mesh.position.x) * 0.12;
-          mesh.position.z += (target[1] - mesh.position.z) * 0.12;
-          mesh.position.y += (targetAlt - mesh.position.y) * 0.12;
+          mesh.position.x += (target[0] - mesh.position.x) * 0.14;
+          mesh.position.z += (target[1] - mesh.position.z) * 0.14;
+          mesh.position.y += (targetAlt - mesh.position.y) * 0.14;
         }
       });
 
@@ -226,10 +290,16 @@ export const ThreeCanvas: React.FC<ThreeCanvasProps> = ({
     };
   }, []);
 
-  // 2. Synchronize Beacon Position with Global Best
+  // 2. Synchronize Beacon Position & Trigger Shockwave on S_best improvement
   useEffect(() => {
     if (!beaconRef.current || globalBest.fitness === Infinity) return;
     beaconRef.current.position.set(globalBest.position[0], 0, globalBest.position[1]);
+
+    if (globalBest.fitness < prevBestFitnessRef.current && shockwaveRef.current) {
+      prevBestFitnessRef.current = globalBest.fitness;
+      shockwaveRef.current.scale.set(1, 1, 1);
+      (shockwaveRef.current.material as THREE.MeshBasicMaterial).opacity = 0.9;
+    }
   }, [globalBest]);
 
   // 3. Helper: Build AOA Drone Mesh
@@ -284,33 +354,46 @@ export const ThreeCanvas: React.FC<ThreeCanvasProps> = ({
     return drone;
   };
 
-  // 4. Helper: Build ES Chromosome Entity Mesh
+  // 4. Helper: Build ES Chromosome Bio-Digital Entity Mesh
   const buildESEntityMesh = (agent: Agent): THREE.Group => {
     const entity = new THREE.Group();
     const colorHex = parseInt(agent.color.replace('#', '0x'), 16) || 0x8b5cf6;
 
+    // Capsule core
     const body = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.5, 0.5, 1.5, 12),
+      new THREE.CylinderGeometry(0.55, 0.55, 1.6, 16),
       new THREE.MeshStandardMaterial({
         color: colorHex,
         emissive: colorHex,
-        emissiveIntensity: 0.4,
+        emissiveIntensity: agent.isParent ? 0.55 : 0.35,
         roughness: 0.3,
         metalness: 0.7,
       })
     );
     body.position.y = 0.9;
     body.castShadow = true;
+    body.name = 'body';
     entity.add(body);
 
+    // Glowing orbiting halo (mutation ring)
     const halo = new THREE.Mesh(
-      new THREE.TorusGeometry(0.9, 0.05, 8, 24),
+      new THREE.TorusGeometry(0.95, 0.05, 8, 24),
       new THREE.MeshBasicMaterial({ color: colorHex })
     );
     halo.rotation.x = Math.PI / 2;
     halo.position.y = 1.2;
     halo.name = 'halo';
     entity.add(halo);
+
+    // Parent Crown/Star for mu parents
+    if (agent.isParent) {
+      const crown = new THREE.Mesh(
+        new THREE.OctahedronGeometry(0.3, 0),
+        new THREE.MeshBasicMaterial({ color: 0xf59e0b })
+      );
+      crown.position.y = 2.0;
+      entity.add(crown);
+    }
 
     return entity;
   };
@@ -321,14 +404,14 @@ export const ThreeCanvas: React.FC<ThreeCanvasProps> = ({
     if (!scene) return;
 
     const currentMap = agentMeshesRef.current;
+    const allActive = [...agents, ...(algorithm === 'ES' ? esOffspring : [])];
     const activeIds = new Set<number>();
 
-    agents.forEach((agent) => {
+    allActive.forEach((agent) => {
       activeIds.add(agent.id);
       let mesh = currentMap.get(agent.id);
 
       if (!mesh) {
-        // Create new mesh based on algorithm
         if (algorithm === 'AOA' || (algorithm === 'SPLIT' && agent.id < 500)) {
           mesh = buildDroneMesh(agent);
         } else {
@@ -339,34 +422,28 @@ export const ThreeCanvas: React.FC<ThreeCanvasProps> = ({
         currentMap.set(agent.id, mesh);
       }
 
-      // Update target for lerp
       mesh.userData.targetPosition = agent.position;
       mesh.userData.targetAltitude = agent.altitude;
 
-      // Update appearance based on phase
-      const eye = mesh.getObjectByName('eye') as THREE.Mesh;
-      const laser = mesh.getObjectByName('laser') as THREE.Mesh;
-      if (eye && laser) {
-        if (agent.color === '#10b981') {
-          (eye.material as THREE.MeshBasicMaterial).color.setHex(0x10b981);
-          (laser.material as THREE.MeshBasicMaterial).opacity = 0.75;
-          laser.scale.set(1, agent.altitude, 1);
-          laser.position.y = -agent.altitude / 2;
-        } else {
-          (eye.material as THREE.MeshBasicMaterial).color.setHex(0x38bdf8);
-          (laser.material as THREE.MeshBasicMaterial).opacity = 0;
-        }
+      // Update color if promoted to elite or parent
+      const body = mesh.getObjectByName('body') as THREE.Mesh;
+      const halo = mesh.getObjectByName('halo') as THREE.Mesh;
+      if (body && halo) {
+        const hex = parseInt(agent.color.replace('#', '0x'), 16);
+        (body.material as THREE.MeshStandardMaterial).color.setHex(hex);
+        (body.material as THREE.MeshStandardMaterial).emissive.setHex(hex);
+        (halo.material as THREE.MeshBasicMaterial).color.setHex(hex);
       }
     });
 
-    // Remove obsolete meshes
+    // Remove culled offspring / dissolved entities
     currentMap.forEach((mesh, id) => {
       if (!activeIds.has(id)) {
         scene.remove(mesh);
         currentMap.delete(id);
       }
     });
-  }, [agents, algorithm]);
+  }, [agents, esOffspring, algorithm]);
 
   return (
     <div className="relative w-full h-[460px] md:h-[540px] bg-cyber-950 overflow-hidden cursor-grab active:cursor-grabbing rounded-xl">
@@ -387,7 +464,7 @@ export const ThreeCanvas: React.FC<ThreeCanvasProps> = ({
           <>
             <div className="flex items-center gap-2">
               <span className="w-2.5 h-2.5 rounded-full bg-cyber-sky inline-block" />
-              <span>Drone Eksplorasi (÷, ×)</span>
+              <span>Drone Eksplorasi (&divide;, &times;)</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="w-2.5 h-2.5 rounded-full bg-cyber-emerald inline-block" />
@@ -398,21 +475,24 @@ export const ThreeCanvas: React.FC<ThreeCanvasProps> = ({
         {(algorithm === 'ES' || algorithm === 'SPLIT') && (
           <>
             <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-cyber-purple inline-block" />
-              <span>Induk Terpilih (&mu;)</span>
+              <span className="w-2.5 h-2.5 rounded-full bg-cyber-purple inline-block shadow" />
+              <span>Induk Terpilih (&mu; Parents)</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-cyber-lime inline-block" />
-              <span>Elitis Generasi Baru</span>
+              <span className="w-2.5 h-2.5 rounded-full bg-cyber-pink inline-block shadow" />
+              <span>Keturunan Mutasi (&lambda; Offspring 1:7)</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-cyber-lime inline-block shadow" />
+              <span>Elitis Generasi Baru (Tercepat)</span>
             </div>
           </>
         )}
         <div className="flex items-center gap-2">
           <span className="w-2.5 h-2.5 rounded-full bg-cyber-gold inline-block" />
-          <span>Suar Target Terbaik (Best)</span>
+          <span>Suar Target Terbaik (S<sub>best</sub>)</span>
         </div>
       </div>
     </div>
   );
 };
-

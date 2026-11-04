@@ -13,8 +13,16 @@ import { Header } from './components/Header';
 import { ThreeCanvas } from './components/ThreeCanvas';
 import { MetricsDashboard } from './components/MetricsDashboard';
 import { EducationalCards } from './components/EducationalCards';
+import { ESEducationalCards } from './components/ESEducationalCards';
 import { InteractiveSandbox } from './components/InteractiveSandbox';
-import { Agent, AlgorithmType, GlobalBest, OperatorCounts, SimulationParams } from './types';
+import {
+  Agent,
+  AlgorithmType,
+  GlobalBest,
+  OperatorCounts,
+  SimulationParams,
+  ESMetrics,
+} from './types';
 import { initAOAPopulation, stepAOA } from './algorithms/aoa';
 import { initESPopulation, stepES } from './algorithms/es';
 
@@ -30,7 +38,10 @@ export const App: React.FC = () => {
     populationSize: 30,
     maxIterations: 100,
     alpha: 5,
-    landscape: 'cloud_multi',
+    muParents: 5,
+    ratio: 7, // 1:7 optimal rule from paper
+    mutationRate: 0.10, // 10%
+    landscape: 'cern_alice',
   });
 
   // Algorithm Dynamic States
@@ -46,11 +57,11 @@ export const App: React.FC = () => {
   const [mop, setMop] = useState<number>(1.0);
   const [isExploration, setIsExploration] = useState<boolean>(true);
   const [opCounts, setOpCounts] = useState<OperatorCounts>({ div: 0, mul: 0, sub: 0, add: 0 });
+  const [esMetrics, setEsMetrics] = useState<ESMetrics | undefined>(undefined);
+  const [stepPhase, setStepPhase] = useState<number>(1);
   const [convergenceHistory, setConvergenceHistory] = useState<number[]>([]);
 
   // Simulation loop timer
-  const isRunningRef = useRef(isRunning);
-  isRunningRef.current = isRunning;
   const loopRef = useRef<number | null>(null);
 
   // Initialize Population based on active mode
@@ -61,7 +72,7 @@ export const App: React.FC = () => {
     if (algorithm === 'AOA') {
       const { agents: initialAgents, globalBest: best } = initAOAPopulation(
         params.populationSize,
-        params.landscape
+        params.landscape === 'cern_alice' ? 'cloud_multi' : params.landscape
       );
       setAgents(initialAgents);
       setEsOffspring([]);
@@ -71,22 +82,36 @@ export const App: React.FC = () => {
       setMop(1.0);
       setIsExploration(true);
       setOpCounts({ div: 0, mul: 0, sub: 0, add: 0 });
+      setEsMetrics(undefined);
     } else if (algorithm === 'ES') {
-      const { parents, globalBest: best } = initESPopulation(10, params.landscape);
+      const { parents, globalBest: best, metrics } = initESPopulation(
+        params.muParents,
+        params.landscape
+      );
       setAgents(parents);
       setEsOffspring([]);
       setGlobalBest(best);
       setConvergenceHistory([best.fitness]);
       setIsExploration(true);
+      setEsMetrics(metrics);
+      setStepPhase(1);
     } else {
-      // Split Arena Mode: 15 AOA drones vs 8 ES entities
-      const { agents: aoaAgents, globalBest: bestAoa } = initAOAPopulation(16, params.landscape);
-      const { parents: esParents, globalBest: bestEs } = initESPopulation(8, params.landscape);
+      // Split Arena Mode: 15 AOA drones vs 5 ES parents
+      const { agents: aoaAgents, globalBest: bestAoa } = initAOAPopulation(
+        15,
+        params.landscape === 'cern_alice' ? 'cloud_multi' : params.landscape
+      );
+      const { parents: esParents, globalBest: bestEs, metrics } = initESPopulation(
+        params.muParents,
+        params.landscape
+      );
 
       const combinedBest = bestAoa.fitness < bestEs.fitness ? bestAoa : bestEs;
       setAgents([...aoaAgents, ...esParents]);
+      setEsOffspring([]);
       setGlobalBest(combinedBest);
       setConvergenceHistory([combinedBest.fitness]);
+      setEsMetrics(metrics);
     }
   }, [algorithm, params]);
 
@@ -111,7 +136,7 @@ export const App: React.FC = () => {
           nextIter,
           params.maxIterations,
           params.alpha,
-          params.landscape
+          params.landscape === 'cern_alice' ? 'cloud_multi' : params.landscape
         );
         setAgents(result.agents);
         setGlobalBest(result.globalBest);
@@ -126,12 +151,15 @@ export const App: React.FC = () => {
           globalBest,
           nextIter,
           params.maxIterations,
-          24,
+          params.ratio,
+          params.mutationRate,
           params.landscape
         );
         setAgents(result.parents);
         setEsOffspring(result.offspring);
         setGlobalBest(result.globalBest);
+        setEsMetrics(result.metrics);
+        setStepPhase(result.stepPhase);
         setIsExploration(nextIter < params.maxIterations * 0.5);
         setConvergenceHistory((hist) => [...hist, result.globalBest.fitness]);
       } else {
@@ -145,14 +173,15 @@ export const App: React.FC = () => {
           nextIter,
           params.maxIterations,
           params.alpha,
-          params.landscape
+          params.landscape === 'cern_alice' ? 'cloud_multi' : params.landscape
         );
         const resEs = stepES(
           esList,
           globalBest,
           nextIter,
           params.maxIterations,
-          16,
+          params.ratio,
+          params.mutationRate,
           params.landscape
         );
 
@@ -162,10 +191,12 @@ export const App: React.FC = () => {
             : resEs.globalBest;
 
         setAgents([...resAoa.agents, ...resEs.parents]);
+        setEsOffspring(resEs.offspring);
         setGlobalBest(bestNow);
         setMoa(resAoa.moa);
         setMop(resAoa.mop);
         setOpCounts(resAoa.opCounts);
+        setEsMetrics(resEs.metrics);
         setConvergenceHistory((hist) => [...hist, bestNow.fitness]);
       }
 
@@ -198,21 +229,38 @@ export const App: React.FC = () => {
       <main className="max-w-7xl mx-auto px-4 lg:px-8 py-6 space-y-6">
         {/* HERO CONTEXT */}
         <section className="cyber-panel rounded-2xl p-5 border border-cyber-700/50 relative overflow-hidden">
-          <div className="absolute right-0 top-0 w-96 h-full bg-gradient-to-l from-cyber-cyan/10 via-cyber-cyan/5 to-transparent pointer-events-none" />
+          <div
+            className={`absolute right-0 top-0 w-96 h-full bg-gradient-to-l pointer-events-none ${
+              algorithm === 'ES'
+                ? 'from-cyber-purple/15 via-cyber-purple/5 to-transparent'
+                : 'from-cyber-cyan/10 via-cyber-cyan/5 to-transparent'
+            }`}
+          />
           <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 relative z-10">
             <div className="space-y-1.5 max-w-3xl">
-              <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-cyber-cyan/10 border border-cyber-cyan/30 text-cyber-cyan text-xs font-mono">
+              <div
+                className={`inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-mono border ${
+                  algorithm === 'ES'
+                    ? 'bg-cyber-purple/15 border-cyber-purple/40 text-cyber-violet'
+                    : 'bg-cyber-cyan/10 border-cyber-cyan/30 text-cyber-cyan'
+                }`}
+              >
                 <Cpu className="w-3.5 h-3.5" />
-                <span>Studi Kasus Riil: Cloud Task Scheduling & Resource Allocation</span>
+                <span>
+                  {algorithm === 'ES'
+                    ? 'Studi Kasus Riil: CERN LHC ALICE Monte Carlo Task Scheduling (IEEE Access 2022)'
+                    : 'Studi Kasus Riil: Cloud Task Scheduling & Resource Allocation'}
+                </span>
               </div>
               <h2 className="text-xl md:text-2xl font-bold text-white tracking-tight">
-                Optimasi Beban Server: Meminimalkan Latensi & Konsumsi Energi
+                {algorithm === 'ES'
+                  ? 'Optimasi Penjadwalan Cloud: Minimasi Makespan & Keseimbangan Beban (DI)'
+                  : 'Optimasi Beban Server: Meminimalkan Latensi & Konsumsi Energi'}
               </h2>
               <p className="text-xs md:text-sm text-slate-300 leading-relaxed">
-                Dalam komputasi awan, tugas (*tasks*) harus dialokasikan ke puluhan *Virtual
-                Machines* (VM). Algoritma metaheuristik bertugas mencari koordinat alokasi yang
-                menghasilkan <strong>latensi terendah (ms)</strong> tanpa membebani server hingga{' '}
-                <em>overload</em>.
+                {algorithm === 'ES'
+                  ? 'Mengalokasikan puluhan ribu tugas ilmiah ke 5 Data Center heterogen (2.100 VM). Membandingkan rasio induk-anak 1:7 dengan mutasi acak 10% dan kebijakan antrean LJF untuk memangkas waktu penyelesaian total tugas (Makespan).'
+                  : 'Dalam komputasi awan, tugas (tasks) harus dialokasikan ke puluhan Virtual Machines (VM). Algoritma metaheuristik bertugas mencari koordinat alokasi yang menghasilkan latensi terendah (ms) tanpa membebani server hingga overload.'}
               </p>
             </div>
 
@@ -223,7 +271,7 @@ export const App: React.FC = () => {
               </div>
               <div>
                 <span className="text-[11px] font-mono text-slate-400 uppercase tracking-wider block">
-                  Target Terbaik (Best So Far)
+                  {algorithm === 'ES' ? 'Makespan Terbaik (S_best)' : 'Target Terbaik (Best So Far)'}
                 </span>
                 <div className="flex items-baseline gap-1">
                   <span className="text-xl font-bold font-mono text-cyber-gold">
@@ -245,18 +293,34 @@ export const App: React.FC = () => {
           <div className="absolute top-3 inset-x-3 z-20 flex flex-wrap items-center justify-between gap-2 pointer-events-none">
             {/* Left Badges */}
             <div className="flex items-center gap-2 pointer-events-auto">
-              <div className="px-3 py-1.5 rounded-lg bg-cyber-900/90 border border-cyber-cyan text-cyber-cyan text-xs font-mono font-bold flex items-center gap-2 shadow-md backdrop-blur-md">
-                <span className="w-2 h-2 rounded-full bg-cyber-cyan animate-ping" />
+              <div
+                className={`px-3 py-1.5 rounded-lg bg-cyber-900/90 border text-xs font-mono font-bold flex items-center gap-2 shadow-md backdrop-blur-md ${
+                  algorithm === 'ES'
+                    ? 'border-cyber-purple text-cyber-purple'
+                    : 'border-cyber-cyan text-cyber-cyan'
+                }`}
+              >
+                <span
+                  className={`w-2 h-2 rounded-full animate-ping ${
+                    algorithm === 'ES' ? 'bg-cyber-purple' : 'bg-cyber-cyan'
+                  }`}
+                />
                 <span>
                   {algorithm === 'AOA'
                     ? 'ARITHMETIC OPTIMIZATION ALGORITHM'
                     : algorithm === 'ES'
-                    ? 'EVOLUTION STRATEGIES'
+                    ? 'EVOLUTION STRATEGIES (μ, λ)-ES'
                     : 'SPLIT ARENA: AOA VS ES'}
                 </span>
               </div>
 
-              <div className="px-3 py-1.5 rounded-lg bg-cyber-900/90 border border-cyber-sky/50 text-cyber-sky text-xs font-mono flex items-center gap-1.5 shadow-md backdrop-blur-md">
+              <div
+                className={`px-3 py-1.5 rounded-lg bg-cyber-900/90 border text-xs font-mono flex items-center gap-1.5 shadow-md backdrop-blur-md ${
+                  algorithm === 'ES'
+                    ? 'border-cyber-pink/50 text-cyber-pink'
+                    : 'border-cyber-sky/50 text-cyber-sky'
+                }`}
+              >
                 <span>
                   Fase:{' '}
                   <strong className="font-bold text-white">
@@ -265,8 +329,8 @@ export const App: React.FC = () => {
                         ? 'Eksplorasi (÷, ×)'
                         : 'Eksploitasi (-, +)'
                       : isExploration
-                      ? 'Mutasi Luas (&sigma; tinggi)'
-                      : 'Seleksi Presisi (&sigma; rendah)'}
+                      ? `Reproduksi & Mutasi (Rasio 1:${params.ratio})`
+                      : 'Seleksi Lingkungan & Elitisme'}
                   </strong>
                 </span>
               </div>
@@ -276,13 +340,14 @@ export const App: React.FC = () => {
             <div className="flex items-center gap-2 pointer-events-auto font-mono text-xs">
               <div className="px-3 py-1.5 rounded-lg bg-cyber-900/90 border border-cyber-700 text-slate-300 flex items-center gap-2 backdrop-blur-md">
                 <span>
-                  Iterasi: <strong className="text-white font-bold">{iteration}</strong> /{' '}
+                  {algorithm === 'ES' ? 'Generasi:' : 'Iterasi:'}{' '}
+                  <strong className="text-white font-bold">{iteration}</strong> /{' '}
                   {params.maxIterations}
                 </span>
               </div>
               <div className="px-3 py-1.5 rounded-lg bg-cyber-900/90 border border-cyber-gold/60 text-cyber-gold flex items-center gap-2 backdrop-blur-md shadow-sm">
                 <span>
-                  Best:{' '}
+                  {algorithm === 'ES' ? 'Makespan:' : 'Best:'}{' '}
                   <strong className="text-white font-bold">
                     {globalBest.fitness === Infinity ? '---' : globalBest.fitness.toFixed(2)}
                   </strong>{' '}
@@ -299,6 +364,7 @@ export const App: React.FC = () => {
             esOffspring={esOffspring}
             globalBest={globalBest}
             isExploration={isExploration}
+            stepPhase={stepPhase}
           />
 
           {/* Bottom Control Bar */}
@@ -306,7 +372,11 @@ export const App: React.FC = () => {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setIsRunning(!isRunning)}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-cyber-cyan text-cyber-950 font-bold hover:bg-cyber-sky transition shadow-lg font-mono text-xs md:text-sm"
+                className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold transition shadow-lg font-mono text-xs md:text-sm ${
+                  algorithm === 'ES'
+                    ? 'bg-cyber-purple text-white hover:bg-cyber-violet'
+                    : 'bg-cyber-cyan text-cyber-950 hover:bg-cyber-sky'
+                }`}
               >
                 {isRunning ? (
                   <>
@@ -324,7 +394,7 @@ export const App: React.FC = () => {
               <button
                 onClick={handleStep}
                 className="p-2.5 rounded-xl bg-cyber-800 hover:bg-cyber-700 text-slate-200 border border-cyber-700 transition"
-                title="Langkah Tunggal (+1 Iterasi)"
+                title="Langkah Tunggal (+1 Generasi/Iterasi)"
               >
                 <StepForward className="w-4 h-4" />
               </button>
@@ -348,7 +418,9 @@ export const App: React.FC = () => {
                     onClick={() => setSpeed(s)}
                     className={`px-2.5 py-1 rounded transition ${
                       speed === s
-                        ? 'bg-cyber-800 text-cyber-cyan font-bold'
+                        ? algorithm === 'ES'
+                          ? 'bg-cyber-800 text-cyber-purple font-bold'
+                          : 'bg-cyber-800 text-cyber-cyan font-bold'
                         : 'text-slate-400 hover:text-white'
                     }`}
                   >
@@ -361,10 +433,22 @@ export const App: React.FC = () => {
             {/* Population & Space Stats */}
             <div className="flex items-center gap-4 text-xs font-mono text-slate-400">
               <div>
-                Populasi: <strong className="text-slate-200">{agents.length} Agen</strong>
+                {algorithm === 'ES' ? (
+                  <>
+                    Bibit: <strong className="text-slate-200">{agents.length} Induk (μ)</strong> |{' '}
+                    <strong className="text-cyber-pink">
+                      {agents.length * params.ratio} Anak (λ)
+                    </strong>
+                  </>
+                ) : (
+                  <>
+                    Populasi: <strong className="text-slate-200">{agents.length} Agen</strong>
+                  </>
+                )}
               </div>
               <div className="border-l border-cyber-800 pl-4">
-                Ruang Masalah: <strong className="text-slate-200">2D Server Matrix</strong>
+                Pusat Data:{' '}
+                <strong className="text-slate-200">5 Kluster Heterogen (CERN ALICE)</strong>
               </div>
             </div>
           </div>
@@ -372,20 +456,29 @@ export const App: React.FC = () => {
 
         {/* METRICS DASHBOARD */}
         <MetricsDashboard
+          algorithm={algorithm}
           moa={moa}
           mop={mop}
           opCounts={opCounts}
           totalAgents={agents.length}
           history={convergenceHistory}
           bestFitness={globalBest.fitness}
-          algorithm={algorithm}
+          esMetrics={esMetrics}
         />
 
-        {/* EDUCATIONAL CARDS (Materi AOA) */}
-        <EducationalCards />
+        {/* DYNAMIC EDUCATIONAL CARDS (AOA vs ES) */}
+        {algorithm === 'AOA' && <EducationalCards />}
+        {algorithm === 'ES' && <ESEducationalCards />}
+        {algorithm === 'SPLIT' && (
+          <div className="space-y-8">
+            <EducationalCards />
+            <ESEducationalCards />
+          </div>
+        )}
 
         {/* INTERACTIVE SANDBOX */}
         <InteractiveSandbox
+          algorithm={algorithm}
           params={params}
           onChangeParams={setParams}
           onApply={initializeSimulation}
@@ -396,7 +489,10 @@ export const App: React.FC = () => {
       <footer className="max-w-7xl mx-auto px-4 lg:px-8 py-8 border-t border-cyber-900 text-xs font-mono text-slate-500 flex flex-col md:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-2">
           <Terminal className="w-4 h-4 text-cyber-cyan" />
-          <span>Cloud Optimization Matrix &bull; Platform Edukasi Interaktif Metaheuristik</span>
+          <span>
+            Cloud Optimization Matrix &bull; AOA (Abualigah et al., 2021) & Evolution Strategies
+            (Lončar & Lončar, IEEE Access 2022)
+          </span>
         </div>
         <div>Modern Vite + React + Three.js + Tailwind CSS</div>
       </footer>
@@ -405,4 +501,3 @@ export const App: React.FC = () => {
 };
 
 export default App;
-
