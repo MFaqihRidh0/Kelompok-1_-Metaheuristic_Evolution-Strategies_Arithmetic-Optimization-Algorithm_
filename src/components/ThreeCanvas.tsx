@@ -425,6 +425,46 @@ export const ThreeCanvas: React.FC<ThreeCanvasProps> = ({
       mesh.userData.targetPosition = agent.position;
       mesh.userData.targetAltitude = agent.altitude;
 
+      // Check if this agent is the current Best Champion Drone
+      const isChampion =
+        Math.abs(agent.position[0] - globalBest.position[0]) < 0.2 &&
+        Math.abs(agent.position[1] - globalBest.position[1]) < 0.2;
+
+      let crown = mesh.getObjectByName('championCrown');
+      if (isChampion) {
+        if (!crown) {
+          const crownGroup = new THREE.Group();
+          crownGroup.name = 'championCrown';
+
+          // Golden halo ring above drone
+          const ring = new THREE.Mesh(
+            new THREE.TorusGeometry(0.85, 0.08, 8, 24),
+            new THREE.MeshBasicMaterial({ color: 0xf59e0b })
+          );
+          ring.rotation.x = Math.PI / 2;
+          ring.position.y = 1.6;
+          crownGroup.add(ring);
+
+          // Golden star diamond above drone
+          const star = new THREE.Mesh(
+            new THREE.OctahedronGeometry(0.35, 0),
+            new THREE.MeshStandardMaterial({
+              color: 0xf59e0b,
+              emissive: 0xf59e0b,
+              emissiveIntensity: 0.85,
+            })
+          );
+          star.position.y = 2.2;
+          crownGroup.add(star);
+
+          mesh.add(crownGroup);
+        }
+      } else {
+        if (crown) {
+          mesh.remove(crown);
+        }
+      }
+
       // Update color and laser
       const body = mesh.getObjectByName('body') as THREE.Mesh;
       const halo = mesh.getObjectByName('halo') as THREE.Mesh;
@@ -478,11 +518,15 @@ export const ThreeCanvas: React.FC<ThreeCanvasProps> = ({
           <>
             <div className="flex items-center gap-2">
               <span className="w-2.5 h-2.5 rounded-full bg-[#0284c7] inline-block shadow-sm" />
-              <span className="text-coffee-900 font-medium">Drone Eksplorasi (&divide;, &times;)</span>
+              <span className="text-coffee-900 font-medium">Aksi Drone: Melompat Jauh (&divide;, &times;)</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="w-2.5 h-2.5 rounded-full bg-[#059669] inline-block shadow-sm" />
-              <span className="text-coffee-900 font-medium">Drone Eksploitasi (-, +)</span>
+              <span className="text-coffee-900 font-medium">Aksi Drone: Menyisir Rapat (-, +)</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#f59e0b] inline-block shadow-sm ring-1 ring-amber-500" />
+              <span className="text-coffee-900 font-bold">👑 Drone Bermahkota: Pemilik Rekor Saat Ini</span>
             </div>
           </>
         )}

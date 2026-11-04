@@ -53,6 +53,15 @@ export const StepInspector: React.FC<StepInspectorProps> = ({
         <Sparkles className="w-4 h-4 text-amber-600 shrink-0" />
         <span>{stepLog.highlight}</span>
       </div>
+
+      {/* Educational Clarification Tip */}
+      <div className="flex items-start gap-2 text-[11px] font-sans p-2.5 rounded-xl bg-sand-100/70 border border-sand-200 text-coffee-800">
+        <span className="font-bold text-amber-800 shrink-0">💡 Mengapa rekor belum berubah saat drone mendekat?</span>
+        <span>
+          Suar emas (dan drone bermahkota 👑) berdiri di titik rekor <strong>yang sudah ditemukan</strong>. Drone di sekitarnya sedang berkumpul menyisir area tersebut. Rekor baru <strong>hanya akan pecah</strong> jika ada drone yang menemukan konfigurasi server dengan latensi <strong>lebih rendah lagi</strong> daripada titik suar tersebut. Warna <strong>biru/hijau</strong> adalah jenis aksi alat kerja (lompat jauh vs menyisir tanah), bukan penanda juara.
+        </span>
+      </div>
     </div>
   );
 };
+
