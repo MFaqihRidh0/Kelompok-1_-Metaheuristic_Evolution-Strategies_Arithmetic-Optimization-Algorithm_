@@ -31,6 +31,7 @@ export const ThreeCanvas: React.FC<ThreeCanvasProps> = ({
 
   const agentMeshesRef = useRef<Map<number, THREE.Group>>(new Map());
   const dataCubesRef = useRef<THREE.Mesh[]>([]);
+  const culledMeshesRef = useRef<THREE.Group[]>([]);
 
   // 1. Initial Scene Setup (Bright Warm Studio Lighting)
   useEffect(() => {
@@ -293,10 +294,32 @@ export const ThreeCanvas: React.FC<ThreeCanvasProps> = ({
         (shockwave.material as THREE.MeshBasicMaterial).opacity -= 0.02;
       }
 
-      // Rotate data cubes floating over servers
+      // Smooth Dissolve Animation for Culled Entities (Seleksi Alam (μ, λ))
+      const stillDissolving: THREE.Group[] = [];
+      culledMeshesRef.current.forEach((mesh) => {
+        mesh.scale.multiplyScalar(0.85); // Smoothly shrink down
+        mesh.position.y += 0.08; // Ascend like energy burst / dissolving dust
+        if (mesh.scale.x > 0.04) {
+          stillDissolving.push(mesh);
+        } else {
+          scene.remove(mesh);
+        }
+      });
+      culledMeshesRef.current = stillDissolving;
+
+      // Rotate and glide data cubes (Cloudlets) - with LJF Queue alignment in ES
       dataCubesRef.current.forEach((cb, idx) => {
         cb.rotation.y += 0.015 + idx * 0.002;
-        cb.position.y += Math.sin(Date.now() * 0.002 + idx) * 0.012;
+        if (algorithm === 'ES') {
+          // LJF Sorting Flow: Larger cubes advance along highway towards DC-1 & DC-2
+          const targetX = -18 + (idx % 5) * 8.5;
+          const targetZ = -14 + Math.sin(Date.now() * 0.0012 + idx) * 3;
+          cb.position.x += (targetX - cb.position.x) * 0.04;
+          cb.position.z += (targetZ - cb.position.z) * 0.04;
+          cb.position.y = 8 + Math.sin(Date.now() * 0.003 + idx) * 0.5;
+        } else {
+          cb.position.y += Math.sin(Date.now() * 0.002 + idx) * 0.012;
+        }
       });
 
       // Rotate agent rotors / halos & smooth calm lerp (0.08 for readable glide)
@@ -534,10 +557,10 @@ export const ThreeCanvas: React.FC<ThreeCanvasProps> = ({
       }
     });
 
-    // Remove culled offspring / dissolved entities
+    // Remove culled offspring / dissolved entities with smooth dissolve effect
     currentMap.forEach((mesh, id) => {
       if (!activeIds.has(id)) {
-        scene.remove(mesh);
+        culledMeshesRef.current.push(mesh);
         currentMap.delete(id);
       }
     });

@@ -16,6 +16,8 @@ import { StepInspector } from './components/StepInspector';
 import { EducationalCards } from './components/EducationalCards';
 import { ESEducationalCards } from './components/ESEducationalCards';
 import { VisualFAQ } from './components/VisualFAQ';
+import { DatacenterLoadCard } from './components/DatacenterLoadCard';
+import { LJFQueueVisualizer } from './components/LJFQueueVisualizer';
 import { InteractiveSandbox } from './components/InteractiveSandbox';
 import {
   Agent,
@@ -494,6 +496,20 @@ export const App: React.FC = () => {
           bestFitness={globalBest.fitness}
           esMetrics={esMetrics}
         />
+
+        {/* TABEL/KARTU MINI 5 DATA CENTER: PEMBAGIAN BEBAN NYATA & % UTILISASI (DC-1 S.D DC-5) */}
+        <DatacenterLoadCard
+          algorithm={algorithm}
+          globalBest={globalBest}
+          iteration={iteration}
+          maxIterations={params.maxIterations}
+          esMetrics={esMetrics}
+        />
+
+        {/* ANIMASI ANTREAN TUGAS & PENJADWALAN LONGEST JOB FIRST (LJF) */}
+        {(algorithm === 'ES' || algorithm === 'SPLIT') && (
+          <LJFQueueVisualizer isRunning={isRunning} iteration={iteration} />
+        )}
 
         {/* PUSAT TANYA-JAWAB VISUAL & PANDUAN OBSERVASI 3D (JAWABAN SPESIFIK SESUAI ALGORITMA AKTIF) */}
         <VisualFAQ algorithm={algorithm} />
