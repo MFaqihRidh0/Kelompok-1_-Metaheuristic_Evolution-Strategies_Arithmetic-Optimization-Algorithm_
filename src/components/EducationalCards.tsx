@@ -152,6 +152,63 @@ export const EducationalCards: React.FC = () => {
         </div>
       </div>
 
+      {/* SPECIAL DEEP DIVE: MENGAPA REKOR BISA PECAH DI TITIK SUAR YANG SAMA */}
+      <div className="warm-panel p-6 md:p-7 rounded-2xl border-2 border-amber-300 bg-gradient-to-br from-amber-50/60 via-white to-cream-100 space-y-4 shadow-md">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-amber-200 pb-3">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 rounded-xl bg-amber-200 text-amber-950 font-bold border border-amber-300 shadow-sm">
+              <HelpCircle className="w-6 h-6 text-amber-900" />
+            </div>
+            <div>
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-amber-100 text-amber-900 border border-amber-300">
+                Pertanyaan Kritis Optimasi Awan
+              </div>
+              <h4 className="text-base md:text-lg font-bold text-coffee-950">
+                "Mengapa Drone pada Repetisi Kesekian yang Berada Tepat di Suar Masih Bisa Memecahkan Rekor Baru?"
+              </h4>
+            </div>
+          </div>
+          <span className="text-xs font-mono text-amber-900 font-semibold px-2 py-1 rounded bg-white border border-amber-200">
+            Penjelasan Matematis & Fisik
+          </span>
+        </div>
+
+        <div className="text-xs md:text-sm text-coffee-900 leading-relaxed space-y-3">
+          <p>
+            Secara visual di kanvas 3D, mata kita melihat drone pertama (iterasi 5) dan drone kedua (iterasi 40) tampak <strong>sama-sama menyentuh tiang suar emas yang sama</strong>. Namun mengapa latensi pada repetisi kesekian bisa turun lebih tajam (misal dari <strong>7.91 ms</strong> menjadi <strong>6.80 ms</strong>)? Ada 3 faktor ilmiah di baliknya:
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 pt-1 text-xs">
+            <div className="p-3.5 rounded-xl bg-white border border-amber-200 space-y-1.5 shadow-sm">
+              <div className="font-bold text-amber-900 flex items-center gap-1.5 text-sm">
+                <span>1. Analogi Bor Tambang Emas</span>
+              </div>
+              <p className="text-coffee-700 leading-normal">
+                Drone pertama menemukan urat emas di kedalaman 1 meter (latensi 7.91 ms) lalu menancapkan suar. Drone di repetisi kesekian <strong>mengebor lebih dalam di titik yang sama</strong> hingga kedalaman 5 meter (latensi 6.80 ms). Lokasi petanya sama, namun kualitas temuannya jauh lebih murni.
+              </p>
+            </div>
+
+            <div className="p-3.5 rounded-xl bg-white border border-amber-200 space-y-1.5 shadow-sm">
+              <div className="font-bold text-amber-900 flex items-center gap-1.5 text-sm">
+                <span>2. Presisi Langkah MOP Mengecil</span>
+              </div>
+              <p className="text-coffee-700 leading-normal">
+                Di awal iterasi, nilai <strong>MOP</strong> masih besar (~0.8), tebakan koordinat masih kasar. Di repetisi kesekian, MOP mengecil (~0.12), gerakan drone menyisir dengan <strong>presisi desimal mikro</strong> tepat di titik <em>sweet-spot</em> inti server yang sebelumnya terlewat.
+              </p>
+            </div>
+
+            <div className="p-3.5 rounded-xl bg-white border border-amber-200 space-y-1.5 shadow-sm">
+              <div className="font-bold text-amber-900 flex items-center gap-1.5 text-sm">
+                <span>3. Dimensi Riil Alokasi Cloud</span>
+              </div>
+              <p className="text-coffee-700 leading-normal">
+                Alokasi cloud bukan sekadar posisi fisik 2D di lantai, melainkan kombinasi alokasi <strong>Core CPU, kapasitas RAM, dan pembagian antrean MIPS</strong>. Drone kedua menemukan konfigurasi alokasi internal yang lebih efisien di gedung server yang sama.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Grid: 6 Langkah Iterasi & Kriteria Penghentian */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Alur 6 Langkah Iterasi */}

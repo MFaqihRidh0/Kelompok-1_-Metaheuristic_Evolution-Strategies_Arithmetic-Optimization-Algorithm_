@@ -100,6 +100,44 @@ export const ThreeCanvas: React.FC<ThreeCanvasProps> = ({
     gridHelper.position.y = 0.05;
     scene.add(gridHelper);
 
+    // Helper to generate floating 3D text badge sprites above Datacenters
+    const createDatacenterBadgeSprite = (name: string, mips: number, color: string): THREE.Sprite => {
+      const canvas = document.createElement('canvas');
+      canvas.width = 512;
+      canvas.height = 140;
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        if (ctx.roundRect) {
+          ctx.roundRect(10, 10, 492, 120, 24);
+        } else {
+          ctx.rect(10, 10, 492, 120);
+        }
+        ctx.fill();
+
+        ctx.lineWidth = 8;
+        ctx.strokeStyle = color;
+        ctx.stroke();
+
+        ctx.fillStyle = '#1c1917';
+        ctx.font = 'bold 36px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(name, 256, 50);
+
+        ctx.fillStyle = '#57534e';
+        ctx.font = 'bold 26px monospace';
+        ctx.fillText(`${mips} MIPS | Cloudlet Server`, 256, 94);
+      }
+      const texture = new THREE.CanvasTexture(canvas);
+      texture.minFilter = THREE.LinearFilter;
+      const mat = new THREE.SpriteMaterial({ map: texture, transparent: true, depthWrite: false });
+      const sprite = new THREE.Sprite(mat);
+      sprite.scale.set(7.5, 2.05, 1);
+      return sprite;
+    };
+
     // 5 Heterogeneous Datacenter Towers (Warm Coffee & Bronze Styling)
     HETEROGENEOUS_DATACENTERS.forEach((dc) => {
       // Main Center Tower
@@ -123,6 +161,11 @@ export const ThreeCanvas: React.FC<ThreeCanvasProps> = ({
       tower.add(led);
 
       scene.add(tower);
+
+      // Floating 3D Text Badge above Datacenter Tower
+      const badge = createDatacenterBadgeSprite(dc.name, dc.mips, dc.color);
+      badge.position.set(dc.position[0], dc.height + 2.5, dc.position[1]);
+      scene.add(badge);
 
       // Satellite VM racks
       for (let s = 0; s < 3; s++) {
@@ -549,6 +592,9 @@ export const ThreeCanvas: React.FC<ThreeCanvasProps> = ({
         <div className="flex items-center gap-2">
           <span className="w-2.5 h-2.5 rounded-full bg-[#d97706] inline-block shadow-sm" />
           <span className="text-coffee-900 font-medium">Suar Target Terbaik (S<sub>best</sub>)</span>
+        </div>
+        <div className="flex items-center gap-2 pt-1 border-t border-sand-200">
+          <span className="text-[10px] font-bold text-coffee-800">🏢 5 Gedung: Kluster Pusat Data CERN ALICE</span>
         </div>
       </div>
     </div>

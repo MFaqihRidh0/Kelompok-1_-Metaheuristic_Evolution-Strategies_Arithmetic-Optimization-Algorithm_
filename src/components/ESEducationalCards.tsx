@@ -133,6 +133,63 @@ export const ESEducationalCards: React.FC = () => {
         </div>
       </div>
 
+      {/* SPECIAL DEEP DIVE: MENGAPA REKOR MAKESPAN BISA PECAH DI SERVER YANG SAMA */}
+      <div className="warm-panel p-6 md:p-7 rounded-2xl border-2 border-purple-300 bg-gradient-to-br from-purple-50/60 via-white to-sand-50 space-y-4 shadow-md">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-purple-200 pb-3">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 rounded-xl bg-purple-200 text-purple-950 font-bold border border-purple-300 shadow-sm">
+              <ShieldAlert className="w-6 h-6 text-purple-900" />
+            </div>
+            <div>
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-purple-100 text-purple-900 border border-purple-300">
+                Pertanyaan Kritis Penjadwalan Cloud
+              </div>
+              <h4 className="text-base md:text-lg font-bold text-coffee-950">
+                "Mengapa Entitas yang Berada di Data Center yang Sama Masih Bisa Memecahkan Rekor Makespan Baru?"
+              </h4>
+            </div>
+          </div>
+          <span className="text-xs font-mono text-purple-900 font-semibold px-2 py-1 rounded bg-white border border-purple-200">
+            Penjelasan Teori Penjadwalan
+          </span>
+        </div>
+
+        <div className="text-xs md:text-sm text-coffee-900 leading-relaxed space-y-3">
+          <p>
+            Meskipun entitas solusi tetap berada di kluster pusat data yang sama (misal sama-sama berada di <strong>DC-1 HPC</strong>), waktu total pengerjaan tugas (<em>Makespan</em>) bisa terpangkas drastis di generasi berikutnya karena 3 faktor optimasi:
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 pt-1 text-xs">
+            <div className="p-3.5 rounded-xl bg-white border border-purple-200 space-y-1.5 shadow-sm">
+              <div className="font-bold text-purple-900 flex items-center gap-1.5 text-sm">
+                <span>1. Kebijakan LJF (Longest Job First)</span>
+              </div>
+              <p className="text-coffee-700 leading-normal">
+                Dengan menempatkan tugas dengan instruksi terbesar (hingga 60.780 MI) di urutan awal pada prosesor VM terkuat, waktu tunggu server lain terpangkas secara signifikan sehingga Makespan turun drastis.
+              </p>
+            </div>
+
+            <div className="p-3.5 rounded-xl bg-white border border-purple-200 space-y-1.5 shadow-sm">
+              <div className="font-bold text-purple-900 flex items-center gap-1.5 text-sm">
+                <span>2. Mutasi 10% Menghilangkan Bottleneck</span>
+              </div>
+              <p className="text-coffee-700 leading-normal">
+                Melalui <em>Random Resetting Mutation</em>, anak generasi baru memindahkan sekitar 10% antrean tugas kecil yang membebani server utama ke VM satelit yang sedang menganggur, sehingga antrean tidak macet.
+              </p>
+            </div>
+
+            <div className="p-3.5 rounded-xl bg-white border border-purple-200 space-y-1.5 shadow-sm">
+              <div className="font-bold text-purple-900 flex items-center gap-1.5 text-sm">
+                <span>3. Penurunan Degree of Imbalance (DI)</span>
+              </div>
+              <p className="text-coffee-700 leading-normal">
+                Di lokasi fisik yang sama, pembagian beban kerja antar-VM menjadi jauh lebih adil dan merata. Nilai DI mendekati nol membuktikan efisiensi komputasi meningkat walau gedungnya tidak berganti.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* DATA RIIL DARI JURNAL CERN LHC ALICE */}
       <div className="warm-panel p-6 rounded-2xl border border-purple-200 bg-gradient-to-br from-purple-50/50 via-white to-sand-50 space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-sand-200 pb-3">

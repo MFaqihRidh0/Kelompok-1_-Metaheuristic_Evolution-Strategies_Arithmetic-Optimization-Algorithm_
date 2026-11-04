@@ -90,12 +90,27 @@ export const StepInspector: React.FC<StepInspectorProps> = ({
         <span>{stepLog.highlight}</span>
       </div>
 
-      {/* Educational Clarification Tip */}
-      <div className="flex items-start gap-2 text-[11px] font-sans p-2.5 rounded-xl bg-sand-100/70 border border-sand-200 text-coffee-800">
-        <span className="font-bold text-amber-800 shrink-0">💡 Mengapa drone yang secara visual dekat ke suar tidak memecahkan rekor?</span>
-        <span>
-          Rekor diukur berdasarkan <strong>nilai latensi server (ms)</strong>, bukan sekadar jarak fisik (meter) ke suar. Tiang suar emas didirikan persis di titik terendah yang pernah ditemukan. Ketika ada drone lain mendekati suar, ia baru berada di lereng sekitar suar (latensinya masih sedikit lebih tinggi). Rekor <strong>hanya akan pecah</strong> jika ada drone yang menemukan titik dengan latensi <strong>lebih kecil dari nilai suar</strong>. Warna <strong>biru/hijau</strong> adalah jenis alat aksi (lompat jauh vs menyisir tanah), bukan penanda juara.
-        </span>
+      {/* Educational Clarification Tips (Interactive Multi-Insights) */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 pt-1 text-[11px] font-sans">
+        <div className="p-3 rounded-xl bg-amber-50/90 border border-amber-300 text-coffee-800 space-y-1">
+          <div className="flex items-center gap-1.5 font-bold text-amber-950">
+            <span className="p-1 rounded bg-amber-200 text-amber-900 text-[10px]">💡 Insight 1</span>
+            <span>Mengapa Repetisi Kesekian di Titik Suar yang Sama Masih Bisa Pecah Rekor?</span>
+          </div>
+          <p className="text-coffee-700 leading-relaxed">
+            Secara visual di peta 3D tampak mendarat di tiang yang sama, namun <strong>nilai MOP menyusut mikro</strong> sehingga drone menyisir dengan presisi desimal tajam (seperti <em>bor tambang</em> yang mengebor lebih dalam 10 meter di koordinat emas yang sama). Di server awan riil, drone menemukan susunan antrean internal CPU/RAM yang lebih optimal tanpa waktu tunggu.
+          </p>
+        </div>
+
+        <div className="p-3 rounded-xl bg-sand-100/90 border border-sand-300 text-coffee-800 space-y-1">
+          <div className="flex items-center gap-1.5 font-bold text-coffee-950">
+            <span className="p-1 rounded bg-sand-200 text-coffee-800 text-[10px]">💡 Insight 2</span>
+            <span>Mengapa Drone Dekat ke Suar Tidak Otomatis Memecahkan Rekor?</span>
+          </div>
+          <p className="text-coffee-700 leading-relaxed">
+            Rekor dihitung dari <strong>nilai latensi (ms)</strong>, bukan jarak visual (meter). Tiang suar berdiri di dasar lembah terendah; drone yang dekat dengannya masih berada di lereng bukit (latensinya sedikit lebih tinggi). Rekor <strong>hanya pecah jika latensi drone lebih kecil mutlak (&lt;)</strong>. Penanda rekor sejati adalah drone yang mengenakan <strong>Mahkota Emas (👑)</strong>.
+          </p>
+        </div>
       </div>
     </div>
   );

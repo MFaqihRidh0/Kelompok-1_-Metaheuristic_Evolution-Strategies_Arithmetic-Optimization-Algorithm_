@@ -15,6 +15,7 @@ import { MetricsDashboard } from './components/MetricsDashboard';
 import { StepInspector } from './components/StepInspector';
 import { EducationalCards } from './components/EducationalCards';
 import { ESEducationalCards } from './components/ESEducationalCards';
+import { VisualFAQ } from './components/VisualFAQ';
 import { InteractiveSandbox } from './components/InteractiveSandbox';
 import {
   Agent,
@@ -493,6 +494,9 @@ export const App: React.FC = () => {
           bestFitness={globalBest.fitness}
           esMetrics={esMetrics}
         />
+
+        {/* PUSAT TANYA-JAWAB VISUAL & PANDUAN OBSERVASI 3D (JAWABAN LENGKAP PHENOMENA) */}
+        <VisualFAQ />
 
         {/* DYNAMIC EDUCATIONAL CARDS (AOA vs ES) */}
         {algorithm === 'AOA' && <EducationalCards />}
