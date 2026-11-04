@@ -19,6 +19,7 @@ export interface GlobalBest {
   iteration: number;
   makespan?: number;
   imbalance?: number;
+  improved?: boolean;
 }
 
 export interface SimulationParams {
@@ -28,7 +29,7 @@ export interface SimulationParams {
   muParents: number; // Parents for ES
   ratio: number; // Offspring ratio (optimal 7 according to paper)
   mutationRate: number; // Default 0.10 (10%)
-  landscape: 'cloud_multi' | 'sphere' | 'rastrigin' | 'cern_alice';
+  landscape: 'cern_alice' | 'cloud_multi' | 'sphere' | 'rastrigin';
 }
 
 export interface OperatorCounts {
@@ -38,11 +39,19 @@ export interface OperatorCounts {
   add: number;
 }
 
+export interface StepLog {
+  stepNumber: number;
+  stepTitle: string;
+  phase: string;
+  details: string;
+  highlight: string;
+}
+
 export interface ESMetrics {
   generation: number;
-  makespan: number; // in seconds/ms
-  degreeOfImbalance: number; // DI
-  activeVMs: number; // Elastic auto-scaling count
+  makespan: number;
+  degreeOfImbalance: number;
+  activeVMs: number;
   mutationCount: number;
   currentStepDescription: string;
 }

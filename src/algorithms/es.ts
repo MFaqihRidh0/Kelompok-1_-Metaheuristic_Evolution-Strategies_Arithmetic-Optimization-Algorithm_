@@ -1,4 +1,4 @@
-import { Agent, GlobalBest, ESMetrics } from '../types';
+import { Agent, GlobalBest, ESMetrics, StepLog } from '../types';
 import { LB, UB, evaluateFitness, HETEROGENEOUS_DATACENTERS } from './benchmarks';
 
 /**
@@ -9,8 +9,8 @@ import { LB, UB, evaluateFitness, HETEROGENEOUS_DATACENTERS } from './benchmarks
 
 export function initESPopulation(
   mu: number,
-  landscape: 'cloud_multi' | 'sphere' | 'rastrigin' | 'cern_alice' = 'cern_alice'
-): { parents: Agent[]; globalBest: GlobalBest; metrics: ESMetrics } {
+  landscape: 'cern_alice' | 'cloud_multi' | 'sphere' | 'rastrigin' = 'cern_alice'
+): { parents: Agent[]; globalBest: GlobalBest; metrics: ESMetrics; initialLog: StepLog } {
   const parents: Agent[] = [];
   let globalBest: GlobalBest = {
     position: [0, 0],
@@ -18,10 +18,10 @@ export function initESPopulation(
     iteration: 0,
     makespan: 0,
     imbalance: 0,
+    improved: false,
   };
 
   for (let i = 0; i < mu; i++) {
-    // Cluster around heterogeneous datacenters
     const dc = HETEROGENEOUS_DATACENTERS[i % HETEROGENEOUS_DATACENTERS.length];
     const x = Math.max(LB, Math.min(UB, dc.position[0] + (Math.random() - 0.5) * 12));
     const z = Math.max(LB, Math.min(UB, dc.position[1] + (Math.random() - 0.5) * 12));
@@ -34,7 +34,7 @@ export function initESPopulation(
       altitude: 1.8,
       fitness: fit,
       op: 'parent',
-      color: '#8b5cf6', // Electric Purple for mu parents
+      color: '#7c3aed', // Warm Royal Amethyst for mu parents
       isParent: true,
     });
 
@@ -45,6 +45,7 @@ export function initESPopulation(
         iteration: 0,
         makespan: fit,
         imbalance: 0.35 + Math.random() * 0.15,
+        improved: true,
       };
     }
   }
@@ -59,7 +60,15 @@ export function initESPopulation(
       'Generasi 0: Inisialisasi Populasi Induk (μ). Tugas dipetakan ke 5 kluster pusat data heterogen.',
   };
 
-  return { parents, globalBest, metrics };
+  const initialLog: StepLog = {
+    stepNumber: 0,
+    stepTitle: 'Generasi 0: Inisialisasi Populasi Induk (μ) di 5 Data Center',
+    phase: 'Inisialisasi Induk',
+    details: `Membentuk ${mu} komandan bibit induk alokasi tugas ke 5 pusat data heterogen CERN ALICE (HPC, HTC, HSC, Storage, General). Standar Makespan awal dinobatkan pada durasi ${globalBest.fitness.toFixed(2)} ms.`,
+    highlight: `Standar awal S_best berhasil dicatat di koordinat [${globalBest.position[0].toFixed(1)}, ${globalBest.position[1].toFixed(1)}]`,
+  };
+
+  return { parents, globalBest, metrics, initialLog };
 }
 
 /**
@@ -72,13 +81,14 @@ export function stepES(
   maxGenerations: number,
   ratio = 7, // Optimal 1:7 ratio from paper
   mutationRate = 0.10, // ~10% random resetting mutation
-  landscape: 'cloud_multi' | 'sphere' | 'rastrigin' | 'cern_alice' = 'cern_alice'
+  landscape: 'cern_alice' | 'cloud_multi' | 'sphere' | 'rastrigin' = 'cern_alice'
 ): {
   parents: Agent[];
   offspring: Agent[];
   globalBest: GlobalBest;
   metrics: ESMetrics;
   stepPhase: number;
+  stepLog: StepLog;
 } {
   const mu = parents.length;
   const lambda = mu * ratio; // 1:7 ratio explosion
@@ -89,7 +99,7 @@ export function stepES(
 
   const offspringList: Agent[] = [];
   let mutationCount = 0;
-  let newBest = { ...globalBest };
+  let newBest = { ...globalBest, improved: false };
 
   // 1. Generate Lambda Offspring via Random Resetting Mutation (~10% tasks reassigned)
   for (let i = 0; i < lambda; i++) {
@@ -124,7 +134,7 @@ export function stepES(
       altitude: 2.2,
       fitness: childFitness,
       op: 'offspring',
-      color: '#ec4899', // Magenta / Pink for lambda offspring
+      color: '#e11d48', // Warm Rose / Coral Pink for lambda offspring
       isParent: false,
     };
 
@@ -138,12 +148,12 @@ export function stepES(
         iteration: currentGeneration,
         makespan: childFitness,
         imbalance: Math.max(0.04, 0.35 * (1 - progress) + (Math.random() * 0.03)),
+        improved: true,
       };
     }
   }
 
   // 2. Strict (μ, λ) Environmental Selection:
-  // Sort lambda offspring by fitness (Makespan) and take top mu individuals
   const sortedOffspring = [...offspringList].sort((a, b) => a.fitness - b.fitness);
   const nextParents: Agent[] = [];
 
@@ -156,53 +166,61 @@ export function stepES(
       altitude: 1.8,
       fitness: selected.fitness,
       op: 'parent',
-      color: i === 0 ? '#84cc16' : '#8b5cf6', // Rank 1 child turns Lime Green, others Violet
+      color: i === 0 ? '#16a34a' : '#7c3aed', // Rank 1 child turns Forest Green, others Royal Amethyst
       isParent: true,
     });
   }
 
-  // 3. Elitism Safeguard: If all offspring were worse than historical best, protect S_best
+  // 3. Elitism Safeguard: Protect S_best
   if (newBest.fitness < nextParents[0].fitness) {
     nextParents[0].position = newBest.position;
     nextParents[0].targetPosition = newBest.position;
     nextParents[0].fitness = newBest.fitness;
-    nextParents[0].color = '#84cc16';
+    nextParents[0].color = '#16a34a';
   }
 
-  // 4. Determine Active Storyboard Phase and Step Description (Section 7B)
+  // 4. Storyboard Narrative and Step Log Generation
   let stepPhase = 1;
   let description = '';
+  let stepTitle = '';
+  let highlight = '';
 
-  if (currentGeneration === 1) {
-    stepPhase = 1;
-    description =
-      'Generasi 1: Tugas dialokasikan acak ke 5 kluster VM heterogen. Menemukan standar Makespan awal.';
-  } else if (progress < 0.25) {
+  if (progress < 0.25) {
     stepPhase = 2;
-    description = `Seleksi Induk: Hanya μ = ${mu} strategi alokasi tercepat yang dipertahankan sebagai bibit generasi.`;
+    stepTitle = `Generasi ${currentGeneration}: Seleksi Induk (μ = ${mu})`;
+    description = `Menyaring μ = ${mu} strategi alokasi terbaik dari populasi untuk dipertahankan sebagai bibit induk generasi baru.`;
+    highlight = `Hanya ${mu} kandidat dengan waktu eksekusi paling efisien yang lolos menjadi induk.`;
   } else if (progress < 0.55) {
     stepPhase = 3;
-    description = `Mutasi Biologis (Rasio 1:7): Induk menghasilkan λ = ${lambda} anak. ~10% tugas melompat ke server cepat.`;
+    stepTitle = `Generasi ${currentGeneration}: Ledakan Mutasi Acak (Rasio 1:${ratio})`;
+    description = `Setiap induk melahirkan 7 keturunan baru (total λ = ${lambda} anak). Sebanyak ${mutationCount} tugas (~10%) mengalami mutasi acak melompat ke server berkecepatan tinggi.`;
+    highlight = `Rasio 1:7 memberikan tekanan seleksi optimal sesuai pembuktian jurnal IEEE Access.`;
   } else if (progress < 0.85) {
     stepPhase = 4;
-    description =
-      'Seleksi Alam: Generasi induk lama digantikan penuh oleh keturunan terbaik (aturan (μ, λ)-ES).';
+    stepTitle = `Generasi ${currentGeneration}: Seleksi Alam & Eliminasi Induk Lama`;
+    description = `Seluruh ${lambda} anak diuji beban tugasnya. Induk lama dipensiunkan; ${mu} anak terbaik diangkat menjadi induk baru.`;
+    highlight = `Aturan (μ, λ)-ES: Tidak ada kompromi, generasi lama digantikan seutuhnya oleh anak terbaik.`;
   } else if (progress < 0.95) {
     stepPhase = 5;
-    description = `Elitisme & Rekor S_best: Mengamankan alokasi terbaik sepanjang masa (Makespan: ${newBest.fitness.toFixed(2)} ms).`;
+    stepTitle = `Generasi ${currentGeneration}: Proteksi Elitisme (S_best Terjaga)`;
+    description = `Mengamankan konfigurasi jadwal terbaik sepanjang masa (Makespan: ${newBest.fitness.toFixed(2)} ms) agar progres optimasi tidak pernah mundur.`;
+    highlight = `Perisai elitisme menjamin kualitas penjadwalan komputasi awan selalu stabil.`;
   } else {
     stepPhase = 6;
-    description =
-      'Kebijakan Broker LJF (Longest Job First): Tugas terberat dieksekusi lebih dulu. Beban server seimbang sempurna!';
+    stepTitle = `Generasi ${currentGeneration}: Kebijakan Broker LJF (Longest Job First)`;
+    description = `Tugas terberat diselesaikan paling awal oleh VM ber-MIPS tinggi. Seluruh server bekerja seimbang tanpa ada yang menganggur di akhir waktu.`;
+    highlight = `Degree of Imbalance (DI) berhasil ditekan ke batas minimum (beban seimbang optimal).`;
   }
 
-  // Auto-Scaling VM calculation: Peak around mid-generations (~850 VMs), then scales-in
+  if (newBest.improved) {
+    highlight = `⚡ REKOR MAKESPAN TERPECAHKAN! Durasi total pengerjaan tugas turun menjadi ${newBest.fitness.toFixed(2)} ms! Tiang suar emas memancarkan shockwave keemasan!`;
+  }
+
   const activeVMs =
     progress < 0.5
       ? Math.round(300 + progress * 2 * 580)
       : Math.round(880 - (progress - 0.5) * 2 * 720);
 
-  // Degree of Imbalance (DI) drops as load balancing reaches optimum
   const currentImbalance = Math.max(0.05, 0.45 * Math.pow(1 - progress, 1.6) + 0.02 * Math.sin(currentGeneration));
 
   const metrics: ESMetrics = {
@@ -214,11 +232,20 @@ export function stepES(
     currentStepDescription: description,
   };
 
+  const stepLog: StepLog = {
+    stepNumber: currentGeneration,
+    stepTitle,
+    phase: progress < 0.55 ? 'Mutasi Keturunan (1:7)' : 'Seleksi & Elitisme',
+    details: description,
+    highlight,
+  };
+
   return {
     parents: nextParents,
     offspring: offspringList,
     globalBest: newBest,
     metrics,
     stepPhase,
+    stepLog,
   };
 }

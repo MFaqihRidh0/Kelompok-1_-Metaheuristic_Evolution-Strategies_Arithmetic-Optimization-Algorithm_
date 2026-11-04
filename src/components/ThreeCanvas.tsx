@@ -29,11 +29,10 @@ export const ThreeCanvas: React.FC<ThreeCanvasProps> = ({
   const shockwaveRef = useRef<THREE.Mesh | null>(null);
   const prevBestFitnessRef = useRef<number>(Infinity);
 
-  // Mesh registries mapping agent ID to Three.js Object3D
   const agentMeshesRef = useRef<Map<number, THREE.Group>>(new Map());
   const dataCubesRef = useRef<THREE.Mesh[]>([]);
 
-  // 1. Initial Scene Setup
+  // 1. Initial Scene Setup (Bright Warm Studio Lighting)
   useEffect(() => {
     if (!mountRef.current) return;
     const container = mountRef.current;
@@ -42,13 +41,13 @@ export const ThreeCanvas: React.FC<ThreeCanvasProps> = ({
 
     // Scene
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x06090e);
-    scene.fog = new THREE.FogExp2(0x06090e, 0.015);
+    scene.background = new THREE.Color(0xfcf8f2); // Bright Warm Cream/Ivory
+    scene.fog = new THREE.FogExp2(0xfcf8f2, 0.009);
     sceneRef.current = scene;
 
     // Camera
     const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
-    camera.position.set(0, 52, 68);
+    camera.position.set(0, 50, 68);
 
     // Renderer
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
@@ -69,45 +68,46 @@ export const ThreeCanvas: React.FC<ThreeCanvasProps> = ({
     controls.target.set(0, 0, 0);
     controlsRef.current = controls;
 
-    // Lights
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+    // Bright Warm Lights
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.95); // High ambient for bright visibility
     scene.add(ambientLight);
 
-    const dirLight = new THREE.DirectionalLight(0x38bdf8, 1.3);
-    dirLight.position.set(30, 65, 40);
-    dirLight.castShadow = true;
-    dirLight.shadow.mapSize.width = 1024;
-    dirLight.shadow.mapSize.height = 1024;
-    scene.add(dirLight);
+    const sunLight = new THREE.DirectionalLight(0xfffaed, 1.3);
+    sunLight.position.set(35, 70, 45);
+    sunLight.castShadow = true;
+    sunLight.shadow.mapSize.width = 1024;
+    sunLight.shadow.mapSize.height = 1024;
+    scene.add(sunLight);
 
-    const purpleLight = new THREE.PointLight(0x8b5cf6, 1.6, 95);
-    purpleLight.position.set(-25, 28, -20);
-    scene.add(purpleLight);
+    const warmFillLight = new THREE.DirectionalLight(0xfef3c7, 0.6);
+    warmFillLight.position.set(-30, 40, -30);
+    scene.add(warmFillLight);
 
-    // Cyber Datacenter Grid Floor
+    // Bright Sand/Cream Grid Floor
     const floorGeo = new THREE.PlaneGeometry(100, 100, 32, 32);
     const floorMat = new THREE.MeshStandardMaterial({
-      color: 0x090d14,
-      roughness: 0.85,
-      metalness: 0.15,
+      color: 0xf3ede2, // Warm Sand Cream
+      roughness: 0.9,
+      metalness: 0.05,
     });
     const groundMesh = new THREE.Mesh(floorGeo, floorMat);
     groundMesh.rotation.x = -Math.PI / 2;
     groundMesh.receiveShadow = true;
     scene.add(groundMesh);
 
-    const gridHelper = new THREE.GridHelper(100, 50, 0x06b6d4, 0x1e293b);
+    // Warm Caramel Grid Lines
+    const gridHelper = new THREE.GridHelper(100, 50, 0xb45309, 0xdbcdb8);
     gridHelper.position.y = 0.05;
     scene.add(gridHelper);
 
-    // 5 Heterogeneous Datacenter Clusters (CERN ALICE Architecture)
+    // 5 Heterogeneous Datacenter Towers (Warm Coffee & Bronze Styling)
     HETEROGENEOUS_DATACENTERS.forEach((dc) => {
       // Main Center Tower
-      const towerGeo = new THREE.BoxGeometry(3.5, dc.height, 3.5);
+      const towerGeo = new THREE.BoxGeometry(3.6, dc.height, 3.6);
       const towerMat = new THREE.MeshStandardMaterial({
-        color: 0x111827,
+        color: 0x443024, // Warm Deep Coffee
         roughness: 0.35,
-        metalness: 0.85,
+        metalness: 0.6,
       });
       const tower = new THREE.Mesh(towerGeo, towerMat);
       tower.position.set(dc.position[0], dc.height / 2, dc.position[1]);
@@ -116,7 +116,7 @@ export const ThreeCanvas: React.FC<ThreeCanvasProps> = ({
 
       // Glow Beacon LED ring around top
       const colorHex = parseInt(dc.color.replace('#', '0x'), 16);
-      const ledGeo = new THREE.BoxGeometry(3.6, 0.3, 3.6);
+      const ledGeo = new THREE.BoxGeometry(3.7, 0.35, 3.7);
       const ledMat = new THREE.MeshBasicMaterial({ color: colorHex });
       const led = new THREE.Mesh(ledGeo, ledMat);
       led.position.y = dc.height / 2;
@@ -124,12 +124,12 @@ export const ThreeCanvas: React.FC<ThreeCanvasProps> = ({
 
       scene.add(tower);
 
-      // Satellite secondary VM racks surrounding each datacenter
+      // Satellite VM racks
       for (let s = 0; s < 3; s++) {
         const satHeight = dc.height * (0.6 + Math.random() * 0.3);
         const sat = new THREE.Mesh(
           new THREE.BoxGeometry(1.8, satHeight, 1.8),
-          new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.7, roughness: 0.3 })
+          new THREE.MeshStandardMaterial({ color: 0x694e3d, metalness: 0.4, roughness: 0.4 })
         );
         const ang = (s * (2 * Math.PI)) / 3;
         sat.position.set(
@@ -145,12 +145,12 @@ export const ThreeCanvas: React.FC<ThreeCanvasProps> = ({
     // Floating Data Cubes (Cloudlets)
     const cubes: THREE.Mesh[] = [];
     for (let c = 0; c < 12; c++) {
-      const size = 0.6 + (c % 3) * 0.4; // Varying instruction length MI
+      const size = 0.65 + (c % 3) * 0.35;
       const cubeGeo = new THREE.BoxGeometry(size, size, size);
       const cubeMat = new THREE.MeshStandardMaterial({
-        color: c % 2 === 0 ? 0x06b6d4 : 0xec4899,
-        emissive: c % 2 === 0 ? 0x06b6d4 : 0xec4899,
-        emissiveIntensity: 0.5,
+        color: c % 2 === 0 ? 0x0284c7 : 0xe11d48, // Warm Azure vs Rose Pink
+        emissive: c % 2 === 0 ? 0x0284c7 : 0xe11d48,
+        emissiveIntensity: 0.4,
         roughness: 0.2,
       });
       const cube = new THREE.Mesh(cubeGeo, cubeMat);
@@ -167,19 +167,19 @@ export const ThreeCanvas: React.FC<ThreeCanvasProps> = ({
 
     // Golden Beacon Beam for Global Best (S_best)
     const beacon = new THREE.Group();
-    const beamGeo = new THREE.CylinderGeometry(0.18, 0.18, 45, 16);
+    const beamGeo = new THREE.CylinderGeometry(0.2, 0.2, 45, 16);
     const beamMat = new THREE.MeshBasicMaterial({
-      color: 0xf59e0b,
+      color: 0xd97706, // Warm Amber Gold
       transparent: true,
-      opacity: 0.85,
+      opacity: 0.9,
     });
     const beam = new THREE.Mesh(beamGeo, beamMat);
     beam.position.y = 22.5;
     beacon.add(beam);
 
-    const ringGeo = new THREE.RingGeometry(1.6, 2.4, 32);
+    const ringGeo = new THREE.RingGeometry(1.6, 2.5, 32);
     const ringMat = new THREE.MeshBasicMaterial({
-      color: 0xfbbf24,
+      color: 0xb45309,
       side: THREE.DoubleSide,
       transparent: true,
       opacity: 0.9,
@@ -190,7 +190,7 @@ export const ThreeCanvas: React.FC<ThreeCanvasProps> = ({
     beacon.add(ring);
 
     // Shockwave pulse disk for S_best updates
-    const shockGeo = new THREE.RingGeometry(2.0, 3.2, 32);
+    const shockGeo = new THREE.RingGeometry(2.0, 3.4, 32);
     const shockMat = new THREE.MeshBasicMaterial({
       color: 0xf59e0b,
       side: THREE.DoubleSide,
@@ -205,8 +205,8 @@ export const ThreeCanvas: React.FC<ThreeCanvasProps> = ({
 
     const diamondGeo = new THREE.OctahedronGeometry(1.3, 0);
     const diamondMat = new THREE.MeshStandardMaterial({
-      color: 0xf59e0b,
-      emissive: 0xf59e0b,
+      color: 0xd97706,
+      emissive: 0xd97706,
       emissiveIntensity: 0.65,
       roughness: 0.1,
       metalness: 0.9,
@@ -230,7 +230,7 @@ export const ThreeCanvas: React.FC<ThreeCanvasProps> = ({
     };
     window.addEventListener('resize', handleResize);
 
-    // Continuous Animation Loop
+    // Continuous Animation Loop with smooth calm lerp
     let animId: number;
     let shockwaveScale = 1;
 
@@ -239,39 +239,39 @@ export const ThreeCanvas: React.FC<ThreeCanvasProps> = ({
 
       // Rotate diamond
       if (diamond) {
-        diamond.rotation.y += 0.025;
-        diamond.rotation.x += 0.012;
+        diamond.rotation.y += 0.02;
+        diamond.rotation.x += 0.01;
       }
 
       // Shockwave expansion animation on new best
       if (shockwave && (shockwave.material as THREE.MeshBasicMaterial).opacity > 0) {
-        shockwaveScale += 0.08;
+        shockwaveScale += 0.06;
         shockwave.scale.set(shockwaveScale, shockwaveScale, shockwaveScale);
-        (shockwave.material as THREE.MeshBasicMaterial).opacity -= 0.025;
+        (shockwave.material as THREE.MeshBasicMaterial).opacity -= 0.02;
       }
 
       // Rotate data cubes floating over servers
       dataCubesRef.current.forEach((cb, idx) => {
-        cb.rotation.y += 0.02 + idx * 0.003;
-        cb.position.y += Math.sin(Date.now() * 0.003 + idx) * 0.015;
+        cb.rotation.y += 0.015 + idx * 0.002;
+        cb.position.y += Math.sin(Date.now() * 0.002 + idx) * 0.012;
       });
 
-      // Rotate agent rotors / halos & smooth lerp
+      // Rotate agent rotors / halos & smooth calm lerp (0.08 for readable glide)
       agentMeshesRef.current.forEach((mesh) => {
         mesh.traverse((child) => {
           if (child.name === 'rotor') {
-            child.rotation.z += 0.45;
+            child.rotation.z += 0.35;
           } else if (child.name === 'halo') {
-            child.rotation.z += 0.04;
+            child.rotation.z += 0.03;
           }
         });
 
         const target = mesh.userData.targetPosition;
         const targetAlt = mesh.userData.targetAltitude || 2.2;
         if (target) {
-          mesh.position.x += (target[0] - mesh.position.x) * 0.14;
-          mesh.position.z += (target[1] - mesh.position.z) * 0.14;
-          mesh.position.y += (targetAlt - mesh.position.y) * 0.14;
+          mesh.position.x += (target[0] - mesh.position.x) * 0.08;
+          mesh.position.z += (target[1] - mesh.position.z) * 0.08;
+          mesh.position.y += (targetAlt - mesh.position.y) * 0.08;
         }
       });
 
@@ -308,12 +308,12 @@ export const ThreeCanvas: React.FC<ThreeCanvasProps> = ({
 
     const core = new THREE.Mesh(
       new THREE.CylinderGeometry(0.7, 0.7, 0.35, 8),
-      new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.8, roughness: 0.2 })
+      new THREE.MeshStandardMaterial({ color: 0x3d2817, metalness: 0.8, roughness: 0.2 })
     );
     core.castShadow = true;
     drone.add(core);
 
-    const eyeColor = agent.color === '#10b981' ? 0x10b981 : 0x38bdf8;
+    const eyeColor = agent.color === '#059669' ? 0x059669 : 0x0284c7;
     const eye = new THREE.Mesh(
       new THREE.SphereGeometry(0.3, 16, 16),
       new THREE.MeshBasicMaterial({ color: eyeColor })
@@ -322,8 +322,8 @@ export const ThreeCanvas: React.FC<ThreeCanvasProps> = ({
     eye.name = 'eye';
     drone.add(eye);
 
-    const armMat = new THREE.MeshStandardMaterial({ color: 0x475569 });
-    const rotorMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8, wireframe: true });
+    const armMat = new THREE.MeshStandardMaterial({ color: 0x785642 });
+    const rotorMat = new THREE.MeshBasicMaterial({ color: 0x0284c7, wireframe: true });
     const angles = [Math.PI / 4, (3 * Math.PI) / 4, (5 * Math.PI) / 4, (7 * Math.PI) / 4];
 
     angles.forEach((ang) => {
@@ -341,11 +341,11 @@ export const ThreeCanvas: React.FC<ThreeCanvasProps> = ({
 
     // Downward Laser Scanner Line (active during exploitation)
     const laserMat = new THREE.MeshBasicMaterial({
-      color: 0x10b981,
+      color: 0x059669,
       transparent: true,
-      opacity: agent.color === '#10b981' ? 0.75 : 0,
+      opacity: agent.color === '#059669' ? 0.8 : 0,
     });
-    const laser = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 1, 8), laserMat);
+    const laser = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 1, 8), laserMat);
     laser.name = 'laser';
     laser.position.y = -agent.altitude / 2;
     laser.scale.set(1, agent.altitude, 1);
@@ -357,7 +357,7 @@ export const ThreeCanvas: React.FC<ThreeCanvasProps> = ({
   // 4. Helper: Build ES Chromosome Bio-Digital Entity Mesh
   const buildESEntityMesh = (agent: Agent): THREE.Group => {
     const entity = new THREE.Group();
-    const colorHex = parseInt(agent.color.replace('#', '0x'), 16) || 0x8b5cf6;
+    const colorHex = parseInt(agent.color.replace('#', '0x'), 16) || 0x7c3aed;
 
     // Capsule core
     const body = new THREE.Mesh(
@@ -365,9 +365,9 @@ export const ThreeCanvas: React.FC<ThreeCanvasProps> = ({
       new THREE.MeshStandardMaterial({
         color: colorHex,
         emissive: colorHex,
-        emissiveIntensity: agent.isParent ? 0.55 : 0.35,
+        emissiveIntensity: agent.isParent ? 0.45 : 0.3,
         roughness: 0.3,
-        metalness: 0.7,
+        metalness: 0.6,
       })
     );
     body.position.y = 0.9;
@@ -388,8 +388,8 @@ export const ThreeCanvas: React.FC<ThreeCanvasProps> = ({
     // Parent Crown/Star for mu parents
     if (agent.isParent) {
       const crown = new THREE.Mesh(
-        new THREE.OctahedronGeometry(0.3, 0),
-        new THREE.MeshBasicMaterial({ color: 0xf59e0b })
+        new THREE.OctahedronGeometry(0.32, 0),
+        new THREE.MeshBasicMaterial({ color: 0xd97706 })
       );
       crown.position.y = 2.0;
       entity.add(crown);
@@ -425,14 +425,29 @@ export const ThreeCanvas: React.FC<ThreeCanvasProps> = ({
       mesh.userData.targetPosition = agent.position;
       mesh.userData.targetAltitude = agent.altitude;
 
-      // Update color if promoted to elite or parent
+      // Update color and laser
       const body = mesh.getObjectByName('body') as THREE.Mesh;
       const halo = mesh.getObjectByName('halo') as THREE.Mesh;
+      const eye = mesh.getObjectByName('eye') as THREE.Mesh;
+      const laser = mesh.getObjectByName('laser') as THREE.Mesh;
+
       if (body && halo) {
         const hex = parseInt(agent.color.replace('#', '0x'), 16);
         (body.material as THREE.MeshStandardMaterial).color.setHex(hex);
         (body.material as THREE.MeshStandardMaterial).emissive.setHex(hex);
         (halo.material as THREE.MeshBasicMaterial).color.setHex(hex);
+      }
+
+      if (eye && laser) {
+        if (agent.color === '#059669') {
+          (eye.material as THREE.MeshBasicMaterial).color.setHex(0x059669);
+          (laser.material as THREE.MeshBasicMaterial).opacity = 0.8;
+          laser.scale.set(1, agent.altitude, 1);
+          laser.position.y = -agent.altitude / 2;
+        } else {
+          (eye.material as THREE.MeshBasicMaterial).color.setHex(0x0284c7);
+          (laser.material as THREE.MeshBasicMaterial).opacity = 0;
+        }
       }
     });
 
@@ -446,51 +461,50 @@ export const ThreeCanvas: React.FC<ThreeCanvasProps> = ({
   }, [agents, esOffspring, algorithm]);
 
   return (
-    <div className="relative w-full h-[460px] md:h-[540px] bg-cyber-950 overflow-hidden cursor-grab active:cursor-grabbing rounded-xl">
+    <div className="relative w-full h-[460px] md:h-[540px] bg-[#fbf8f3] overflow-hidden cursor-grab active:cursor-grabbing rounded-xl border border-[#e5dac9]">
       <div ref={mountRef} className="w-full h-full" />
-      <div className="scanline absolute inset-0 pointer-events-none opacity-20" />
 
       {/* Floating Instructions */}
-      <div className="absolute bottom-3 right-3 z-10 pointer-events-none text-[11px] font-mono text-slate-400 bg-cyber-900/80 px-2.5 py-1 rounded border border-cyber-800 backdrop-blur">
+      <div className="absolute bottom-3 right-3 z-10 pointer-events-none text-[11px] font-mono text-coffee-700 bg-white/90 px-3 py-1.5 rounded-lg border border-sand-200 shadow-sm backdrop-blur">
         Orbit: Klik Kiri + Geser | Pan: Klik Kanan | Zoom: Scroll
       </div>
 
       {/* Dynamic 3D Legend */}
-      <div className="absolute bottom-3 left-3 z-10 pointer-events-auto text-[11px] font-mono bg-cyber-900/90 border border-cyber-700/80 p-2.5 rounded-lg space-y-1.5 shadow-lg backdrop-blur-md">
-        <div className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
+      <div className="absolute bottom-3 left-3 z-10 pointer-events-auto text-[11px] font-mono bg-white/95 border border-sand-200 p-3 rounded-xl space-y-1.5 shadow-md backdrop-blur-md">
+        <div className="text-[10px] text-coffee-800 font-bold uppercase tracking-wider">
           Legenda Agen 3D ({algorithm})
         </div>
         {(algorithm === 'AOA' || algorithm === 'SPLIT') && (
           <>
             <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-cyber-sky inline-block" />
-              <span>Drone Eksplorasi (&divide;, &times;)</span>
+              <span className="w-2.5 h-2.5 rounded-full bg-[#0284c7] inline-block shadow-sm" />
+              <span className="text-coffee-900 font-medium">Drone Eksplorasi (&divide;, &times;)</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-cyber-emerald inline-block" />
-              <span>Drone Eksploitasi (-, +)</span>
+              <span className="w-2.5 h-2.5 rounded-full bg-[#059669] inline-block shadow-sm" />
+              <span className="text-coffee-900 font-medium">Drone Eksploitasi (-, +)</span>
             </div>
           </>
         )}
         {(algorithm === 'ES' || algorithm === 'SPLIT') && (
           <>
             <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-cyber-purple inline-block shadow" />
-              <span>Induk Terpilih (&mu; Parents)</span>
+              <span className="w-2.5 h-2.5 rounded-full bg-[#7c3aed] inline-block shadow-sm" />
+              <span className="text-coffee-900 font-medium">Induk Terpilih (&mu; Parents)</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-cyber-pink inline-block shadow" />
-              <span>Keturunan Mutasi (&lambda; Offspring 1:7)</span>
+              <span className="w-2.5 h-2.5 rounded-full bg-[#e11d48] inline-block shadow-sm" />
+              <span className="text-coffee-900 font-medium">Keturunan Mutasi (&lambda; 1:7)</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-cyber-lime inline-block shadow" />
-              <span>Elitis Generasi Baru (Tercepat)</span>
+              <span className="w-2.5 h-2.5 rounded-full bg-[#16a34a] inline-block shadow-sm" />
+              <span className="text-coffee-900 font-medium">Elitis Generasi Baru</span>
             </div>
           </>
         )}
         <div className="flex items-center gap-2">
-          <span className="w-2.5 h-2.5 rounded-full bg-cyber-gold inline-block" />
-          <span>Suar Target Terbaik (S<sub>best</sub>)</span>
+          <span className="w-2.5 h-2.5 rounded-full bg-[#d97706] inline-block shadow-sm" />
+          <span className="text-coffee-900 font-medium">Suar Target Terbaik (S<sub>best</sub>)</span>
         </div>
       </div>
     </div>

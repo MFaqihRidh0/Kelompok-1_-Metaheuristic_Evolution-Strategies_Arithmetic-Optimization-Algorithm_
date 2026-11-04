@@ -44,14 +44,14 @@ export const MetricsDashboard: React.FC<MetricsDashboardProps> = ({
         datasets: [
           {
             data: history,
-            borderColor: algorithm === 'ES' ? '#a855f7' : '#f59e0b',
-            borderWidth: 2,
+            borderColor: algorithm === 'ES' ? '#7c3aed' : '#b45309',
+            borderWidth: 2.2,
             pointRadius: 0,
             fill: true,
             backgroundColor:
               algorithm === 'ES'
-                ? 'rgba(168, 85, 247, 0.12)'
-                : 'rgba(245, 158, 11, 0.1)',
+                ? 'rgba(124, 58, 237, 0.08)'
+                : 'rgba(180, 83, 9, 0.08)',
             tension: 0.25,
           },
         ],
@@ -67,8 +67,8 @@ export const MetricsDashboard: React.FC<MetricsDashboardProps> = ({
           x: { display: false },
           y: {
             display: true,
-            grid: { color: 'rgba(51, 65, 85, 0.2)' },
-            ticks: { color: '#64748b', font: { size: 9, family: 'monospace' } },
+            grid: { color: 'rgba(219, 190, 170, 0.4)' },
+            ticks: { color: '#785642', font: { size: 9, family: 'monospace' } },
           },
         },
         animation: false,
@@ -88,7 +88,7 @@ export const MetricsDashboard: React.FC<MetricsDashboardProps> = ({
     if (!chart) return;
     chart.data.labels = history.map((_, i) => i);
     chart.data.datasets[0].data = history;
-    chart.data.datasets[0].borderColor = algorithm === 'ES' ? '#a855f7' : '#f59e0b';
+    chart.data.datasets[0].borderColor = algorithm === 'ES' ? '#7c3aed' : '#b45309';
     chart.update();
   }, [history, algorithm]);
 
@@ -104,240 +104,222 @@ export const MetricsDashboard: React.FC<MetricsDashboardProps> = ({
     };
 
     return (
-      <section className="space-y-4">
-        {/* Step-by-Step Storyboard Narrative Banner */}
-        <div className="p-3.5 rounded-xl bg-cyber-900/95 border border-cyber-purple/50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-lg">
-          <div className="flex items-center gap-2.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-cyber-pink animate-ping" />
-            <span className="text-xs font-mono font-bold text-cyber-violet uppercase">
-              Proses ES Berjalan:
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Card 1: Makespan (C_max) */}
+        <div className="warm-panel p-4 rounded-xl space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-mono uppercase tracking-wider text-coffee-700">
+              Makespan (C<sub>max</sub>)
             </span>
-            <span className="text-xs text-slate-200 font-medium">
-              {defaultMetrics.currentStepDescription}
+            <span className="px-2 py-0.5 rounded-full bg-purple-100 text-purple-900 font-mono text-[11px] font-bold">
+              Durasi Total
             </span>
           </div>
-          <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-cyber-purple/20 text-cyber-pink border border-cyber-purple/30">
-            Rasio Induk-Anak 1 : 7
-          </span>
+          <div className="flex items-baseline justify-between">
+            <div className="text-2xl font-mono font-bold text-coffee-950">
+              {bestFitness === Infinity ? '---' : `${bestFitness.toFixed(2)}`}
+            </div>
+            <span className="text-[11px] text-coffee-600 font-mono">ms / detik</span>
+          </div>
+          <div className="w-full h-2 bg-sand-100 rounded-full overflow-hidden border border-sand-200">
+            <div
+              className="h-full bg-purple-600 transition-all duration-300 rounded-full"
+              style={{ width: `${Math.min(100, (bestFitness / 20) * 100)}%` }}
+            />
+          </div>
+          <p className="text-[11px] text-coffee-700 leading-tight">
+            Durasi sejak tugas pertama diproses hingga tugas paling akhir selesai di seluruh VM.
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {/* Card 1: Makespan (C_max) */}
-          <div className="cyber-panel p-4 rounded-xl border border-cyber-700/60 space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-mono uppercase tracking-wider text-slate-400">
-                Makespan (C<sub>max</sub>)
-              </span>
-              <span className="p-1 rounded bg-cyber-purple/10 text-cyber-violet font-mono text-xs font-bold">
-                Durasi Total
-              </span>
-            </div>
-            <div className="flex items-baseline justify-between">
-              <div className="text-2xl font-mono font-bold text-white">
-                {bestFitness === Infinity ? '---' : `${bestFitness.toFixed(2)}`}
-              </div>
-              <span className="text-[11px] text-slate-400 font-mono">ms / detik</span>
-            </div>
-            <div className="w-full h-1.5 bg-cyber-900 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-cyber-purple transition-all duration-200"
-                style={{ width: `${Math.min(100, (bestFitness / 20) * 100)}%` }}
-              />
-            </div>
-            <p className="text-[11px] text-slate-400 leading-tight">
-              Waktu sejak tugas pertama mulai diproses hingga tugas paling akhir tuntas di seluruh VM.
-            </p>
+        {/* Card 2: Degree of Imbalance (DI) */}
+        <div className="warm-panel p-4 rounded-xl space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-mono uppercase tracking-wider text-coffee-700">
+              Degree of Imbalance (DI)
+            </span>
+            <span className="px-2 py-0.5 rounded-full bg-rose-100 text-rose-900 font-mono text-[11px] font-bold">
+              Keseimbangan
+            </span>
           </div>
-
-          {/* Card 2: Degree of Imbalance (DI) */}
-          <div className="cyber-panel p-4 rounded-xl border border-cyber-700/60 space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-mono uppercase tracking-wider text-slate-400">
-                Degree of Imbalance (DI)
-              </span>
-              <span className="p-1 rounded bg-cyber-pink/10 text-cyber-pink font-mono text-xs font-bold">
-                Keadilan Beban
-              </span>
+          <div className="flex items-baseline justify-between">
+            <div className="text-2xl font-mono font-bold text-rose-700">
+              {defaultMetrics.degreeOfImbalance.toFixed(3)}
             </div>
-            <div className="flex items-baseline justify-between">
-              <div className="text-2xl font-mono font-bold text-cyber-pink">
-                {defaultMetrics.degreeOfImbalance.toFixed(3)}
-              </div>
-              <span className="text-[11px] text-slate-400 font-mono">Target &le; 0.08</span>
-            </div>
-            <div className="w-full h-1.5 bg-cyber-900 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-cyber-pink transition-all duration-200"
-                style={{ width: `${Math.max(5, (1 - defaultMetrics.degreeOfImbalance) * 100)}%` }}
-              />
-            </div>
-            <p className="text-[11px] text-slate-400 leading-tight">
-              Mengukur disparitas utilisasi server. Nilai mendekati nol menandakan beban merata.
-            </p>
+            <span className="text-[11px] text-coffee-600 font-mono">Target &le; 0.08</span>
           </div>
-
-          {/* Card 3: Elastisitas VM Aktif (Auto-Scaling) */}
-          <div className="cyber-panel p-4 rounded-xl border border-cyber-700/60 space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-mono uppercase tracking-wider text-slate-400">
-                Penskalaan VM (Auto-Scale)
-              </span>
-              <span className="text-[10px] font-mono text-cyber-mint bg-cyber-mint/10 px-1.5 py-0.5 rounded">
-                Dinamis
-              </span>
-            </div>
-            <div className="flex items-baseline justify-between">
-              <div className="text-2xl font-mono font-bold text-cyber-mint">
-                {defaultMetrics.activeVMs}
-              </div>
-              <span className="text-[11px] text-slate-400 font-mono">VM Instans Aktif</span>
-            </div>
-            <div className="w-full h-1.5 bg-cyber-900 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-cyber-mint transition-all duration-200"
-                style={{ width: `${Math.min(100, (defaultMetrics.activeVMs / 900) * 100)}%` }}
-              />
-            </div>
-            <p className="text-[11px] text-slate-400 leading-tight">
-              Instans VM otomatis scale-out saat beban antrean tinggi, dan scale-in saat tugas rampung.
-            </p>
+          <div className="w-full h-2 bg-sand-100 rounded-full overflow-hidden border border-sand-200">
+            <div
+              className="h-full bg-rose-600 transition-all duration-300 rounded-full"
+              style={{ width: `${Math.max(5, (1 - defaultMetrics.degreeOfImbalance) * 100)}%` }}
+            />
           </div>
+          <p className="text-[11px] text-coffee-700 leading-tight">
+            Disparitas beban antar-server. Semakin mendekati nol, alokasi beban semakin merata.
+          </p>
+        </div>
 
-          {/* Card 4: Sparkline Konvergensi ES */}
-          <div className="cyber-panel p-4 rounded-xl border border-cyber-700/60 space-y-2 flex flex-col justify-between">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-mono uppercase tracking-wider text-slate-400">
-                Konvergensi Makespan
-              </span>
-              <span className="text-[10px] font-mono text-cyber-purple flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-cyber-purple" /> Makespan vs Generasi
-              </span>
+        {/* Card 3: Elastisitas VM Aktif (Auto-Scaling) */}
+        <div className="warm-panel p-4 rounded-xl space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-mono uppercase tracking-wider text-coffee-700">
+              Auto-Scaling VM Aktif
+            </span>
+            <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-900 font-mono text-[11px] font-bold">
+              Elastis
+            </span>
+          </div>
+          <div className="flex items-baseline justify-between">
+            <div className="text-2xl font-mono font-bold text-emerald-700">
+              {defaultMetrics.activeVMs}
             </div>
-            <div className="w-full h-20 bg-cyber-950/60 rounded-lg p-1 border border-cyber-800">
-              <canvas ref={chartCanvasRef} className="w-full h-full" />
-            </div>
-            <div className="flex items-center justify-between text-[10px] font-mono text-slate-400">
-              <span>Awal: {history[0]?.toFixed(1) || '--'} ms</span>
-              <span>
-                Optimum:{' '}
-                <strong className="text-cyber-lime font-bold">
-                  {bestFitness === Infinity ? '--' : bestFitness.toFixed(2)} ms
-                </strong>
-              </span>
-            </div>
+            <span className="text-[11px] text-coffee-600 font-mono">Mesin Virtual</span>
+          </div>
+          <div className="w-full h-2 bg-sand-100 rounded-full overflow-hidden border border-sand-200">
+            <div
+              className="h-full bg-emerald-600 transition-all duration-300 rounded-full"
+              style={{ width: `${Math.min(100, (defaultMetrics.activeVMs / 900) * 100)}%` }}
+            />
+          </div>
+          <p className="text-[11px] text-coffee-700 leading-tight">
+            Scale-out bertambah saat beban puncak dan scale-in ke nol saat pekerjaan tuntas.
+          </p>
+        </div>
+
+        {/* Card 4: Sparkline Konvergensi ES */}
+        <div className="warm-panel p-4 rounded-xl space-y-2 flex flex-col justify-between">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-mono uppercase tracking-wider text-coffee-700">
+              Konvergensi Makespan
+            </span>
+            <span className="text-[10px] font-mono text-purple-700 flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-purple-600" /> Makespan vs Generasi
+            </span>
+          </div>
+          <div className="w-full h-20 bg-cream-50 rounded-lg p-1 border border-sand-200">
+            <canvas ref={chartCanvasRef} className="w-full h-full" />
+          </div>
+          <div className="flex items-center justify-between text-[10px] font-mono text-coffee-700">
+            <span>Awal: {history[0]?.toFixed(1) || '--'} ms</span>
+            <span>
+              Optimum:{' '}
+              <strong className="text-emerald-700 font-bold">
+                {bestFitness === Infinity ? '--' : bestFitness.toFixed(2)} ms
+              </strong>
+            </span>
           </div>
         </div>
-      </section>
+      </div>
     );
   }
 
-  // Default AOA & Split Display
+  // Default AOA Display
   return (
-    <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       {/* 1. MOA */}
-      <div className="cyber-panel p-4 rounded-xl border border-cyber-700/60 space-y-2">
+      <div className="warm-panel p-4 rounded-xl space-y-2">
         <div className="flex items-center justify-between">
-          <span className="text-xs font-mono uppercase tracking-wider text-slate-400">
+          <span className="text-xs font-mono uppercase tracking-wider text-coffee-700">
             Saklar Waktu (MOA)
           </span>
-          <span className="p-1 rounded bg-cyber-cyan/10 text-cyber-cyan font-mono text-xs font-bold">
+          <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 font-mono text-[11px] font-bold">
             Transisi Fase
           </span>
         </div>
         <div className="flex items-baseline justify-between">
-          <div className="text-2xl font-mono font-bold text-white">{moa.toFixed(3)}</div>
-          <span className="text-[11px] text-slate-400 font-mono">Range [0.2 - 0.9]</span>
+          <div className="text-2xl font-mono font-bold text-coffee-950">{moa.toFixed(3)}</div>
+          <span className="text-[11px] text-coffee-600 font-mono">Range [0.2 - 0.9]</span>
         </div>
-        <div className="w-full h-1.5 bg-cyber-900 rounded-full overflow-hidden">
+        <div className="w-full h-2 bg-sand-100 rounded-full overflow-hidden border border-sand-200">
           <div
-            className="h-full bg-cyber-cyan transition-all duration-200"
+            className="h-full bg-amber-600 transition-all duration-300 rounded-full"
             style={{ width: `${Math.min(100, (moa / 0.9) * 100)}%` }}
           />
         </div>
-        <p className="text-[11px] text-slate-400 leading-tight">
-          Menentukan kapan tim beralih dari melompat jauh (Eksplorasi) ke menyisir rapat (Eksploitasi).
+        <p className="text-[11px] text-coffee-700 leading-tight">
+          Menentukan proporsi kapan tim melompat jauh (Eksplorasi) vs menyisir rapat (Eksploitasi).
         </p>
       </div>
 
       {/* 2. MOP */}
-      <div className="cyber-panel p-4 rounded-xl border border-cyber-700/60 space-y-2">
+      <div className="warm-panel p-4 rounded-xl space-y-2">
         <div className="flex items-center justify-between">
-          <span className="text-xs font-mono uppercase tracking-wider text-slate-400">
+          <span className="text-xs font-mono uppercase tracking-wider text-coffee-700">
             Pengecil Langkah (MOP)
           </span>
-          <span className="p-1 rounded bg-cyber-mint/10 text-cyber-mint font-mono text-xs font-bold">
-            Akurasi
+          <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-900 font-mono text-[11px] font-bold">
+            Presisi
           </span>
         </div>
         <div className="flex items-baseline justify-between">
-          <div className="text-2xl font-mono font-bold text-cyber-mint">{mop.toFixed(3)}</div>
-          <span className="text-[11px] text-slate-400 font-mono">Sensitivitas &alpha; = 5</span>
+          <div className="text-2xl font-mono font-bold text-emerald-700">{mop.toFixed(3)}</div>
+          <span className="text-[11px] text-coffee-600 font-mono">Sensitivitas &alpha; = 5</span>
         </div>
-        <div className="w-full h-1.5 bg-cyber-900 rounded-full overflow-hidden">
+        <div className="w-full h-2 bg-sand-100 rounded-full overflow-hidden border border-sand-200">
           <div
-            className="h-full bg-cyber-mint transition-all duration-200"
+            className="h-full bg-emerald-600 transition-all duration-300 rounded-full"
             style={{ width: `${Math.min(100, mop * 100)}%` }}
           />
         </div>
-        <p className="text-[11px] text-slate-400 leading-tight">
-          Koefisien langkah non-linear agar koordinat agen makin stabil dan tidak meleset di akhir pencarian.
+        <p className="text-[11px] text-coffee-700 leading-tight">
+          Koefisien langkah non-linear agar koordinat drone makin stabil dan halus di akhir iterasi.
         </p>
       </div>
 
       {/* 3. 4 Operators Distribution */}
-      <div className="cyber-panel p-4 rounded-xl border border-cyber-700/60 space-y-2">
+      <div className="warm-panel p-4 rounded-xl space-y-2">
         <div className="flex items-center justify-between">
-          <span className="text-xs font-mono uppercase tracking-wider text-slate-400">
+          <span className="text-xs font-mono uppercase tracking-wider text-coffee-700">
             Distribusi Operator
           </span>
-          <span className="text-[10px] font-mono text-slate-400">Populasi: {totalAgents}</span>
+          <span className="text-[10px] font-mono text-coffee-600">Populasi: {totalAgents}</span>
         </div>
         <div className="grid grid-cols-4 gap-1.5 text-center font-mono">
-          <div className="p-1.5 rounded bg-cyber-900/80 border border-cyber-cyan/30">
-            <span className="text-[10px] text-slate-400 block">Bagi (÷)</span>
-            <strong className="text-sm font-bold text-cyber-cyan">{opCounts.div}</strong>
+          <div className="p-1.5 rounded-lg bg-sky-50 border border-sky-200">
+            <span className="text-[10px] text-sky-800 block">Bagi (÷)</span>
+            <strong className="text-sm font-bold text-sky-900">{opCounts.div}</strong>
           </div>
-          <div className="p-1.5 rounded bg-cyber-900/80 border border-cyber-sky/30">
-            <span className="text-[10px] text-slate-400 block">Kali (×)</span>
-            <strong className="text-sm font-bold text-cyber-sky">{opCounts.mul}</strong>
+          <div className="p-1.5 rounded-lg bg-sky-50 border border-sky-200">
+            <span className="text-[10px] text-sky-800 block">Kali (×)</span>
+            <strong className="text-sm font-bold text-sky-900">{opCounts.mul}</strong>
           </div>
-          <div className="p-1.5 rounded bg-cyber-900/80 border border-cyber-emerald/30">
-            <span className="text-[10px] text-slate-400 block">Kurang (-)</span>
-            <strong className="text-sm font-bold text-cyber-emerald">{opCounts.sub}</strong>
+          <div className="p-1.5 rounded-lg bg-emerald-50 border border-emerald-200">
+            <span className="text-[10px] text-emerald-800 block">Kurang (-)</span>
+            <strong className="text-sm font-bold text-emerald-900">{opCounts.sub}</strong>
           </div>
-          <div className="p-1.5 rounded bg-cyber-900/80 border border-cyber-mint/30">
-            <span className="text-[10px] text-slate-400 block">Tambah (+)</span>
-            <strong className="text-sm font-bold text-cyber-mint">{opCounts.add}</strong>
+          <div className="p-1.5 rounded-lg bg-emerald-50 border border-emerald-200">
+            <span className="text-[10px] text-emerald-800 block">Tambah (+)</span>
+            <strong className="text-sm font-bold text-emerald-900">{opCounts.add}</strong>
           </div>
         </div>
-        <p className="text-[11px] text-slate-400 leading-tight">
-          Rincian eksekusi kalkulasi aritmatika pada iterasi yang sedang aktif.
+        <p className="text-[11px] text-coffee-700 leading-tight">
+          Distribusi kalkulasi 4 operator aritmatika pada iterasi yang sedang aktif.
         </p>
       </div>
 
       {/* 4. Convergence Sparkline */}
-      <div className="cyber-panel p-4 rounded-xl border border-cyber-700/60 space-y-2 flex flex-col justify-between">
+      <div className="warm-panel p-4 rounded-xl space-y-2 flex flex-col justify-between">
         <div className="flex items-center justify-between">
-          <span className="text-xs font-mono uppercase tracking-wider text-slate-400">
+          <span className="text-xs font-mono uppercase tracking-wider text-coffee-700">
             Grafik Konvergensi
           </span>
-          <span className="text-[10px] font-mono text-cyber-gold flex items-center gap-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-cyber-gold" /> Latensi vs Iterasi
+          <span className="text-[10px] font-mono text-amber-700 flex items-center gap-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-600" /> Latensi vs Iterasi
           </span>
         </div>
-        <div className="w-full h-20 bg-cyber-950/60 rounded-lg p-1 border border-cyber-800">
+        <div className="w-full h-20 bg-cream-50 rounded-lg p-1 border border-sand-200">
           <canvas ref={chartCanvasRef} className="w-full h-full" />
         </div>
-        <div className="flex items-center justify-between text-[10px] font-mono text-slate-400">
+        <div className="flex items-center justify-between text-[10px] font-mono text-coffee-700">
           <span>Awal: {history[0]?.toFixed(1) || '--'} ms</span>
           <span>
             Optimum:{' '}
-            <strong className="text-cyber-emerald font-bold">
+            <strong className="text-emerald-700 font-bold">
               {bestFitness === Infinity ? '--' : bestFitness.toFixed(2)} ms
             </strong>
           </span>
         </div>
       </div>
-    </section>
+    </div>
   );
 };
