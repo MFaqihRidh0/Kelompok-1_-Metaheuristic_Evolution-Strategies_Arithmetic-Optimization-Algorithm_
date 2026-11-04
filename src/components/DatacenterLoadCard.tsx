@@ -248,3 +248,4 @@ export const DatacenterLoadCard: React.FC<DatacenterLoadCardProps> = ({
     </section>
   );
 };
+

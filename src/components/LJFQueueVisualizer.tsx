@@ -237,3 +237,4 @@ export const LJFQueueVisualizer: React.FC<LJFQueueVisualizerProps> = ({ isRunnin
     </section>
   );
 };
+
