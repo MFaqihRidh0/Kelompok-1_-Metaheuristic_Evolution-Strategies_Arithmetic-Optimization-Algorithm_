@@ -1,6 +1,6 @@
 import React from 'react';
 import { StepLog, AlgorithmType } from '../types';
-import { Compass, Dna, Info, Sparkles } from 'lucide-react';
+import { Compass, Dna, Info, Sparkles, Target, Activity } from 'lucide-react';
 
 interface StepInspectorProps {
   algorithm: AlgorithmType;
@@ -28,7 +28,7 @@ export const StepInspector: React.FC<StepInspectorProps> = ({
                 Log Langkah Operasional ({algorithm})
               </span>
               <span className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-coffee-100 text-coffee-800 border border-coffee-200">
-                Langkah {iteration} dari {maxIterations}
+                Putaran {iteration} / {maxIterations}
               </span>
             </div>
             <h4 className="text-base font-bold text-coffee-950 tracking-tight">
@@ -48,6 +48,42 @@ export const StepInspector: React.FC<StepInspectorProps> = ({
         {stepLog.details}
       </div>
 
+      {/* Comparison Score Telemetry (Menjawab Mengapa Rekor Tidak Pecah) */}
+      {stepLog.roundBestLatency !== undefined && stepLog.currentRecordLatency !== undefined && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-mono">
+          <div className="p-2.5 rounded-xl bg-amber-50/90 border border-amber-300 flex items-center justify-between">
+            <span className="flex items-center gap-1.5 text-amber-900 font-semibold">
+              <Target className="w-4 h-4 text-amber-700" />
+              <span>Rekor Suar Emas (Target yang Dikejar):</span>
+            </span>
+            <strong className="text-amber-950 text-sm">
+              {stepLog.currentRecordLatency.toFixed(2)} ms
+            </strong>
+          </div>
+
+          <div className="p-2.5 rounded-xl bg-white border border-sand-300 flex items-center justify-between">
+            <span className="flex items-center gap-1.5 text-coffee-800 font-semibold">
+              <Activity className="w-4 h-4 text-sky-700" />
+              <span>Tebakan Terbaik Drone Putaran Ini:</span>
+            </span>
+            <div className="flex items-center gap-1.5">
+              <strong className="text-coffee-950 text-sm">
+                {stepLog.roundBestLatency.toFixed(2)} ms
+              </strong>
+              {stepLog.roundBestLatency <= stepLog.currentRecordLatency ? (
+                <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold">
+                  Pecah Rekor!
+                </span>
+              ) : (
+                <span className="text-[10px] px-1.5 py-0.5 rounded bg-sand-200 text-coffee-700">
+                  Belum Mengalahkan
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Progress Highlight Badge */}
       <div className="flex items-center gap-2 text-xs font-mono p-2.5 rounded-xl bg-amber-50/80 border border-amber-200/80 text-amber-950 font-medium">
         <Sparkles className="w-4 h-4 text-amber-600 shrink-0" />
@@ -56,12 +92,11 @@ export const StepInspector: React.FC<StepInspectorProps> = ({
 
       {/* Educational Clarification Tip */}
       <div className="flex items-start gap-2 text-[11px] font-sans p-2.5 rounded-xl bg-sand-100/70 border border-sand-200 text-coffee-800">
-        <span className="font-bold text-amber-800 shrink-0">💡 Mengapa rekor belum berubah saat drone mendekat?</span>
+        <span className="font-bold text-amber-800 shrink-0">💡 Mengapa drone yang secara visual dekat ke suar tidak memecahkan rekor?</span>
         <span>
-          Suar emas (dan drone bermahkota 👑) berdiri di titik rekor <strong>yang sudah ditemukan</strong>. Drone di sekitarnya sedang berkumpul menyisir area tersebut. Rekor baru <strong>hanya akan pecah</strong> jika ada drone yang menemukan konfigurasi server dengan latensi <strong>lebih rendah lagi</strong> daripada titik suar tersebut. Warna <strong>biru/hijau</strong> adalah jenis aksi alat kerja (lompat jauh vs menyisir tanah), bukan penanda juara.
+          Rekor diukur berdasarkan <strong>nilai latensi server (ms)</strong>, bukan sekadar jarak fisik (meter) ke suar. Tiang suar emas didirikan persis di titik terendah yang pernah ditemukan. Ketika ada drone lain mendekati suar, ia baru berada di lereng sekitar suar (latensinya masih sedikit lebih tinggi). Rekor <strong>hanya akan pecah</strong> jika ada drone yang menemukan titik dengan latensi <strong>lebih kecil dari nilai suar</strong>. Warna <strong>biru/hijau</strong> adalah jenis alat aksi (lompat jauh vs menyisir tanah), bukan penanda juara.
         </span>
       </div>
     </div>
   );
 };
-

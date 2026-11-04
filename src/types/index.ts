@@ -20,6 +20,7 @@ export interface GlobalBest {
   makespan?: number;
   imbalance?: number;
   improved?: boolean;
+  currentRoundBest?: number;
 }
 
 export interface SimulationParams {
@@ -45,6 +46,8 @@ export interface StepLog {
   phase: string;
   details: string;
   highlight: string;
+  roundBestLatency?: number;
+  currentRecordLatency?: number;
 }
 
 export interface ESMetrics {

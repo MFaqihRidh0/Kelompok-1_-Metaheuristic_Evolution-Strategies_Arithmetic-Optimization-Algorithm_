@@ -32,6 +32,7 @@ export function initAOAPopulation(
     fitness: Infinity,
     iteration: 0,
     improved: false,
+    currentRoundBest: Infinity,
   };
 
   for (let i = 0; i < size; i++) {
@@ -55,16 +56,19 @@ export function initAOAPopulation(
         fitness: fit,
         iteration: 0,
         improved: true,
+        currentRoundBest: fit,
       };
     }
   }
 
   const initialLog: StepLog = {
     stepNumber: 1,
-    stepTitle: 'Langkah 1 & 2: Inisialisasi Acak & Penentuan Suar Awal',
+    stepTitle: 'Langkah 1 & 2: Inisialisasi Acak & Penentuan Suar Rekor Awal',
     phase: 'Inisialisasi',
-    details: `Menyebar ${size} drone penjelajah logika secara acak pada ruang koordinat server. Tebakan terbaik sementara langsung ditunjuk sebagai suar target emas awal (${globalBest.fitness.toFixed(2)} ms).`,
-    highlight: `Suar emas berdiri di koordinat [${globalBest.position[0].toFixed(1)}, ${globalBest.position[1].toFixed(1)}]`,
+    details: `Menyebar ${size} drone penjelajah pada ruang koordinat server. Drone dengan latensi paling rendah saat ini (${globalBest.fitness.toFixed(2)} ms) langsung menancapkan tiang suar emas sebagai patokan awal regu.`,
+    highlight: `Rekor awal: ${globalBest.fitness.toFixed(2)} ms di koordinat [${globalBest.position[0].toFixed(1)}, ${globalBest.position[1].toFixed(1)}]`,
+    roundBestLatency: globalBest.fitness,
+    currentRecordLatency: globalBest.fitness,
   };
 
   return { agents, globalBest, initialLog };
@@ -99,6 +103,7 @@ export function stepAOA(
 
   let newBest = { ...globalBest, improved: false };
   let bestFoundByAgent = -1;
+  let minRoundFitness = Infinity;
 
   const updatedAgents: Agent[] = agents.map((agent) => {
     const newCoords: [number, number] = [agent.position[0], agent.position[1]];
@@ -152,9 +157,11 @@ export function stepAOA(
     if (isAgentExploring) explorationCount++;
 
     const newFitness = evaluateFitness(newCoords[0], newCoords[1], landscape);
+    if (newFitness < minRoundFitness) {
+      minRoundFitness = newFitness;
+    }
 
-    // Greedy replacement
-    const acceptedFitness = newFitness < agent.fitness ? newFitness : newFitness;
+    const acceptedFitness = newFitness;
     const acceptedCoords: [number, number] = newCoords;
 
     if (acceptedFitness < newBest.fitness) {
@@ -163,13 +170,15 @@ export function stepAOA(
         fitness: acceptedFitness,
         iteration: currentIter,
         improved: true,
+        currentRoundBest: acceptedFitness,
       };
       bestFoundByAgent = agent.id;
     }
 
     // Determine altitude and color for animation
+    // Blue = Exploration Jump, Green = Exploitation Ground Scan
     const targetAltitude = isAgentExploring ? 8.0 + Math.random() * 3.5 : 2.0;
-    const color = isAgentExploring ? '#0284c7' : '#059669'; // Warm Azure vs Rich Forest Green
+    const color = isAgentExploring ? '#0284c7' : '#059669';
 
     return {
       ...agent,
@@ -183,6 +192,7 @@ export function stepAOA(
   });
 
   const isExploration = explorationCount >= agents.length / 2;
+  newBest.currentRoundBest = minRoundFitness;
 
   // Generate Informative Educational Log for this step
   let stepTitle = '';
@@ -191,16 +201,16 @@ export function stepAOA(
 
   if (isExploration) {
     stepTitle = `Iterasi ${currentIter}: Fase Eksplorasi (Helikopter & Parasut)`;
-    details = `Nilai MOA = ${moa.toFixed(3)} (Peluang lompat masih tinggi). ${opCounts.div} drone memakai Pembagian (÷) dan ${opCounts.mul} drone memakai Perkalian (×) untuk melontar jauh ke gugusan server baru agar terhindar dari jebakan lokal.`;
+    details = `Nilai MOA = ${moa.toFixed(3)} (Peluang lompat tinggi). ${opCounts.div} drone memakai Pembagian (÷) dan ${opCounts.mul} drone memakai Perkalian (×) untuk melontar jauh ke gugusan server baru agar tidak terjebak bukit lokal.`;
   } else {
     stepTitle = `Iterasi ${currentIter}: Fase Eksploitasi (Cangkul & Detektor Logam)`;
-    details = `Nilai MOA = ${moa.toFixed(3)} & MOP = ${mop.toFixed(3)}. Peluang menyisir rapat mendominasi! ${opCounts.sub} drone memakai Pengurangan (-) dan ${opCounts.add} drone memakai Penjumlahan (+) dengan laser pemindai hijau untuk memoles presisi koordinat optimum.`;
+    details = `Nilai MOA = ${moa.toFixed(3)} & MOP = ${mop.toFixed(3)}. Peluang menyisir rapat mendominasi! ${opCounts.sub} drone memakai Pengurangan (-) dan ${opCounts.add} drone memakai Penjumlahan (+) dengan laser hijau untuk memoles koordinat optimum.`;
   }
 
   if (newBest.improved) {
-    highlight = `✨ REKOR BARU! Drone #${bestFoundByAgent + 1} menemukan konfigurasi server lebih unggul: Latensi turun ke ${newBest.fitness.toFixed(2)} ms! Suar emas (beacon) berpindah lokasi!`;
+    highlight = `✨ REKOR BARU PECAH! Drone #${bestFoundByAgent + 1} mencatat latensi ${newBest.fitness.toFixed(2)} ms (mengalahkan rekor lama ${globalBest.fitness.toFixed(2)} ms)! Suar emas langsung berpindah ke titik ini!`;
   } else {
-    highlight = `Rekor terbaik bertahan di ${newBest.fitness.toFixed(2)} ms. Seluruh tim merapatkan koordinat pencarian.`;
+    highlight = `Latensi terbaik di putaran ini adalah ${minRoundFitness.toFixed(2)} ms. Karena angka ini masih lebih besar dari rekor suar (${globalBest.fitness.toFixed(2)} ms), maka tiang suar tetap bertahan di tempat semula.`;
   }
 
   const stepLog: StepLog = {
@@ -209,6 +219,8 @@ export function stepAOA(
     phase: isExploration ? 'Eksplorasi (÷, ×)' : 'Eksploitasi (-, +)',
     details,
     highlight,
+    roundBestLatency: minRoundFitness,
+    currentRecordLatency: newBest.fitness,
   };
 
   return {
