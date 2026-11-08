@@ -185,29 +185,29 @@ Menampilkan data angka perbandingan yang membuktikan secara tak terbantahkan bah
 
 #### 📊 Tabel Komparasi Utama (Tampilkan di Layar):
 
-| Skenario | Algoritma | Makespan (detik) | Throughput (tasks/s) | Rata-rata Utilisasi VM (%) | LBI (Ketimpangan Beban) | Total Biaya Sewa Cloud ($) |
+| Skenario | Algoritma | Makespan (detik) | Perbaikan (%) | Throughput (tasks/s) | LBI (Ketimpangan) | Total Biaya Sewa Cloud ($) |
 | :---: | :--- | :---: | :---: | :---: | :---: | :---: |
-| **100 Tasks** | **Random (Minggu 3)**<br>**AOA yang Baru** | 447.96 s<br>**217.49 s** | 0.23<br>**0.47** | 41.2%<br>**51.3%** | 2.30<br>**1.79** | $91.01<br>**$63.96** |
-| **200 Tasks** | **Random (Minggu 3)**<br>**AOA yang Baru** | 866.13 s<br>**627.91 s** | 0.23<br>**0.33** | 46.4%<br>**52.4%** | 1.96<br>**1.68** | $191.70<br>**$163.73** |
-| **300 Tasks** | **Random (Minggu 3)**<br>**AOA yang Baru** | 1157.17 s<br>**947.90 s** | 0.26<br>**0.32** | 48.0%<br>**53.5%** | 1.89<br>**1.61** | $271.05<br>**$251.80** |
-| **400 Tasks** | **Random (Minggu 3)**<br>**AOA yang Baru** | 1389.41 s<br>**1229.38 s** | 0.29<br>**0.33** | 50.3%<br>**53.9%** | 1.78<br>**1.61** | $343.24<br>**$328.30** |
-| **500 Tasks** | **Random (Minggu 3)**<br>**AOA yang Baru** | 1951.85 s<br>**1673.86 s** | 0.26<br>**0.30** | 49.7%<br>**55.5%** | 1.80<br>**1.57** | $465.28<br>**$445.71** |
+| **100 Tasks** | **Random (Minggu 3)**<br>**AOA yang Baru** | 444.29 s<br>**206.99 s** | -<br>**-53.4%** | 0.23<br>**0.49** (+113%) | 2.20<br>**1.96** | $92.97<br>**$58.48** (Hemat $34.49) |
+| **200 Tasks** | **Random (Minggu 3)**<br>**AOA yang Baru** | 939.25 s<br>**634.92 s** | -<br>**-32.4%** | 0.22<br>**0.32** (+45%) | 2.09<br>**1.64** | $198.09<br>**$167.48** (Hemat $30.61) |
+| **300 Tasks** | **Random (Minggu 3)**<br>**AOA yang Baru** | 1177.30 s<br>**931.37 s** | -<br>**-20.9%** | 0.26<br>**0.32** (+23%) | 1.91<br>**1.59** | $274.11<br>**$250.45** (Hemat $23.66) |
+| **400 Tasks** | **Random (Minggu 3)**<br>**AOA yang Baru** | 1468.63 s<br>**1202.80 s** | -<br>**-18.1%** | 0.27<br>**0.33** (+22%) | 1.83<br>**1.58** | $353.54<br>**$326.90** (Hemat $26.64) |
+| **500 Tasks** | **Random (Minggu 3)**<br>**AOA yang Baru** | 1917.29 s<br>**1682.69 s** | -<br>**-12.2%** | 0.26<br>**0.30** (+15%) | 1.74<br>**1.59** | $467.26<br>**$445.20** (Hemat $22.06) |
 
 #### 🗣️ Naskah yang Harus Anda Tegaskan (Sorot 4 Poin Utama):
-> *"Bapak/Ibu dosen dan rekan-rekan, mari kita cermati lonjakan performa yang sangat nyata pada tabel ini:*
+> *"Bapak/Ibu dosen dan rekan-rekan, mari kita cermati lonjakan performa yang sangat nyata pada tabel hasil eksekusi ini:*
 > 
 > 1. **Pemangkasan Makespan yang Sangat Drastis:**
->    * Pada 100 tugas, Random Scheduling membutuhkan waktu 447.96 detik. AOA memangkasnya menjadi hanya **217.49 detik — ini adalah percepatan lebih dari 51.5% (lebih dari dua kali lipat lebih cepat!)**.
->    * Pada 500 tugas, AOA berhasil memotong waktu tunggu sebesar hampir **300 detik** (dari 1.951 detik turun ke 1.673 detik).
+>    * Pada 100 tugas, Random Scheduling membutuhkan waktu 444.29 detik. AOA memangkasnya menjadi hanya **206.99 detik — ini adalah percepatan sebesar 53.4% (lebih dari dua kali lipat lebih cepat!)**.
+>    * Pada 500 tugas, AOA berhasil memotong waktu tunggu sebesar **234.6 detik** (dari 1.917.29 detik turun ke 1.682.69 detik).
 > 
-> 2. **Throughput Naik Signifikan:**
->    * Laju penyelesaian tugas melonjak dari 0.23 tasks/detik menjadi **0.47 tasks/detik** pada skenario 100 tugas — kapasitas pemrosesan datacenter berlipat ganda tanpa perlu menambah perangkat keras baru.
+> 2. **Throughput Melonjak Lebih Dari Dua Kali Lipat:**
+>    * Laju penyelesaian tugas melonjak dari 0.23 tasks/detik menjadi **0.49 tasks/detik** pada skenario 100 tugas (+113%) — kapasitas pemrosesan datacenter meningkat drastis tanpa perlu menambah perangkat keras baru.
 > 
 > 3. **Beban Kerja Jauh Lebih Merata (LBI Turun Konsisten):**
->    * Indeks ketimpangan beban (LBI) yang tadinya berada di level kritis 2.30 pada Random Scheduling, berhasil ditekan oleh AOA menjadi **1.79** (100 tugas) dan **1.57** (500 tugas). Tidak ada lagi VM Small yang 'tersiksa' sendirian sementara VM Large bersantai.
+>    * Indeks ketimpangan beban (LBI) yang tadinya berada di angka 2.20 pada Random Scheduling, berhasil ditekan oleh AOA menjadi **1.96** (100 tugas) dan menyentuh **1.58** (400 tugas). Distribusi beban antar-VM menjadi jauh lebih proporsional.
 > 
 > 4. **Efisiensi Finansial (Penghematan Biaya Sewa Nyata):**
->    * Karena waktu proses total terpangkas secara masif, biaya komputasi awan yang harus dibayarkan perusahaan turun signifikan di seluruh skenario pengujian."*
+>    * Karena waktu proses total terpangkas secara masif, biaya komputasi awan yang harus dibayarkan perusahaan turun signifikan di seluruh skenario: hemat $34.49 pada 100 tasks, hemat $30.61 pada 200 tasks, dan konsisten hemat di setiap ukuran batch."*
 
 ---
 

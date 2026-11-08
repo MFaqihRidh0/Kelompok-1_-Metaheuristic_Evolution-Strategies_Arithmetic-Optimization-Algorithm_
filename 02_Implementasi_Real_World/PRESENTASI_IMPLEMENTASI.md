@@ -121,29 +121,29 @@ AOA (Abualigah et al., 2021) mengoptimalkan alokasi cloud melalui 2 fase matemat
 <!-- Slide 7 -->
 ## 6. Hasil Ujicoba Empiris: Random vs. AOA yang Baru
 
-*Data rata-rata dari 10 independent runs per skenario (100 total simulasi):*
+*Data nyata dari eksekusi `program_aoa_vs_random.py` (10 independent runs per skenario):*
 
-| Skenario | Algoritma | Makespan (s) | Throughput | Avg Util (%) | LBI (Ketimpangan) | Biaya ($) |
+| Skenario | Algoritma | Makespan (s) | Perbaikan (%) | Throughput | LBI (Ketimpangan) | Biaya ($) |
 | :---: | :--- | :---: | :---: | :---: | :---: | :---: |
-| **100 Tasks** | Random (Minggu 3)<br>**AOA yang Baru** | 447.96 s<br>**217.49 s** | 0.23 t/s<br>**0.47 t/s** | 41.2%<br>**51.3%** | 2.30<br>**1.79** | $91.01<br>**$63.96** |
-| **200 Tasks** | Random (Minggu 3)<br>**AOA yang Baru** | 866.13 s<br>**627.91 s** | 0.23 t/s<br>**0.33 t/s** | 46.4%<br>**52.4%** | 1.96<br>**1.68** | $191.70<br>**$163.73** |
-| **300 Tasks** | Random (Minggu 3)<br>**AOA yang Baru** | 1157.17 s<br>**947.90 s** | 0.26 t/s<br>**0.32 t/s** | 48.0%<br>**53.5%** | 1.89<br>**1.61** | $271.05<br>**$251.80** |
-| **400 Tasks** | Random (Minggu 3)<br>**AOA yang Baru** | 1389.41 s<br>**1229.38 s** | 0.29 t/s<br>**0.33 t/s** | 50.3%<br>**53.9%** | 1.78<br>**1.61** | $343.24<br>**$328.30** |
-| **500 Tasks** | Random (Minggu 3)<br>**AOA yang Baru** | 1951.85 s<br>**1673.86 s** | 0.26 t/s<br>**0.30 t/s** | 49.7%<br>**55.5%** | 1.80<br>**1.57** | $465.28<br>**$445.71** |
+| **100 Tasks** | Random (Minggu 3)<br>**AOA yang Baru** | 444.29 s<br>**206.99 s** | -<br>**-53.4%** | 0.23 t/s<br>**0.49 t/s** | 2.20<br>**1.96** | $92.97<br>**$58.48** |
+| **200 Tasks** | Random (Minggu 3)<br>**AOA yang Baru** | 939.25 s<br>**634.92 s** | -<br>**-32.4%** | 0.22 t/s<br>**0.32 t/s** | 2.09<br>**1.64** | $198.09<br>**$167.48** |
+| **300 Tasks** | Random (Minggu 3)<br>**AOA yang Baru** | 1177.30 s<br>**931.37 s** | -<br>**-20.9%** | 0.26 t/s<br>**0.32 t/s** | 1.91<br>**1.59** | $274.11<br>**$250.45** |
+| **400 Tasks** | Random (Minggu 3)<br>**AOA yang Baru** | 1468.63 s<br>**1202.80 s** | -<br>**-18.1%** | 0.27 t/s<br>**0.33 t/s** | 1.83<br>**1.58** | $353.54<br>**$326.90** |
+| **500 Tasks** | Random (Minggu 3)<br>**AOA yang Baru** | 1917.29 s<br>**1682.69 s** | -<br>**-12.2%** | 0.26 t/s<br>**0.30 t/s** | 1.74<br>**1.59** | $467.26<br>**$445.20** |
 
 ---
 
 <!-- Slide 8 -->
 ## 7. Analisis 4 Keunggulan Utama AOA
 
-1. **Makespan Terpangkas Hingga 51.5%:**
-   Waktu pengerjaan tugas 100 cloudlet terpangkas dari 447 detik menjadi 217 detik (2x lebih cepat), dan menghemat hampir 300 detik pada 500 cloudlet.
-2. **Throughput Melonjak 104%:**
-   Kapasitas pemrosesan naik dari 0.23 menjadi 0.47 tasks/detik tanpa menambah VM.
+1. **Makespan Terpangkas Hingga 53.4%:**
+   Waktu pengerjaan tugas 100 cloudlet terpangkas dari 444.29 detik menjadi 206.99 detik (lebih dari 2x lebih cepat), dan memotong 234.6 detik pada 500 cloudlet.
+2. **Throughput Melonjak Lebih Dari 2x Lipat (+113%):**
+   Kapasitas pemrosesan naik dari 0.23 menjadi 0.49 tasks/detik tanpa menambah VM baru.
 3. **Beban Seimbang (LBI Turun Konsisten):**
-   LBI turun dari 2.30 ke 1.79. Beban terdistribusi proporsional sesuai MIPS CPU.
-4. **Efisiensi Finansial:**
-   Biaya sewa prosesor cloud terpangkas di seluruh skenario karena durasi eksekusi jauh lebih singkat.
+   LBI turun dari 2.20 ke 1.96 pada 100 tugas, dan menyentuh 1.58 pada 400 tugas. Beban terdistribusi proporsional sesuai MIPS CPU.
+4. **Efisiensi Finansial (Hemat Biaya Sewa Nyata):**
+   Biaya sewa prosesor cloud terpangkas di seluruh skenario: hemat $34.49 pada 100 tasks, hemat $30.61 pada 200 tasks, dan hemat hingga ratusan dollar secara kumulatif.
 
 ---
 

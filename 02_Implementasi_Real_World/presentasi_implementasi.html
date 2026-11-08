@@ -585,7 +585,7 @@
       <div class="slide" data-3d-mode="aoa-exploit">
         <span class="slide-tag">BAGIAN 06 &bull; BENCHMARK REAL-WORLD</span>
         <h2>Hasil Ujicoba Empiris: Random vs. AOA yang Baru</h2>
-        <p>Data rata-rata dari 10 independent runs per skenario (100 simulasi penuh) pada dataset Minggu 3:</p>
+        <p>Data rata-rata dari eksekusi nyata <code>program_aoa_vs_random.py</code> (10 independent runs per skenario):</p>
 
         <table>
           <thead>
@@ -593,89 +593,107 @@
               <th>Skenario</th>
               <th>Algoritma</th>
               <th>Makespan (s)</th>
+              <th>Perbaikan</th>
               <th>Throughput</th>
-              <th>Utilisasi VM (%)</th>
               <th>LBI (Ketimpangan)</th>
-              <th>Biaya Sewa ($)</th>
+              <th>Total Biaya</th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td rowspan="2"><strong>100 Tasks</strong></td>
               <td>Random (Minggu 3)</td>
-              <td>447.96 ± 89.67 s</td>
+              <td>444.29 s</td>
+              <td>-</td>
               <td>0.23 t/s</td>
-              <td>41.20%</td>
-              <td>2.30 ± 0.48</td>
-              <td>$91.01</td>
+              <td>2.20</td>
+              <td>$92.97</td>
             </tr>
             <tr>
               <td class="text-sky">AOA yang Baru</td>
-              <td class="text-sky">217.49 ± 30.63 s (-51.5%)</td>
-              <td class="text-sky">0.47 t/s (+104%)</td>
-              <td class="text-sky">51.32%</td>
-              <td class="text-sky">1.79 ± 0.39</td>
-              <td class="text-sky">$63.96 (Hemat 30%)</td>
+              <td class="text-sky">206.99 s</td>
+              <td class="text-sky">-53.4%</td>
+              <td class="text-sky">0.49 t/s (+113%)</td>
+              <td class="text-sky">1.96</td>
+              <td class="text-sky">$58.48 (Hemat $34.49)</td>
             </tr>
 
             <tr>
               <td rowspan="2"><strong>200 Tasks</strong></td>
               <td>Random (Minggu 3)</td>
-              <td>866.13 ± 125.73 s</td>
-              <td>0.23 t/s</td>
-              <td>46.43%</td>
-              <td>1.96 ± 0.27</td>
-              <td>$191.70</td>
+              <td>939.25 s</td>
+              <td>-</td>
+              <td>0.22 t/s</td>
+              <td>2.09</td>
+              <td>$198.09</td>
             </tr>
             <tr>
               <td class="text-sky">AOA yang Baru</td>
-              <td class="text-sky">627.91 ± 93.26 s (-27.5%)</td>
-              <td class="text-sky">0.33 t/s (+43%)</td>
-              <td class="text-sky">52.35%</td>
-              <td class="text-sky">1.68 ± 0.14</td>
-              <td class="text-sky">$163.73 (Hemat 15%)</td>
+              <td class="text-sky">634.92 s</td>
+              <td class="text-sky">-32.4%</td>
+              <td class="text-sky">0.32 t/s (+45%)</td>
+              <td class="text-sky">1.64</td>
+              <td class="text-sky">$167.48 (Hemat $30.61)</td>
             </tr>
 
             <tr>
               <td rowspan="2"><strong>300 Tasks</strong></td>
               <td>Random (Minggu 3)</td>
-              <td>1157.17 ± 138.64 s</td>
+              <td>1177.30 s</td>
+              <td>-</td>
               <td>0.26 t/s</td>
-              <td>48.00%</td>
-              <td>1.89 ± 0.23</td>
-              <td>$271.05</td>
+              <td>1.91</td>
+              <td>$274.11</td>
             </tr>
             <tr>
               <td class="text-sky">AOA yang Baru</td>
-              <td class="text-sky">947.90 ± 55.40 s (-18.1%)</td>
+              <td class="text-sky">931.37 s</td>
+              <td class="text-sky">-20.9%</td>
               <td class="text-sky">0.32 t/s (+23%)</td>
-              <td class="text-sky">53.52%</td>
-              <td class="text-sky">1.61 ± 0.07</td>
-              <td class="text-sky">$251.80 (Hemat 7%)</td>
+              <td class="text-sky">1.59</td>
+              <td class="text-sky">$250.45 (Hemat $23.66)</td>
+            </tr>
+
+            <tr>
+              <td rowspan="2"><strong>400 Tasks</strong></td>
+              <td>Random (Minggu 3)</td>
+              <td>1468.63 s</td>
+              <td>-</td>
+              <td>0.27 t/s</td>
+              <td>1.83</td>
+              <td>$353.54</td>
+            </tr>
+            <tr>
+              <td class="text-sky">AOA yang Baru</td>
+              <td class="text-sky">1202.80 s</td>
+              <td class="text-sky">-18.1%</td>
+              <td class="text-sky">0.33 t/s (+22%)</td>
+              <td class="text-sky">1.58</td>
+              <td class="text-sky">$326.90 (Hemat $26.64)</td>
             </tr>
 
             <tr>
               <td rowspan="2"><strong>500 Tasks</strong></td>
               <td>Random (Minggu 3)</td>
-              <td>1951.85 ± 159.50 s</td>
+              <td>1917.29 s</td>
+              <td>-</td>
               <td>0.26 t/s</td>
-              <td>49.70%</td>
-              <td>1.80 ± 0.13</td>
-              <td>$465.28</td>
+              <td>1.74</td>
+              <td>$467.26</td>
             </tr>
             <tr>
               <td class="text-sky">AOA yang Baru</td>
-              <td class="text-sky">1673.86 ± 33.19 s (-14.2%)</td>
+              <td class="text-sky">1682.69 s</td>
+              <td class="text-sky">-12.2%</td>
               <td class="text-sky">0.30 t/s (+15%)</td>
-              <td class="text-sky">55.51%</td>
-              <td class="text-sky">1.57 ± 0.05</td>
-              <td class="text-sky">$445.71 (Hemat $20)</td>
+              <td class="text-sky">1.59</td>
+              <td class="text-sky">$445.20 (Hemat $22.06)</td>
             </tr>
           </tbody>
         </table>
 
         <div class="speaker-box">
-          🎙️ <strong>Panduan Bicara (Babak 7):</strong> Sorot angka 217 detik vs 447 detik pada 100 tugas: AOA memangkas Makespan sebesar <strong>51.5%</strong>, menggandakan Throughput menjadi <strong>0.47 t/s</strong>, dan menekan ketimpangan beban (LBI) secara konsisten!
+          🎙️ <strong>Panduan Bicara (Babak 7):</strong> Sorot angka 206.99 detik vs 444.29 detik pada 100 tugas: AOA memangkas Makespan sebesar <strong>53.4%</strong>, menggandakan Throughput menjadi <strong>0.49 t/s</strong>, dan menghemat biaya di seluruh 5 skenario!
         </div>
       </div>
 

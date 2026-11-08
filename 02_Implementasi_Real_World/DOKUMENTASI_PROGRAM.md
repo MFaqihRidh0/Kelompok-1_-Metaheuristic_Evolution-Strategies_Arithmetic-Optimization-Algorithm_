@@ -160,9 +160,22 @@ Kelas `ESScheduler` menerapkan arsitektur $(\mu, \lambda)$-ES berdasarkan jurnal
 
 ## 6. Hasil Ujicoba Komparasi Riil (Dataset Minggu 3)
 
-Berikut adalah tabel hasil eksekusi riil dari 10 kali pengujian independen (*10 independent runs*) pada masing-masing skenario:
+Berikut adalah tabel hasil eksekusi riil langsung dari program [`program_aoa_vs_random.py`](./program_aoa_vs_random.py) (10 kali pengujian independen per skenario):
 
-### Tabel 2. Ringkasan Performa Komparatif (Mean &plusmn; Std Dev)
+### Tabel 2. Hasil Komparasi Riil: Random Scheduling vs. AOA yang Baru (`program_aoa_vs_random.py`)
+| Skenario | Makespan Random | Makespan AOA | Perbaikan (%) | Throughput Rnd &rarr; AOA | LBI Random &rarr; AOA | Biaya Rnd &rarr; AOA | Penghematan Biaya ($) |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **100 Cloudlets** | 444.29 s | **206.99 s** | **-53.4%** | 0.23 &rarr; **0.49 t/s** (+113%) | 2.20 &rarr; **1.96** | $92.97 &rarr; **$58.48** | **Hemat $34.49 (37.1%)** |
+| **200 Cloudlets** | 939.25 s | **634.92 s** | **-32.4%** | 0.22 &rarr; **0.32 t/s** (+45%) | 2.09 &rarr; **1.64** | $198.09 &rarr; **$167.48** | **Hemat $30.61 (15.5%)** |
+| **300 Cloudlets** | 1177.30 s | **931.37 s** | **-20.9%** | 0.26 &rarr; **0.32 t/s** (+23%) | 1.91 &rarr; **1.59** | $274.11 &rarr; **$250.45** | **Hemat $23.66 (8.6%)** |
+| **400 Cloudlets** | 1468.63 s | **1202.80 s** | **-18.1%** | 0.27 &rarr; **0.33 t/s** (+22%) | 1.83 &rarr; **1.58** | $353.54 &rarr; **$326.90** | **Hemat $26.64 (7.5%)** |
+| **500 Cloudlets** | 1917.29 s | **1682.69 s** | **-12.2%** | 0.26 &rarr; **0.30 t/s** (+15%) | 1.74 &rarr; **1.59** | $467.26 &rarr; **$445.20** | **Hemat $22.06 (4.7%)** |
+
+> *Seluruh data di atas disimpan secara otomatis ke dalam file [`hasil_program_aoa_vs_random.csv`](./hasil_program_aoa_vs_random.csv).*
+
+---
+
+### Tabel 3. Hasil Komparasi Lengkap 3 Algoritma (`scheduler_realworld.py`)
 | Skenario Tasks | Algoritma Penjadwalan | Makespan (s) | Throughput (t/s) | Avg VM Util (%) | LBI (Imbalance) | Total Biaya ($) |
 | :---: | :--- | :---: | :---: | :---: | :---: | :---: |
 | **100 Cloudlets** | Random (Minggu 3)<br>**AOA**<br>**ES + LJF** | 447.96 &plusmn; 89.67<br>**217.49 &plusmn; 30.63**<br>**129.37 &plusmn; 11.70** | 0.23<br>**0.47**<br>**0.78** | 41.20%<br>**51.32%**<br>**79.27%** | 2.30 &plusmn; 0.48<br>**1.79 &plusmn; 0.39**<br>**0.65 &plusmn; 0.18** | $238.40<br>**$198.15**<br>**$189.40** |
@@ -193,16 +206,26 @@ Berikut adalah tabel hasil eksekusi riil dari 10 kali pengujian independen (*10 
 ## 8. Panduan Menjalankan Program (Cara Eksekusi)
 
 ### Prasyarat
-* Python versi 3.8 atau lebih baru (termasuk Python 3.10 - 3.14).
-* Tidak memerlukan library pihak ketiga khusus (menggunakan modul bawaan Python: `math`, `random`, `csv`, `time`, `dataclasses`).
+* Python versi 3.8 atau lebih baru (menggunakan modul standar: `math`, `random`, `csv`, `time`, `dataclasses`).
+* Java OpenJDK 21 & Maven (jika ingin menjalankan engine CloudSim 7.0.1).
 
-### Perintah Eksekusi
-Buka terminal / Command Prompt pada folder ini, lalu jalankan:
-```bash
-python scheduler_realworld.py
-```
-Atau klik ganda berkas batch [`run.bat`](./run.bat).
+### Pilihan Cara Eksekusi:
+
+1. **Launcher Interaktif 1-Klik:**
+   Klik ganda berkas batch [`run.bat`](./run.bat) lalu pilih menu `[1]` untuk Python atau `[2]` untuk CloudSim Java.
+
+2. **Program Python Real-World (AOA vs Random):**
+   ```bash
+   python program_aoa_vs_random.py
+   ```
+   *Mengeksekusi langsung dataset `dataset_100cloudlet.csv` s.d `500cloudlet.csv`, menampilkan tabel komparasi, dan menyimpan hasil ke `hasil_program_aoa_vs_random.csv`.*
+
+3. **Program Simulator CloudSim Java (AOASchedulingSim.java):**
+   ```cmd
+   mvn compile exec:java
+   ```
 
 ### Berkas Hasil yang Diproduksi
-1. `hasil_real_world_per_run.csv`: Rincian metrik untuk seluruh 150 run eksekusi individual (5 skenario &times; 3 algoritma &times; 10 pengulangan).
-2. `hasil_real_world_ringkasan.csv`: Rangkuman nilai rata-rata (*mean*) dan simpangan baku (*std dev*) untuk setiap metrik komputasi awan.
+1. `hasil_program_aoa_vs_random.csv`: Hasil eksekusi komparasi langsung Random Scheduling vs AOA.
+2. `hasil_real_world_per_run.csv`: Rincian metrik untuk seluruh 150 run eksekusi individual.
+3. `hasil_real_world_ringkasan.csv`: Rangkuman nilai rata-rata (*mean*) dan simpangan baku (*std dev*) untuk setiap metrik komputasi awan.
