@@ -35,8 +35,8 @@ echo ===========================================================================
 echo   MENJALANKAN SIMULATOR CLOUDSIM JAVA: AOASchedulingSim.java
 echo ===============================================================================
 set "JAVA_HOME=C:\Users\FAQIH\.jdks\jbr-21.0.11"
-set "PATH=%JAVA_HOME%\bin;%~dp0..\Proggram\apache-maven-3.9.6\bin;%PATH%"
-call "%~dp0..\Proggram\apache-maven-3.9.6\bin\mvn.cmd" compile exec:java
+set "PATH=%JAVA_HOME%\bin;%~dp0..\..\Proggram\apache-maven-3.9.6\bin;%PATH%"
+call "%~dp0..\..\Proggram\apache-maven-3.9.6\bin\mvn.cmd" compile exec:java
 echo.
 pause
 goto selesai
