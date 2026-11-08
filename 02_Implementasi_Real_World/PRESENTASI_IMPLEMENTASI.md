@@ -8,7 +8,7 @@ color: #292524
 style: |
   section {
     font-family: 'Inter', system-ui, sans-serif;
-    padding: 40px 60px;
+    padding: 36px 56px;
   }
   h1, h2, h3 { color: #1c1917; }
   .badge {
@@ -19,7 +19,7 @@ style: |
     font-size: 14px;
     font-weight: 700;
   }
-  table { font-size: 15px; width: 100%; }
+  table { font-size: 14px; width: 100%; }
   th { background-color: #f5eedf; color: #443024; }
   td { border-bottom: 1px solid #e7ded3; }
 ---
@@ -49,7 +49,7 @@ style: |
 <!-- Slide 3 -->
 ## 2. Mengapa AOA? Sifat Unik Operator Aritmatika
 
-AOA (Abualigah et al., 2021) mengoptimalkan alokasi melalui 2 fase matematis:
+AOA (Abualigah et al., 2021) mengoptimalkan alokasi cloud melalui 2 fase matematis:
 
 1. **Eksplorasi Global (Pembagian $\div$ &amp; Perkalian $\times$):**
    * Menghasilkan sebaran lonjakan nilai tinggi (diibaratkan helikopter pengintai).
@@ -59,7 +59,7 @@ AOA (Abualigah et al., 2021) mengoptimalkan alokasi melalui 2 fase matematis:
    * Menghasilkan dispersi rapat untuk menyisir alokasi di sekitar solusi terbaik.
    * Tugas berat dikunci ke VM bertenaga tinggi, tugas ringan mengisi ruang sisa.
 
-* **Pengendali Dinamis:** **MOA** (saklar fase waktu) &amp; **MOP** (pengecil langkah konvergensi).
+* **Pengendali Dinamis:** **MOA** (saklar fase waktu) &amp; **MOP** (pengecil langkah konvergensi non-linear $\alpha = 5$).
 
 ---
 
@@ -74,12 +74,52 @@ AOA (Abualigah et al., 2021) mengoptimalkan alokasi melalui 2 fase matematis:
 * Surabaya &harr; Surabaya: 1.0 ms
 * Surabaya &harr; Yogyakarta: 8.0 ms
 * Surabaya &harr; Jakarta: 15.0 ms
-* **Dataset Ilmiah Riil:** `dataset_100cloudlet.csv` s.d `dataset_500cloudlet.csv`
+* **Dataset Ilmiah Riil:** `dataset_100cloudlet.csv` s.d `dataset_500cloudlet.csv` (1.400 - 60.780 MI)
 
 ---
 
 <!-- Slide 5 -->
-## 4. Hasil Ujicoba Empiris: Random vs. AOA yang Baru
+## 4. Bagaimana Program Diterapkan &amp; Dijalankan di Real World?
+
+```
+┌─────────────────┐       HTTP / REST API        ┌───────────────────────────────────┐
+│ Client Workload │ ───────────────────────────> │  Cloud API Gateway / Broker       │
+│ (100-500 Tasks) │                              │  (RabbitMQ / Kafka Task Queue)    │
+└─────────────────┘                              └─────────────────┬─────────────────┘
+                                                                   │ Metadata (MI, MB)
+                                                                   ▼
+┌─────────────────────────────────┐   Hasil Mapping    ┌───────────────────────────────────┐
+│ Dynamic Telemetry Monitor       │ <────────────────> │  AOA Optimizer Engine             │
+│ (MIPS CPU, RAM, Latensi 3 Kota) │   (Indeks VM 0..9) │  (MOA, MOP, 4 Operator Matematika)│
+└─────────────────────────────────┘                    └─────────────────┬─────────────────┘
+                                                                         │ Remote Dispatch
+                                                                         ▼
+                      ┌──────────────────────────────────────────────────────────────────────┐
+                      │ Dispatcher / Container Executor (Docker / Kubernetes / Celery)       │
+                      ├──────────────────┬───────────────────────────┬───────────────────────┤
+                      │ DC Surabaya      │ DC Jakarta                │ DC Yogyakarta         │
+                      │ 2x Large (6k)    │ 2x Medium (3.6k)          │ 4x Small (800)        │
+                      │ 1x Medium (3.6k) │ 1x Small (800)            │                       │
+                      └──────────────────┴───────────────────────────┴───────────────────────┘
+```
+
+---
+
+<!-- Slide 6 -->
+## 5. Langkah Operasional Nyata Eksekusi Program di Industri
+
+1. **Ingestion Layer:** Pengguna mengunggah batch pekerjaan ilmiah melalui REST API. Berkas CSV berisi profil tugas (Length MI, Ukuran Input MB, dan CPU PEs).
+2. **Telemetry Ingestion:** Broker membaca kapasitas riil dari 10 Worker VM dan latensi jaringan antarkota via monitoring agent (Prometheus/CloudWatch).
+3. **Optimasi Runtime AOA:** Solver AOA mengeksekusi 50 iterasi dalam waktu kurang dari **0.5 detik** untuk menghitung vektor alokasi tugas terbaik ke 10 VM.
+4. **Remote Dispatch & Eksekusi Fisik:** 
+   * Broker mendispatch pekerjaan ke worker node melalui SSH / Docker Engine API.
+   * File input ditransfer dengan kompensasi latensi fisik (Sby-Jkt 15ms, Sby-Yog 8ms).
+5. **Akuntansi Biaya:** Menghitung durasi pemrosesan riil ($0.03/s), RAM, dan transmisi data.
+
+---
+
+<!-- Slide 7 -->
+## 6. Hasil Ujicoba Empiris: Random vs. AOA yang Baru
 
 *Data rata-rata dari 10 independent runs per skenario (100 total simulasi):*
 
@@ -93,8 +133,8 @@ AOA (Abualigah et al., 2021) mengoptimalkan alokasi melalui 2 fase matematis:
 
 ---
 
-<!-- Slide 6 -->
-## 5. Analisis 4 Keunggulan Utama AOA
+<!-- Slide 8 -->
+## 7. Analisis 4 Keunggulan Utama AOA
 
 1. **Makespan Terpangkas Hingga 51.5%:**
    Waktu pengerjaan tugas 100 cloudlet terpangkas dari 447 detik menjadi 217 detik (2x lebih cepat), dan menghemat hampir 300 detik pada 500 cloudlet.
@@ -107,14 +147,19 @@ AOA (Abualigah et al., 2021) mengoptimalkan alokasi melalui 2 fase matematis:
 
 ---
 
-<!-- Slide 7 -->
+<!-- Slide 9 -->
 _class: lead
 # Sesi Demonstrasi &amp; Tanya Jawab
 
-**Perintah Menjalankan Live Demo:**
+**Cara Menjalankan Program:**
 ```bash
-python scheduler_realworld.py
-# atau klik ganda run.bat
+# 1. Program Python Real-World:
+python program_aoa_vs_random.py
+
+# 2. Program CloudSim Java (Simulator Minggu 3):
+mvn exec:java
+
+# Atau klik ganda run.bat
 ```
 
 *Kelompok 1 &bull; Strategi Optimasi Komputasi Awan*

@@ -515,11 +515,44 @@
         </div>
       </div>
 
-      <!-- Slide 5: Code Walkthrough -->
+      <!-- Slide 5: Real-World Architecture & Deployment -->
+      <div class="slide" data-3d-mode="topology">
+        <span class="slide-tag">BAGIAN 04 &bull; DEPLOYMENT REAL-WORLD</span>
+        <h2>Bagaimana Program AOA Diterapkan &amp; Dijalankan di Real World?</h2>
+        <p>Di lingkungan cloud industri nyata, AOA beroperasi sebagai <strong>Dynamic Broker Dispatcher Engine</strong>:</p>
+
+        <div class="grid-2">
+          <div class="card" style="border-left: 3px solid #0284c7;">
+            <h4>1. Workload Ingestion (REST API / Kafka)</h4>
+            <p>Pengguna mengirim batch pekerjaan ilmiah (panjang instruksi MI &amp; ukuran input MB) melalui API Gateway ke antrean broker.</p>
+          </div>
+          <div class="card" style="border-left: 3px solid #d97706;">
+            <h4>2. Live Telemetry 3 Datacenter</h4>
+            <p>Agent monitoring (Prometheus) memantau status daya 10 VM dan latensi jaringan fisik (Surabaya-Jakarta 15ms, Surabaya-Yogya 8ms).</p>
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-top: 8px;">
+          <div class="card" style="border-left: 3px solid #059669;">
+            <h4>3. Optimasi Real-Time AOA (&lt; 0.5 detik)</h4>
+            <p>Solver AOA menghitung permutasi alokasi optimal (vektor ID VM 0..9) tanpa membebani overhead waktu tunggu.</p>
+          </div>
+          <div class="card" style="border-left: 3px solid #7c3aed;">
+            <h4>4. Remote Dispatch (Docker / SSH / K8s)</h4>
+            <p>Broker mendispatch kontainer tugas secara paralel ke VM Large Surabaya, Medium Jakarta, atau Small Yogyakarta sesuai jadwal optimal.</p>
+          </div>
+        </div>
+
+        <div class="speaker-box">
+          🎙️ <strong>Panduan Bicara (Babak 5):</strong> Tegaskan ke dosen bahwa ini bukan sekadar rumus abstrak! Di industri nyata, AOA dipasang di Cloud Controller yang secara dinamis menjadwalkan ribuan container microservice ke server fisik di berbagai kota.
+        </div>
+      </div>
+
+      <!-- Slide 6: Code Walkthrough -->
       <div class="slide" data-3d-mode="aoa-exploit">
-        <span class="slide-tag">BAGIAN 04 &bull; IMPLEMENTASI PROGRAM</span>
-        <h2>Bedah Kode <code>scheduler_realworld.py</code></h2>
-        <p>Program kami dibangun modular dari nol (*from scratch*) tanpa pustaka blackbox:</p>
+        <span class="slide-tag">BAGIAN 05 &bull; IMPLEMENTASI PROGRAM</span>
+        <h2>Bedah Kode <code>program_aoa_vs_random.py</code> &amp; CloudSim Java</h2>
+        <p>Program kami dibangun modular dalam dua bahasa (Python Real-World &amp; Java CloudSim 7.0.1):</p>
 
         <div class="grid-2">
           <div class="card">
@@ -548,9 +581,9 @@
         </div>
       </div>
 
-      <!-- Slide 6: Hasil Komparasi Benchmark Riil -->
+      <!-- Slide 7: Hasil Komparasi Benchmark Riil -->
       <div class="slide" data-3d-mode="aoa-exploit">
-        <span class="slide-tag">BAGIAN 05 &bull; BENCHMARK REAL-WORLD</span>
+        <span class="slide-tag">BAGIAN 06 &bull; BENCHMARK REAL-WORLD</span>
         <h2>Hasil Ujicoba Empiris: Random vs. AOA yang Baru</h2>
         <p>Data rata-rata dari 10 independent runs per skenario (100 simulasi penuh) pada dataset Minggu 3:</p>
 
@@ -646,22 +679,24 @@
         </div>
       </div>
 
-      <!-- Slide 7: Kesimpulan & Live Demo Ready -->
+      <!-- Slide 8: Kesimpulan & Live Demo Ready -->
       <div class="slide" data-3d-mode="topology">
-        <span class="slide-tag">BAGIAN 06 &bull; KESIMPULAN &amp; Q&amp;A</span>
+        <span class="slide-tag">BAGIAN 07 &bull; KESIMPULAN &amp; Q&amp;A</span>
         <h2>Kesimpulan Akademik &amp; Sesi Tanya Jawab</h2>
         
         <ul style="padding-left: 18px; margin-top: 10px; font-size: 13.5px; line-height: 1.7;">
           <li><strong>Random Scheduling Terbukti Tidak Layak:</strong> Menimbulkan antrean macet di VM kecil dan membiarkan VM besar menganggur.</li>
           <li><strong>AOA yang Baru Terbukti Unggul Mutlak:</strong> Berhasil menyeimbangkan beban komputasi dan memangkas waktu proses hingga <strong>51.5%</strong>.</li>
           <li><strong>Stabilitas Teruji:</strong> Standar deviasi yang rendah di 10 pengujian membuktikan AOA konvergen secara stabil dan bukan hasil kebetulan.</li>
-          <li><strong>Siap Diuji Langsung:</strong> Script <code>scheduler_realworld.py</code> dan <code>run.bat</code> siap dieksekusi secara live di terminal.</li>
+          <li><strong>Dua Implementasi Tersedia:</strong> Program Python Real-World (<code>program_aoa_vs_random.py</code>) dan Java CloudSim 7.0.1 (<code>AOASchedulingSim.java</code>) siap dieksekusi langsung.</li>
         </ul>
 
         <div class="card" style="margin-top: 14px; background: #e0f2fe; border-color: #bae6fd;">
-          <h4 style="color: #0369a1;">🖥️ Perintah Menjalankan Live Demo:</h4>
-          <p style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #0c4a6e; font-weight: 700;">
-            python scheduler_realworld.py &nbsp;&bull;&nbsp; atau klik ganda run.bat
+          <h4 style="color: #0369a1;">🖥️ Pilihan Perintah Menjalankan Program:</h4>
+          <p style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: #0c4a6e; font-weight: 700; line-height: 1.6;">
+            1. Python Real-World: <code>python program_aoa_vs_random.py</code><br>
+            2. Java CloudSim 7.0.1: <code>mvn compile exec:java</code><br>
+            3. Menu Interaktif: Klik ganda <code>run.bat</code>
           </p>
         </div>
 
@@ -717,7 +752,7 @@
       <div class="progress-bar" id="progressBar"></div>
     </div>
 
-    <div class="slide-counter" id="counter">Slide 1 / 7</div>
+    <div class="slide-counter" id="counter">Slide 1 / 8</div>
   </footer>
 
   <!-- THREE.JS 3D STAGE SCRIPT -->

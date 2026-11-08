@@ -17,12 +17,13 @@
 | :---: | :--- | :---: | :--- |
 | **Babak 1** | Pembuka & Konteks Tugas Optimasi Cloud | 1 Menit | Slide 1 (Judul & Anggota Kelompok) |
 | **Babak 2** | Kilas Balik Masalah Fatal Random Scheduling (Minggu 3) | 2 Menit | Slide 2 + Kanvas 3D (Simulasi Overload VM) |
-| **Babak 3** | Mengapa Memilih AOA & Cara Kerja Matematisnya | 2.5 Menit | Slide 3 + Visualisasi Operator Aritmatika ($\div, \times, -, +$) |
+| **Babak 3** | Mengapa Memilih AOA & Cara Kerja Matematisnya | 2 Menit | Slide 3 + Visualisasi Operator Aritmatika ($\div, \times, -, +$) |
 | **Babak 4** | Arsitektur Datacenter Real-World & Latensi Jaringan | 1.5 Menit | Slide 4 + Peta 3 Datacenter (Surabaya, Jkt, Yogya) |
-| **Babak 5** | Bedah Kode Implementasi (`scheduler_realworld.py`) | 2 Menit | Tampilkan potongan fungsi utama di editor / slide |
-| **Babak 6** | Live Demo Eksekusi Program & Pembuktian Terminal | 1 Menit | Terminal / Command Prompt (`run.bat`) |
-| **Babak 7** | Bedah Hasil Empiris (Tabel Komparasi Metrik Lengkap) | 2 Menit | Slide 5 & 6 (Tabel Makespan, Throughput, LBI, Cost) |
-| **Babak 8** | Kesimpulan Akhir & Rekomendasi Industri | 1 Menit | Slide 7 (Poin Kunci Penutup) |
+| **Babak 5** | Bagaimana Program Diterapkan & Dijalankan di Real World | 2 Menit | Slide 5 (Diagram Arsitektur Pipeline Dispatcher) |
+| **Babak 6** | Bedah Kode Implementasi (Python & CloudSim Java) | 1.5 Menit | Slide 6 + File Program di Editor |
+| **Babak 7** | Live Demo Eksekusi Program & Pembuktian Terminal | 1 Menit | Slide 7 + Terminal (`run.bat` / `python`) |
+| **Babak 8** | Bedah Hasil Empiris (Tabel Komparasi Metrik Lengkap) | 2 Menit | Slide 8 (Tabel Makespan, Throughput, LBI, Cost) |
+| **Babak 9** | Kesimpulan Akhir & Rekomendasi Industri | 1 Menit | Slide 8 (Poin Kunci Penutup) |
 | **Q&A** | Sesi Tanya Jawab Dosen & Audiens | 3 - 5 Menit | Cheat-Sheet Tanya Jawab di bagian akhir dokumen ini |
 
 ---
@@ -109,7 +110,36 @@ Meyakinkan dosen bahwa simulasi yang dibuat benar-benar mencerminkan kondisi ind
 
 ---
 
-### 🎙️ Babak 5: Bedah Kode Program `scheduler_realworld.py` (2 Menit)
+### 🎙️ Babak 5: Bagaimana Program Ini Diterapkan &amp; Dijalankan di Real World (2 Menit)
+
+#### 🎯 Sasaran Audiens:
+Menjawab pertanyaan paling krusial dari dosen: *"Bagaimana program algoritma ini benar-benar dioperasikan di dunia nyata, bukan cuma di atas kertas?"*
+
+#### 🗣️ Naskah yang Harus Anda Ucapkan:
+> *"Bapak/Ibu, pertanyaan terpenting adalah: **Bagaimana algoritma AOA ini benar-benar diterapkan dan dijalankan di industri komputasi awan nyata?**
+> 
+> Di lingkungan produksi cloud nyata, program kami bekerja sebagai **Dynamic Broker Dispatcher Microservice** melalui alur 5 tahap:
+> 
+> 1. **Workload Ingestion Layer:**
+>    * Pengguna atau sistem perusahaan mengirimkan sekumpulan pekerjaan komputasi (batch jobs) melalui Cloud API Gateway. Berkas `dataset_100cloudlet.csv` merepresentasikan profil pekerjaan ilmiah nyata ini, lengkap dengan ukuran instruksi ($MI$) dan ukuran berkas masukan ($MB$).
+> 
+> 2. **Telemetry Collector (Status Real-Time 3 Datacenter):**
+>    * Sebelum membagikan tugas, broker meminta data telemetri real-time (melalui Prometheus / CloudWatch agent) dari 3 Datacenter fisik: kapasitas MIPS dari 10 VM, beban antrean saat ini, dan latensi jaringan antarkota (Surabaya-Jakarta 15 ms, Surabaya-Yogya 8 ms).
+> 
+> 3. **Eksekusi Metaheuristic AOA Solver:**
+>    * Engine AOA membaca daftar tugas dan kapasitas VM. Dalam waktu kurang dari **0.5 detik**, AOA menjalankan 50 iterasi perkalian, pembagian, pengurangan, dan penambahan untuk menemukan jadwal alokasi terbaik yang meminimalkan Makespan dan menyeimbangkan beban.
+> 
+> 4. **Physical Dispatch & Remote Container Execution:**
+>    * Setelah jadwal optimal diperoleh, Broker langsung mendispatch tugas ke server target menggunakan remote API (seperti Kubernetes Scheduler, Docker Swarm, atau Celery Distributed Queue). Tugas berat langsung dilarikan ke VM Large 6.000 MIPS di Surabaya, sedangkan tugas ringan disebarkan ke Jakarta dan Yogya.
+> 
+> 5. **Tersedia dalam Dua Bentuk Program di Folder Implementasi:**
+>    * **Pertama:** Program Python Real-World (`program_aoa_vs_random.py`) yang membaca berkas CSV dataset tugas Minggu 3 secara langsung.
+>    * **Kedua:** Program Java Simulator (`AOASchedulingSim.java`) yang terintegrasi dengan engine CloudSim 7.0.1 via Maven.
+>    * Keduanya dapat dijalankan dengan mudah melalui launcher `run.bat`."*
+
+---
+
+### 🎙️ Babak 6: Bedah Kode Program &amp; Arsitektur Modular (1.5 Menit)
 
 #### 🎯 Sasaran Audiens:
 Menunjukkan bahwa kode bersih, modular, dapat direproduksi (*reproducible*), dan diimplementasikan dari nol (*from scratch*) tanpa *library blackbox*.
@@ -117,39 +147,38 @@ Menunjukkan bahwa kode bersih, modular, dapat direproduksi (*reproducible*), dan
 #### 🗣️ Naskah yang Harus Anda Ucapkan:
 > *(Sambil menunjuk file kode di VS Code / layar proyektor)*
 > 
-> *"Implementasi kami terpusat pada file modular `scheduler_realworld.py` dengan arsitektur piramida yang bersih:*
+> *"Implementasi program kami, baik di `program_aoa_vs_random.py` maupun `AOASchedulingSim.java`, dibangun dengan arsitektur yang sangat terstruktur:*
 > 
-> 1. **Parser & Data Model:** Kelas `VM`, `Cloudlet`, dan `SimulationResult` membaca atribut dataset riil secara otomatis.
+> 1. **Parser & Data Model:** Kelas `VM` dan `Cloudlet` membaca kolom CSV dataset tugas riil Minggu 3 secara otomatis.
 > 2. **Dispatcher Real-World (`evaluate_schedule`):** Fungsi evaluasi yang menghitung waktu tiba transfer data jaringan, waktu komputasi CPU, Makespan ($T_{\max}$), Throughput, utilisasi per-VM, hingga total biaya sewa prosesor ($0.03/detik) dan jaringan.
-> 3. **Kelas `AOAScheduler`:** 
->    * Menginisialisasi populasi agen alokasi sejumlah 30 individu dengan panjang vektor sesuai jumlah tugas.
->    * Menghitung nilai MOA dan MOP pada setiap siklus iterasi (60 iterasi).
+> 3. **Engine AOA:** 
+>    * Menginisialisasi 30 agen pencari dengan panjang vektor sesuai jumlah tugas.
+>    * Menghitung nilai MOA (saklar fase) dan MOP (pengecil langkah presisi) di setiap iterasi.
 >    * Menerapkan pemetaan diskret dengan fungsi batas wilayah aman $[0, \text{num\_vms}-1]$ agar setiap tugas selalu dipetakan ke VM yang valid.
->    * Dilengkapi **Best-So-Far Tracker (Elitisme)** agar jadwal terbaik yang sudah dicapai tidak pernah hilang akibat perturbasi acak."*
+>    * Dilengkapi **Proteksi Elitisme ($S_{best}$)** agar jadwal terbaik yang sudah dicapai tidak pernah hilang akibat perturbasi acak."*
 
 ---
 
-### 🎙️ Babak 6: Live Demo Eksekusi Program (1 Menit)
+### 🎙️ Babak 7: Live Demo Eksekusi Program (1 Menit)
 
 #### 🎯 Tindakan Presenter:
 Buka command prompt / terminal, arahkan ke folder `02_Implementasi_Real_World`, lalu jalankan:
 ```bash
-python scheduler_realworld.py
+python program_aoa_vs_random.py
+# atau cukup klik ganda run.bat dan pilih menu [1]
 ```
-*(Atau cukup klik ganda `run.bat` di depan audiens)*
 
 #### 🗣️ Naskah yang Harus Anda Ucapkan:
-> *"Sekarang mari kita buktikan secara langsung. Saya menjalankan script `scheduler_realworld.py` di terminal ini.*
+> *"Sekarang mari kita buktikan secara langsung. Saya menjalankan script `program_aoa_vs_random.py` di terminal ini.*
 > 
 > *(Sambil menunjuk terminal yang sedang memproses)*:
-> * Program sedang mengeksekusi 5 skenario dataset: 100, 200, 300, 400, dan 500 tugas.
-> * Untuk membuktikan keabsahan statistik (*statistical validity*), setiap skenario diulang sebanyak **10 kali pengujian independen (10 independent runs)** dengan seed acak yang berbeda.
-> * Artinya, ada total **100 kali simulasi komparasi penuh** antara Random Scheduling vs AOA yang diselesaikan hanya dalam hitungan detik.
-> * Hasilnya langsung disimpan ke dalam file `hasil_real_world_ringkasan.csv` dan `hasil_real_world_per_run.csv`."*
+> * Program langsung membaca berkas dataset asli: `dataset_100cloudlet.csv` hingga `dataset_500cloudlet.csv`.
+> * Untuk setiap dataset, program mengeksekusi **Random Scheduling** (10 kali pengujian) lalu dilanjutkan mengeksekusi **AOA yang Baru** (10 kali pengujian).
+> * Hanya dalam waktu sekitar 20 detik, seluruh 100 kali simulasi selesai dan program langsung mencetak tabel komparasi akhir serta menyimpannya ke `hasil_program_aoa_vs_random.csv`."*
 
 ---
 
-### 🎙️ Babak 7: Bedah Hasil Empiris (Random vs AOA Baru) (2 Menit)
+### 🎙️ Babak 8: Bedah Hasil Empiris (Random vs AOA Baru) (2 Menit)
 
 #### 🎯 Sasaran Audiens:
 Menampilkan data angka perbandingan yang membuktikan secara tak terbantahkan bahwa AOA jauh lebih unggul daripada Random Scheduling.
@@ -182,7 +211,7 @@ Menampilkan data angka perbandingan yang membuktikan secara tak terbantahkan bah
 
 ---
 
-### 🎙️ Babak 8: Penutup & Kesimpulan Kunci (1 Menit)
+### 🎙️ Babak 9: Penutup &amp; Kesimpulan Kunci (1 Menit)
 
 #### 🗣️ Naskah yang Harus Anda Ucapkan:
 > *"Sebagai kesimpulan dari pengujian dan perancangan kami:*
