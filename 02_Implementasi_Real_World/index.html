@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Komparasi Penjadwalan Cloud: Random Scheduling vs Algoritma AOA yang Baru</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <!-- Three.js & OrbitControls via CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header>
+    <div class="brand">
+      <span>☁️ Presentasi Interaktif 3D &bull; Kelompok 1</span>
+      <span class="badge-top">Live Three.js Stage</span>
+    </div>
+    <div style="font-size: 12px; color: var(--coffee-600); font-family: 'JetBrains Mono', monospace;">
+      Random Scheduling vs Algoritma AOA yang Baru &bull; Dataset Minggu 3
+    </div>
+  </header>
+
+  <!-- Main Presentation Container: 3 Bagian (Penjelasan, Animasi, Controller) -->
+  <main class="presentation-container">
+    
+    <!-- TOP ROW: Bagian 1 (Penjelasan) & Bagian 2 (Animasi 3D) -->
+    <div class="top-row">
+
+      <!-- Bagian 1: Left Slide Panel (Penjelasan) -->
+      <div class="slides-wrapper">
+      
+      <!-- Slide 1: Cover -->
+      <div class="slide active" data-3d-mode="topology">
+        <span class="slide-tag">DEMO IMPLEMENTASI &bull; TUGAS 1 S.D 6</span>
+        <h2>Komparasi Kinerja Penjadwalan Cloud</h2>
+        <p style="color: var(--sky-700); font-weight: 600; font-size: 14.5px; margin-bottom: 14px;">
+          Baseline Random Scheduling (Minggu 3) vs. Algoritma Arithmetic Optimization Algorithm (AOA) yang Baru &amp; Lebih Baik
+        </p>
+
+        <div class="grid-2">
+          <div class="card" style="border-left: 3px solid var(--amber-600);">
+            <h4>3 Datacenter Heterogen</h4>
+            <p>Surabaya (Host 0, 6.000 MIPS), Jakarta (Host 1, 3.600 MIPS), dan Yogyakarta (Host 2, 800 MIPS) dengan latensi fisik antarkota.</p>
+          </div>
+          <div class="card" style="border-left: 3px solid var(--sky-700);">
+            <h4>Dataset Tugas Ilmiah Riil</h4>
+            <p>Menggunakan file <code>dataset_100cloudlet.csv</code> s.d <code>500cloudlet.csv</code> dari tugas Minggu 3 (1.400 - 60.780 MI).</p>
+          </div>
+        </div>
+
+        <div class="speaker-box">
+          🎙️ <strong>Panduan Bicara (Babak 1):</strong> Sambut dosen penguji &amp; audiens. Tegaskan bahwa presentasi ini fokus membandingkan kelemahan Random Scheduling dengan keunggulan nyata Algoritma AOA yang baru dan telah teruji pada dataset riil!
+        </div>
+      </div>
+
+      <!-- Slide 2: Problem Recap Minggu 3 -->
+      <div class="slide" data-3d-mode="topology">
+        <span class="slide-tag">BAGIAN 01 &bull; PROBLEM STATEMENT</span>
+        <h2>Kilas Balik: Inefisiensi Fatal Random Scheduling (Minggu 3)</h2>
+        <p>Pada tugas Minggu 3, penjadwalan acak pada CloudSim menghasilkan kegagalan distribusi beban yang ekstrem:</p>
+
+        <div class="grid-2">
+          <div class="card" style="background: #fff7ed; border-color: #fed7aa;">
+            <h4 style="color: #9a3412;">⚠️ Kelemahan Fatal Random Scheduling:</h4>
+            <ul style="padding-left: 16px; margin-top: 5px; font-size: 11.5px; line-height: 1.55;">
+              <li><strong>Makespan Membengkak:</strong> Menyentuh <strong>1.951+ detik</strong> (32+ menit) pada 500 tasks.</li>
+              <li><strong>Severe Bottleneck:</strong> VM Small Yogyakarta (800 MIPS) terbebani <strong>99.9%</strong>, antrean macet.</li>
+              <li><strong>Kapasitas Terbuang:</strong> VM Large Surabaya (6.000 MIPS) menganggur (*idle*) utilisasi &lt; 15%.</li>
+              <li><strong>Ketimpangan Ekstrem:</strong> LBI berada di level kritis <strong>1.80 s.d 2.30</strong>.</li>
+            </ul>
+          </div>
+
+          <div class="card" style="background: #f0fdf4; border-color: #bbf7d0;">
+            <h4 style="color: #166534;">🎯 Misi Solusi AOA yang Baru:</h4>
+            <ul style="padding-left: 16px; margin-top: 5px; font-size: 11.5px; line-height: 1.55;">
+              <li>Memetakan tugas secara cerdas sesuai kapasitas MIPS tiap VM.</li>
+              <li>Memangkas Makespan hingga <strong>51.5% lebih cepat</strong> (2x lipat).</li>
+              <li>Menaikkan Throughput dari 0.23 ke <strong>0.47 tasks/detik</strong>.</li>
+              <li>Menyeimbangkan beban (LBI turun) dan memotong biaya sewa cloud.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="speaker-box">
+          🎙️ <strong>Panduan Bicara (Babak 2):</strong> Jelaskan seberapa merugikannya metode acak bagi penyedia cloud dan bagaimana AOA hadir sebagai solusi cerdas.
+        </div>
+      </div>
+
+      <!-- Slide 3: 3 Datacenter & Network Delay -->
+      <div class="slide" data-3d-mode="topology">
+        <span class="slide-tag">BAGIAN 02 &bull; TOPOLOGI REAL-WORLD</span>
+        <h2>Arsitektur 3 Datacenter &amp; Jaringan Geografis Riil</h2>
+        <p>Infrastruktur dimodelkan secara presisi sesuai spesifikasi tugas Minggu 3:</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Datacenter</th>
+              <th>Host</th>
+              <th>VM ID &amp; Tipe</th>
+              <th>Total Daya MIPS</th>
+              <th>RAM &amp; Bandwidth</th>
+              <th>Latensi Jaringan</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>DC_Surabaya</strong></td>
+              <td>Host 0</td>
+              <td>VM 0, 1 (Large)<br>VM 2 (Medium)</td>
+              <td>6.000 MIPS (2 Core)<br>3.600 MIPS (1 Core)</td>
+              <td>8 GB / 2.500 Mbps<br>4 GB / 1.000 Mbps</td>
+              <td>Intra: 1.0 ms</td>
+            </tr>
+            <tr>
+              <td><strong>DC_Jakarta</strong></td>
+              <td>Host 1</td>
+              <td>VM 3, 4 (Medium)<br>VM 5 (Small)</td>
+              <td>3.600 MIPS (1 Core)<br>800 MIPS (1 Core)</td>
+              <td>4 GB / 1.000 Mbps<br>2 GB / 500 Mbps</td>
+              <td>Sby-Jkt: 15.0 ms</td>
+            </tr>
+            <tr>
+              <td><strong>DC_Yogyakarta</strong></td>
+              <td>Host 2</td>
+              <td>VM 6, 7, 8, 9 (Small)</td>
+              <td>800 MIPS (1 Core)</td>
+              <td>2 GB / 500 Mbps</td>
+              <td>Sby-Yog: 8.0 ms</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="speaker-box">
+          🎙️ <strong>Panduan Bicara (Babak 3):</strong> Arahkan pandangan audiens ke kanvas 3D di kanan. Tiga menara mewakili Surabaya (biru/kiri), Jakarta (ungu/kanan), dan Yogyakarta (hijau/depan) yang terhubung laser latensi nyata.
+        </div>
+      </div>
+
+      <!-- Slide 4: Mengapa Memilih AOA? -->
+      <div class="slide" data-3d-mode="aoa-explore">
+        <span class="slide-tag">BAGIAN 03 &bull; MATEMATIKA AOA YANG BARU</span>
+        <h2>Mengapa Memilih AOA? Keunggulan 4 Operator Aritmatika</h2>
+        <p>AOA (Abualigah et al., 2021) mengoptimalkan alokasi cloud melalui 2 fase matematis terencana:</p>
+
+        <div class="grid-2">
+          <div class="card" style="border-left: 3px solid var(--sky-700);">
+            <h4 class="text-sky">1. Eksplorasi Global (÷ &amp; ×)</h4>
+            <p>Menghasilkan lonjakan nilai acak tinggi (diibaratkan helikopter pengintai). Agen pencari melompat bebas antar-datacenter &rarr; <strong>Bebas dari jebakan optimum lokal (*local optima avoidance*)</strong>.</p>
+          </div>
+          <div class="card" style="border-left: 3px solid var(--emerald-700);">
+            <h4 class="text-green">2. Eksploitasi Presisi (-, +)</h4>
+            <p>Menghasilkan dispersi rapat dan halus. Agen menyisir detail alokasi di sekitar target terbaik, memastikan tugas terberat terkunci tepat di VM 6.000 MIPS Surabaya.</p>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top: 10px; background: #f8fafc;">
+          <h4 style="font-size: 12px; color: var(--coffee-950);">⚙️ Pengendali Dinamis: Saklar MOA &amp; Pengecil Langkah MOP</h4>
+          <p style="font-size: 11.5px; color: var(--coffee-600);">
+            <strong>MOA</strong> secara linier beralih dari eksplorasi (0.2) ke eksploitasi (0.9), sementara <strong>MOP</strong> menyempit secara non-linear (&alpha; = 5) memastikan konvergensi presisi tinggi di akhir iterasi.
+          </p>
+        </div>
+
+        <div class="speaker-box">
+          🎙️ <strong>Panduan Bicara (Babak 4):</strong> Di kanvas 3D: Drone Biru sedang melompat eksplorasi jarak jauh antar-datacenter menggunakan operator kali dan bagi.
+        </div>
+      </div>
+
+      <!-- Slide 5: Real-World Architecture & Deployment -->
+      <div class="slide" data-3d-mode="topology">
+        <span class="slide-tag">BAGIAN 04 &bull; DEPLOYMENT REAL-WORLD</span>
+        <h2>Bagaimana Program AOA Diterapkan &amp; Dijalankan di Real World?</h2>
+        <p>Di lingkungan cloud industri nyata, AOA beroperasi sebagai <strong>Dynamic Broker Dispatcher Engine</strong>:</p>
+
+        <div class="grid-2">
+          <div class="card" style="border-left: 3px solid #0284c7;">
+            <h4>1. Workload Ingestion (REST API / Kafka)</h4>
+            <p>Pengguna mengirim batch pekerjaan ilmiah (panjang instruksi MI &amp; ukuran input MB) melalui API Gateway ke antrean broker.</p>
+          </div>
+          <div class="card" style="border-left: 3px solid #d97706;">
+            <h4>2. Live Telemetry 3 Datacenter</h4>
+            <p>Agent monitoring (Prometheus) memantau status daya 10 VM dan latensi jaringan fisik (Surabaya-Jakarta 15ms, Surabaya-Yogya 8ms).</p>
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-top: 8px;">
+          <div class="card" style="border-left: 3px solid #059669;">
+            <h4>3. Optimasi Real-Time AOA (&lt; 0.5 detik)</h4>
+            <p>Solver AOA menghitung permutasi alokasi optimal (vektor ID VM 0..9) tanpa membebani overhead waktu tunggu.</p>
+          </div>
+          <div class="card" style="border-left: 3px solid #7c3aed;">
+            <h4>4. Remote Dispatch (Docker / SSH / K8s)</h4>
+            <p>Broker mendispatch kontainer tugas secara paralel ke VM Large Surabaya, Medium Jakarta, atau Small Yogyakarta sesuai jadwal optimal.</p>
+          </div>
+        </div>
+
+        <div class="speaker-box">
+          🎙️ <strong>Panduan Bicara (Babak 5):</strong> Tegaskan ke dosen bahwa ini bukan sekadar rumus abstrak! Di industri nyata, AOA dipasang di Cloud Controller yang secara dinamis menjadwalkan ribuan container microservice ke server fisik di berbagai kota.
+        </div>
+      </div>
+
+      <!-- Slide 6: Code Walkthrough -->
+      <div class="slide" data-3d-mode="aoa-exploit">
+        <span class="slide-tag">BAGIAN 05 &bull; IMPLEMENTASI PROGRAM</span>
+        <h2>Bedah Kode <code>program_aoa_vs_random.py</code> &amp; CloudSim Java</h2>
+        <p>Program kami dibangun modular dalam dua bahasa (Python Real-World &amp; Java CloudSim 7.0.1):</p>
+
+        <div class="grid-2">
+          <div class="card">
+            <h4>1. Continuous-to-Discrete Mapping</h4>
+            <p>Operator AOA menghasilkan koordinat kontinu yang kemudian dibulatkan secara deterministik (<code>round(val)</code>) dan dibatasi ke indeks VM valid <code>[0..9]</code>.</p>
+          </div>
+          <div class="card">
+            <h4>2. Proteksi Elitisme (Best-So-Far Tracker)</h4>
+            <p>Jadwal dengan Makespan terbaik selalu disimpan di tiang suar emas ($S_{best}$). Jadwal tidak akan pernah mengalami degradasi kualitas di setiap putaran.</p>
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-top: 8px;">
+          <div class="card">
+            <h4>3. Real-World Dispatcher</h4>
+            <p>Menghitung waktu transfer file input, latensi antarkota, waktu pemrosesan CPU, Makespan ($T_{\max}$), Throughput, dan biaya sewa ($0.03/detik).</p>
+          </div>
+          <div class="card">
+            <h4>4. Validasi Statistik Objektif</h4>
+            <p>Setiap skenario diuji 10 kali secara independen dengan random seed berbeda untuk menjamin keabsahan statistik (*mean &amp; std dev*).</p>
+          </div>
+        </div>
+
+        <!-- Interactive Runner Card inside Slide 6 -->
+        <div class="card" style="margin-top: 10px; background: #fdfbf7; border: 1.5px solid #0284c7; padding: 10px 14px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <h4 style="color: #0284c7; font-size: 12.5px; margin: 0; display: flex; align-items: center; gap: 6px;">
+              <span>🎮</span> Uji Coba Langsung di Layar (Live Dispatcher Runner)
+            </h4>
+            <span class="badge-top" style="font-size: 9.5px; padding: 2px 8px;">Terhubung Kanvas 3D</span>
+          </div>
+          <p style="font-size: 11px; color: var(--coffee-800); margin-bottom: 8px;">
+            Klik tombol di bawah untuk mengeksekusi algoritma dan perhatikan perbedaan alokasi tugas di kanvas 3D:
+          </p>
+          <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+            <button class="btn-nav" style="background: #fef2f2; border-color: #fca5a5; color: #991b1b; padding: 5px 12px; font-size: 11px;" onclick="runDemoAlgo('random')">
+              ⚠️ Jalankan Random (Buktikan Overload Yogya)
+            </button>
+            <button class="btn-nav" style="background: #ecfdf5; border-color: #86efac; color: #166534; padding: 5px 12px; font-size: 11px;" onclick="runDemoAlgo('aoa')">
+              ✨ Jalankan AOA (Buktikan Keseimbangan Beban)
+            </button>
+            <button class="btn-nav" style="background: #f0f9ff; border-color: #7dd3fc; color: #075985; padding: 5px 10px; font-size: 11px;" onclick="triggerBenchmarkModal()">
+              ⚡ Tabel Lengkap (100-500)
+            </button>
+          </div>
+        </div>
+
+        <div class="speaker-box">
+          🎙️ <strong>Panduan Bicara (Babak 5):</strong> Di kanvas 3D: Arahkan dosen untuk melihat simulasi real-time. Tekan tombol Random untuk membuktikan bottleneck Yogya, lalu tekan AOA untuk membuktikan keseimbangan sempurna!
+        </div>
+      </div>
+
+      <!-- Slide 7: Hasil Komparasi Benchmark Riil -->
+      <div class="slide" data-3d-mode="aoa-exploit">
+        <span class="slide-tag">BAGIAN 06 &bull; VALIDASI DUA LINGKUNGAN</span>
+        <h2>Hasil Ujicoba Empiris: Simulator CloudSim &amp; Real-World</h2>
+        <p>Pengujian 10 independent runs per skenario membuktikan AOA unggul konsisten di kedua lingkungan:</p>
+
+        <h4 style="font-size: 12px; color: var(--coffee-950); margin-top: 10px; margin-bottom: 4px;">
+          🅰️ Hasil pada Simulator CloudSim 7.0.1 (Tugas 2, 3, 4):
+        </h4>
+        <table>
+          <thead>
+            <tr>
+              <th>Tasks</th>
+              <th>Makespan Random</th>
+              <th>Makespan AOA</th>
+              <th>Perbaikan (%)</th>
+              <th>Throughput AOA</th>
+              <th>Utilisasi AOA</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>100</strong></td>
+              <td>464.47 ± 82.5 s</td>
+              <td class="text-sky">203.88 ± 28.0 s</td>
+              <td class="text-sky"><strong>-56.1%</strong></td>
+              <td class="text-sky">0.50 t/s (+127%)</td>
+              <td>49.51%</td>
+            </tr>
+            <tr>
+              <td><strong>200</strong></td>
+              <td>915.34 ± 103.4 s</td>
+              <td class="text-sky">626.68 ± 69.8 s</td>
+              <td class="text-sky"><strong>-31.5%</strong></td>
+              <td class="text-sky">0.32 t/s (+45%)</td>
+              <td>50.63%</td>
+            </tr>
+            <tr>
+              <td><strong>300</strong></td>
+              <td>1271.93 ± 121.1 s</td>
+              <td class="text-sky">908.69 ± 43.7 s</td>
+              <td class="text-sky"><strong>-28.6%</strong></td>
+              <td class="text-sky">0.33 t/s (+38%)</td>
+              <td>54.23%</td>
+            </tr>
+            <tr>
+              <td><strong>400</strong></td>
+              <td>1436.33 ± 135.9 s</td>
+              <td class="text-sky">1237.98 ± 47.0 s</td>
+              <td class="text-sky"><strong>-13.8%</strong></td>
+              <td class="text-sky">0.32 t/s (+14%)</td>
+              <td>54.32%</td>
+            </tr>
+            <tr>
+              <td><strong>500</strong></td>
+              <td>2000.79 ± 164.0 s</td>
+              <td class="text-sky">1645.40 ± 43.3 s</td>
+              <td class="text-sky"><strong>-17.8% (Hemat 355s)</strong></td>
+              <td class="text-sky">0.30 t/s (+20%)</td>
+              <td>56.10%</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h4 style="font-size: 12px; color: var(--coffee-950); margin-top: 12px; margin-bottom: 4px;">
+          🅱️ Hasil pada Real-World Dispatcher dengan Latensi Geografis (Tugas 5, 6):
+        </h4>
+        <table>
+          <thead>
+            <tr>
+              <th>Tasks</th>
+              <th>Makespan Random</th>
+              <th>Makespan AOA</th>
+              <th>Perbaikan (%)</th>
+              <th>LBI (Imbalance)</th>
+              <th>Penghematan Biaya ($)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>100</strong></td>
+              <td>444.29 s</td>
+              <td class="text-sky">206.99 s</td>
+              <td class="text-sky"><strong>-53.4%</strong></td>
+              <td>2.20 &rarr; <span class="text-sky">1.96</span></td>
+              <td class="text-sky">Hemat $34.49 (37.1%)</td>
+            </tr>
+            <tr>
+              <td><strong>300</strong></td>
+              <td>1177.30 s</td>
+              <td class="text-sky">931.37 s</td>
+              <td class="text-sky"><strong>-20.9%</strong></td>
+              <td>1.91 &rarr; <span class="text-sky">1.59</span></td>
+              <td class="text-sky">Hemat $23.66 (8.6%)</td>
+            </tr>
+            <tr>
+              <td><strong>500</strong></td>
+              <td>1917.29 s</td>
+              <td class="text-sky">1682.69 s</td>
+              <td class="text-sky"><strong>-12.2%</strong></td>
+              <td>1.74 &rarr; <span class="text-sky">1.59</span></td>
+              <td class="text-sky">Hemat $22.06 (4.7%)</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="speaker-box">
+          🎙️ <strong>Panduan Bicara (Babak 7):</strong> Tegaskan ke dosen bahwa AOA telah divalidasi pada DUA lingkungan: Simulator CloudSim 7.0.1 (memotong Makespan hingga 56.1%) dan Real-World dengan latensi jaringan (memotong Makespan hingga 53.4% dan hemat biaya 37.1%)!
+        </div>
+      </div>
+
+      <!-- Slide 8: Kesimpulan & Live Demo Ready -->
+      <div class="slide" data-3d-mode="topology">
+        <span class="slide-tag">BAGIAN 07 &bull; KESIMPULAN &amp; Q&amp;A</span>
+        <h2>Kesimpulan Akademik &amp; Sesi Tanya Jawab</h2>
+        
+        <ul style="padding-left: 18px; margin-top: 10px; font-size: 13.5px; line-height: 1.7;">
+          <li><strong>Random Scheduling Terbukti Tidak Layak:</strong> Menimbulkan antrean macet di VM kecil dan membiarkan VM besar menganggur.</li>
+          <li><strong>AOA yang Baru Terbukti Unggul Mutlak:</strong> Berhasil menyeimbangkan beban komputasi dan memangkas waktu proses hingga <strong>51.5%</strong>.</li>
+          <li><strong>Stabilitas Teruji:</strong> Standar deviasi yang rendah di 10 pengujian membuktikan AOA konvergen secara stabil dan bukan hasil kebetulan.</li>
+          <li><strong>Dua Implementasi Tersedia:</strong> Program Python Real-World (<code>program_aoa_vs_random.py</code>) dan Java CloudSim 7.0.1 (<code>AOASchedulingSim.java</code>) siap dieksekusi langsung.</li>
+        </ul>
+
+        <div class="card" style="margin-top: 14px; background: #e0f2fe; border-color: #bae6fd;">
+          <h4 style="color: #0369a1;">🖥️ Pilihan Perintah Menjalankan Program:</h4>
+          <p style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: #0c4a6e; font-weight: 700; line-height: 1.6;">
+            1. Python Real-World: <code>python program_aoa_vs_random.py</code><br>
+            2. Java CloudSim 7.0.1: <code>mvn compile exec:java</code><br>
+            3. Menu Interaktif: Klik ganda <code>run.bat</code>
+          </p>
+        </div>
+
+        <div class="speaker-box">
+          🎙️ <strong>Panduan Bicara (Babak 8):</strong> Tutup presentasi dengan percaya diri dan undang dosen penguji untuk memberikan pertanyaan. Pegang cheat-sheet Q&amp;A yang telah disiapkan!
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bagian 2: Animasi 3D Three.js Stage (Bebas Halangan 100%) -->
+    <div class="stage-wrapper">
+      
+      <!-- Top HUD on 3D Stage -->
+      <div class="stage-overlay-top">
+        <div class="stage-pill">
+          <span style="width: 8px; height: 8px; border-radius: 9999px; background: #0284c7; display: inline-block;"></span>
+          <span id="stageTitle">Topologi 3 Datacenter (Minggu 3)</span>
+        </div>
+
+        <div class="stage-controls">
+          <button class="btn-mode active" id="btnModeTopology" onclick="set3DMode('topology')">Topologi DC</button>
+          <button class="btn-mode" id="btnModeAOAExplore" onclick="set3DMode('aoa-explore')">AOA Eksplorasi (÷, ×)</button>
+          <button class="btn-mode" id="btnModeAOAExploit" onclick="set3DMode('aoa-exploit')">AOA Eksploitasi (-, +)</button>
+        </div>
+      </div>
+
+      <!-- Three.js Canvas Mount Point -->
+      <div id="threeCanvas"></div>
+
+      <!-- Bottom HUD on 3D Stage -->
+      <div class="stage-overlay-bottom">
+        <div class="telemetry-tag" id="stageTelemetry">
+          Surabaya (6.000 MIPS) &bull; Jakarta (3.600 MIPS) &bull; Yogya (800 MIPS)
+        </div>
+        <div class="telemetry-tag" style="font-size: 10px;">
+          Orbit: Klik Kiri + Geser | Zoom: Scroll
+        </div>
+      </div>
+
+    </div>
+
+  </div> <!-- End .top-row -->
+
+  <!-- Bagian 3: Controller Simulator Dashboard (Tersusun Rapi di Bawah Penjelasan & Animasi) -->
+  <div class="sim-dashboard" id="simConsolePanel">
+    
+    <!-- Header Row: Title, Mode Indicator & Live Simulation Clock -->
+    <div class="sim-header-row">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span class="pulse-dot" id="simStatusDot"></span>
+        <span style="font-weight: 800; font-size: 11px; color: var(--coffee-950); text-transform: uppercase; letter-spacing: 0.5px;">
+          🎮 Konsol Simulasi Penjadwalan: Random vs AOA
+        </span>
+        <span id="simActiveTag" class="badge-top" style="font-size: 9px; padding: 1px 7px;">AOA (Teroptimasi)</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 14px;">
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; color: #0284c7;" id="liveClockDisplay">
+          ⏱️ Waktu Eksekusi: <span id="clockValue">0.00s</span>
+        </div>
+        <button class="btn-sm" onclick="triggerBenchmarkModal()" style="background: #f5f3ff; color: #6d28d9; border-color: #ddd6fe;">
+          ⚡ Buka Tabel Lengkap (100-500)
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Cockpit Grid: 3 Columns (Controls, KPIs, Datacenter Meters) -->
+    <div class="sim-cockpit-grid">
+      
+      <!-- Col 1: Form Selector & Action Buttons -->
+      <div class="sim-ctrl-box">
+        <div class="sim-selectors-row">
+          <div class="ctrl-group">
+            <label>Pilih Algoritma</label>
+            <select id="algoSelect" onchange="onAlgoChange()">
+              <option value="aoa">✨ AOA (Algoritma Baru)</option>
+              <option value="random">⚠️ Random (Baseline Minggu 3)</option>
+            </select>
+          </div>
+          <div class="ctrl-group">
+            <label>Dataset Tugas</label>
+            <select id="datasetSelect" onchange="onDatasetChange()">
+              <option value="100">100 Cloudlets</option>
+              <option value="200">200 Cloudlets</option>
+              <option value="300">300 Cloudlets</option>
+              <option value="400">400 Cloudlets</option>
+              <option value="500">500 Cloudlets</option>
+            </select>
+          </div>
+          <div class="ctrl-group">
+            <label>Lingkungan</label>
+            <select id="envSelect" onchange="onEnvChange()">
+              <option value="real-world">🌐 Real-World (Python)</option>
+              <option value="cloudsim">☕ CloudSim 7.0.1 (Java)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="ctrl-actions">
+          <button class="btn-run" id="btnRunSim" onclick="triggerRunSimulation()">
+            <span>▶ Jalankan Alokasi</span>
+          </button>
+          <button class="btn-reset" onclick="reset3DSimulation()" title="Reset Antrean">
+            <span>↺ Reset</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Col 2: Live KPI Tiles -->
+      <div class="kpi-grid">
+        <div class="kpi-card" id="kpiMakespanCard">
+          <div class="kpi-label">Makespan Selesai</div>
+          <div class="kpi-val" id="kpiMakespan">206.99 s</div>
+          <div class="kpi-sub text-green" id="kpiMakespanDelta">-53.4% Lebih Cepat</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Ketimpangan (LBI)</div>
+          <div class="kpi-val" id="kpiLBI">1.96</div>
+          <div class="kpi-sub text-green" id="kpiLBIBadge">Seimbang</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Throughput Sistem</div>
+          <div class="kpi-val" id="kpiThroughput">0.48 t/s</div>
+          <div class="kpi-sub text-sky" id="kpiThroughputSub">+108% Cepat</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Estimasi Biaya</div>
+          <div class="kpi-val" id="kpiCost">$58.48</div>
+          <div class="kpi-sub text-green" id="kpiCostDelta">Hemat $34.49</div>
+        </div>
+      </div>
+
+      <!-- Col 3: 3 Datacenter Real-Time Processing Bars -->
+      <div class="dc-meters-box">
+        <div class="dc-meter-item">
+          <div class="dc-meter-info">
+            <span><strong>Surabaya</strong> (Host 0 &bull; 6.000 MIPS)</span>
+            <span id="dcSbyLoadText" class="text-sky font-mono">54.2% (Optimal Heavy)</span>
+          </div>
+          <div class="meter-track">
+            <div class="meter-fill fill-sky" id="dcSbyBar" style="width: 54.2%;"></div>
+          </div>
+        </div>
+
+        <div class="dc-meter-item">
+          <div class="dc-meter-info">
+            <span><strong>Jakarta</strong> (Host 1 &bull; 3.600 MIPS)</span>
+            <span id="dcJktLoadText" class="text-purple font-mono">52.8% (Optimal Med)</span>
+          </div>
+          <div class="meter-track">
+            <div class="meter-fill fill-purple" id="dcJktBar" style="width: 52.8%;"></div>
+          </div>
+        </div>
+
+        <div class="dc-meter-item">
+          <div class="dc-meter-info">
+            <span><strong>Yogyakarta</strong> (Host 2 &bull; 800 MIPS)</span>
+            <span id="dcYogLoadText" class="text-green font-mono">55.1% (Optimal Light)</span>
+          </div>
+          <div class="meter-track">
+            <div class="meter-fill fill-green" id="dcYogBar" style="width: 55.1%;"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bottom Status Banner -->
+    <div class="sim-status-banner" id="simStatusBanner">
+      <span id="simStatusIcon">✅</span>
+      <span id="simStatusText">
+        <strong>AOA Berhasil:</strong> Tugas terberat dialokasikan presisi ke Surabaya (6.000 MIPS). Beban 3 DC seimbang merata dan Makespan terpangkas 53.4%!
+      </span>
+    </div>
+
+  </div>
+
+</main> <!-- End .presentation-container -->
+
+  <!-- Bottom Navigation Footer -->
+  <footer>
+    <div>
+      <button class="btn-nav" id="prevBtn" onclick="prevSlide()">← Sebelumnya</button>
+      <button class="btn-nav" id="nextBtn" onclick="nextSlide()">Berikutnya →</button>
+    </div>
+
+    <div class="progress-bar-container">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <div class="slide-counter" id="counter">Slide 1 / 8</div>
+  </footer>
+
+  <!-- Modal Benchmark Comparison (100 - 500 Tasks) -->
+  <div class="modal-overlay" id="benchmarkModal" onclick="closeBenchmarkModal(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--border); padding-bottom: 12px; margin-bottom: 16px;">
+        <div>
+          <span class="slide-tag" style="margin-bottom: 2px;">HASIL LENGKAP BENCHMARK &bull; TUGAS 4 &amp; 6</span>
+          <h3 style="font-size: 18px; font-weight: 800; color: var(--coffee-950);">
+            ⚡ Komparasi Empiris: Random Scheduling vs AOA yang Baru
+          </h3>
+        </div>
+        <button class="btn-sm" onclick="closeBenchmarkModal(null)" style="font-size: 14px; padding: 4px 10px;">✕ Tutup</button>
+      </div>
+
+      <div style="display: flex; gap: 8px; margin-bottom: 14px;">
+        <button class="btn-mode active" id="tabBtnRealWorld" onclick="switchModalTab('real-world')">🌐 Real-World Network (Python)</button>
+        <button class="btn-mode" id="tabBtnCloudSim" onclick="switchModalTab('cloudsim')">☕ Simulator CloudSim 7.0.1 (Java)</button>
+      </div>
+
+      <!-- Tab Content: Real World -->
+      <div id="tabContentRealWorld">
+        <p style="font-size: 12px; color: var(--coffee-700); margin-bottom: 8px;">
+          Hasil eksekusi riil dari berkas <code>program_aoa_vs_random.py</code> dengan 10 independent runs per skenario (memperhitungkan latensi fisik Sby-Jkt 15ms, Sby-Yog 8ms, bandwidth, dan tarif komputasi):
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th>Tasks</th>
+              <th>Makespan Random</th>
+              <th>Makespan AOA</th>
+              <th>Perbaikan (%)</th>
+              <th>LBI Random &rarr; AOA</th>
+              <th>Biaya Random</th>
+              <th>Biaya AOA</th>
+              <th>Penghematan ($)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>100</strong></td>
+              <td>444.29 s</td>
+              <td class="text-sky">206.99 s</td>
+              <td class="text-sky"><strong>-53.4%</strong></td>
+              <td>2.20 &rarr; <strong class="text-green">1.96</strong></td>
+              <td>$92.97</td>
+              <td class="text-green">$58.48</td>
+              <td class="text-green"><strong>Hemat $34.49 (37.1%)</strong></td>
+            </tr>
+            <tr>
+              <td><strong>200</strong></td>
+              <td>939.25 s</td>
+              <td class="text-sky">634.92 s</td>
+              <td class="text-sky"><strong>-32.4%</strong></td>
+              <td>2.09 &rarr; <strong class="text-green">1.64</strong></td>
+              <td>$198.09</td>
+              <td class="text-green">$167.48</td>
+              <td class="text-green"><strong>Hemat $30.61 (15.5%)</strong></td>
+            </tr>
+            <tr>
+              <td><strong>300</strong></td>
+              <td>1177.30 s</td>
+              <td class="text-sky">931.37 s</td>
+              <td class="text-sky"><strong>-20.9%</strong></td>
+              <td>1.91 &rarr; <strong class="text-green">1.59</strong></td>
+              <td>$274.11</td>
+              <td class="text-green">$250.45</td>
+              <td class="text-green"><strong>Hemat $23.66 (8.6%)</strong></td>
+            </tr>
+            <tr>
+              <td><strong>400</strong></td>
+              <td>1468.63 s</td>
+              <td class="text-sky">1202.80 s</td>
+              <td class="text-sky"><strong>-18.1%</strong></td>
+              <td>1.83 &rarr; <strong class="text-green">1.58</strong></td>
+              <td>$353.54</td>
+              <td class="text-green">$326.90</td>
+              <td class="text-green"><strong>Hemat $26.64 (7.5%)</strong></td>
+            </tr>
+            <tr>
+              <td><strong>500</strong></td>
+              <td>1917.29 s</td>
+              <td class="text-sky">1682.69 s</td>
+              <td class="text-sky"><strong>-12.2%</strong></td>
+              <td>1.74 &rarr; <strong class="text-green">1.59</strong></td>
+              <td>$467.26</td>
+              <td class="text-green">$445.20</td>
+              <td class="text-green"><strong>Hemat $22.06 (4.7%)</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Tab Content: CloudSim -->
+      <div id="tabContentCloudSim" style="display: none;">
+        <p style="font-size: 12px; color: var(--coffee-700); margin-bottom: 8px;">
+          Hasil eksekusi simulator resmi CloudSim 7.0.1 (Java 21) dari berkas <code>AOASchedulingSim.java</code> (Tugas 2, 3, 4):
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th>Tasks</th>
+              <th>Makespan Random</th>
+              <th>Makespan AOA</th>
+              <th>Perbaikan (%)</th>
+              <th>Throughput Random</th>
+              <th>Throughput AOA</th>
+              <th>Utilisasi Random</th>
+              <th>Utilisasi AOA</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>100</strong></td>
+              <td>406.18 s</td>
+              <td class="text-sky">254.24 s</td>
+              <td class="text-sky"><strong>-37.4%</strong></td>
+              <td>0.25 t/s</td>
+              <td class="text-sky">0.39 t/s (+56%)</td>
+              <td>47.8%</td>
+              <td>40.0%</td>
+            </tr>
+            <tr>
+              <td><strong>200</strong></td>
+              <td>728.07 s</td>
+              <td class="text-sky">607.90 s</td>
+              <td class="text-sky"><strong>-16.5%</strong></td>
+              <td>0.27 t/s</td>
+              <td class="text-sky">0.33 t/s (+22%)</td>
+              <td>55.8%</td>
+              <td>48.4%</td>
+            </tr>
+            <tr>
+              <td><strong>300</strong></td>
+              <td>1352.44 s</td>
+              <td class="text-sky">933.42 s</td>
+              <td class="text-sky"><strong>-31.0%</strong></td>
+              <td>0.22 t/s</td>
+              <td class="text-sky">0.32 t/s (+45%)</td>
+              <td>45.0%</td>
+              <td>54.3%</td>
+            </tr>
+            <tr>
+              <td><strong>400</strong></td>
+              <td>1557.14 s</td>
+              <td class="text-sky">1208.29 s</td>
+              <td class="text-sky"><strong>-22.4%</strong></td>
+              <td>0.26 t/s</td>
+              <td class="text-sky">0.33 t/s (+27%)</td>
+              <td>49.9%</td>
+              <td>53.9%</td>
+            </tr>
+            <tr>
+              <td><strong>500</strong></td>
+              <td>2104.69 s</td>
+              <td class="text-sky">1680.48 s</td>
+              <td class="text-sky"><strong>-20.2%</strong></td>
+              <td>0.24 t/s</td>
+              <td class="text-sky">0.30 t/s (+25%)</td>
+              <td>49.1%</td>
+              <td>57.3%</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="margin-top: 16px; display: flex; justify-content: flex-end; gap: 8px;">
+        <button class="btn-run" onclick="triggerRunSimulation(); closeBenchmarkModal(null);">
+          <span>▶ Uji di Kanvas 3D Sekarang</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- THREE.JS 3D STAGE & CLOUD SIMULATOR SCRIPT -->
+  <!-- Modular JavaScript Architecture -->
+  <script src="js/data.js"></script>
+  <script src="js/scene3d.js"></script>
+  <script src="js/simulation.js"></script>
+  <script src="js/presentation.js"></script>
+</body>
+</html>

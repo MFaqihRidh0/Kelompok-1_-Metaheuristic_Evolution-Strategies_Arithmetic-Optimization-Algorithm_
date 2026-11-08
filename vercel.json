@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/", "destination": "/02_Implementasi_Real_World/index.html" },
+    { "source": "/css/:match*", "destination": "/02_Implementasi_Real_World/css/:match*" },
+    { "source": "/js/:match*", "destination": "/02_Implementasi_Real_World/js/:match*" },
+    { "source": "/implementasi", "destination": "/02_Implementasi_Real_World/index.html" },
+    { "source": "/implementasi/:match*", "destination": "/02_Implementasi_Real_World/:match*" },
+    { "source": "/02_Implementasi_Real_World", "destination": "/02_Implementasi_Real_World/index.html" },
+    { "source": "/slides", "destination": "/01_Presentasi/dist/index.html" }
+  ]
+}
