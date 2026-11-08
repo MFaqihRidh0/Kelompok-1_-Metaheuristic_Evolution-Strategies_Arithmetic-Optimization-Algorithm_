@@ -73,26 +73,37 @@
       font-weight: 700;
     }
 
-    /* Main Split Container: Left Presentation Slides, Right 3D Canvas Stage */
+    /* Main Layout: 3 Distinct Sections (Penjelasan, Animasi, Controller) */
     .presentation-container {
       flex: 1;
       display: flex;
+      flex-direction: column;
       position: relative;
       overflow: hidden;
-      padding: 14px 24px;
-      gap: 20px;
+      padding: 8px 20px 4px;
+      gap: 8px;
+      min-height: 0;
     }
 
-    /* Left Slide Panel */
+    /* Top Row: Left Penjelasan (Slides) & Right Animasi 3D Stage */
+    .top-row {
+      flex: 1;
+      display: flex;
+      gap: 14px;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    /* Bagian 1: Left Slide Panel (Penjelasan) */
     .slides-wrapper {
-      flex: 1.15;
+      flex: 1;
       position: relative;
       overflow-y: auto;
       background: var(--card-bg);
       border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 32px 38px;
-      box-shadow: 0 16px 36px -15px rgba(41, 37, 36, 0.08);
+      border-radius: 16px;
+      padding: 18px 24px;
+      box-shadow: 0 10px 24px -10px rgba(41, 37, 36, 0.08);
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -363,91 +374,56 @@
       font-family: 'JetBrains Mono', monospace;
     }
 
-    /* Live Interactive Simulator Console */
-    .sim-console {
-      position: absolute;
-      bottom: 40px;
-      left: 14px;
-      right: 14px;
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(14px);
+    /* Bagian 3: Controller Simulator Dashboard (Ditempatkan rapi di bawah Penjelasan & Animasi) */
+    .sim-dashboard {
+      background: #ffffff;
       border: 1px solid var(--border);
       border-radius: 14px;
-      padding: 10px 14px;
-      box-shadow: 0 12px 30px rgba(41, 37, 36, 0.14);
-      z-index: 15;
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-      pointer-events: auto;
+      padding: 8px 16px;
+      box-shadow: 0 4px 16px rgba(41, 37, 36, 0.06);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex-shrink: 0;
+      z-index: 10;
     }
 
-    .sim-console.collapsed #simConsoleBody {
-      display: none;
-    }
-
-    .sim-console-header {
+    .sim-header-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding-bottom: 6px;
+      padding-bottom: 4px;
       border-bottom: 1px solid rgba(231, 222, 211, 0.7);
-      margin-bottom: 8px;
     }
 
-    .pulse-dot {
-      width: 9px;
-      height: 9px;
-      border-radius: 9999px;
-      background: #10b981;
-      display: inline-block;
-      box-shadow: 0 0 8px #10b981;
-      animation: pulseDot 1.8s infinite;
+    .sim-cockpit-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 1.35fr 1.25fr;
+      gap: 12px;
+      align-items: center;
     }
 
-    .pulse-dot.danger {
-      background: #ef4444;
-      box-shadow: 0 0 8px #ef4444;
-    }
-
-    @keyframes pulseDot {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.4; transform: scale(0.85); }
-    }
-
-    .btn-sm {
-      border: 1px solid var(--border);
-      background: #fdfaf6;
-      color: var(--coffee-800);
-      padding: 3px 9px;
-      border-radius: 6px;
-      font-size: 10px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .btn-sm:hover {
-      background: #f5eedf;
-    }
-
-    .sim-ctrl-row {
+    .sim-ctrl-box {
       display: flex;
-      gap: 8px;
-      align-items: flex-end;
-      margin-bottom: 9px;
-      flex-wrap: wrap;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .sim-selectors-row {
+      display: flex;
+      gap: 6px;
     }
 
     .ctrl-group {
       display: flex;
       flex-direction: column;
-      gap: 3px;
+      gap: 2px;
       flex: 1;
-      min-width: 110px;
     }
 
     .ctrl-group label {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 10px;
+      font-size: 9px;
       font-weight: 700;
       text-transform: uppercase;
       color: var(--coffee-600);
@@ -455,10 +431,10 @@
 
     .ctrl-group select {
       font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 11px;
+      font-size: 10.5px;
       font-weight: 600;
-      padding: 5px 8px;
-      border-radius: 8px;
+      padding: 4px 6px;
+      border-radius: 6px;
       border: 1px solid var(--border);
       background: #ffffff;
       color: var(--coffee-950);
@@ -476,30 +452,30 @@
       background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
       color: #ffffff;
       border: none;
-      padding: 6px 14px;
-      border-radius: 8px;
-      font-size: 11.5px;
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 11px;
       font-weight: 700;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 5px;
-      box-shadow: 0 3px 8px rgba(2, 132, 199, 0.3);
+      gap: 4px;
+      box-shadow: 0 2px 6px rgba(2, 132, 199, 0.3);
       transition: all 0.2s;
     }
 
     .btn-run:hover {
       transform: translateY(-1px);
-      box-shadow: 0 5px 12px rgba(2, 132, 199, 0.4);
+      box-shadow: 0 4px 10px rgba(2, 132, 199, 0.4);
     }
 
     .btn-benchmark {
       background: #f5f3ff;
       color: #6d28d9;
       border: 1px solid #ddd6fe;
-      padding: 6px 11px;
-      border-radius: 8px;
-      font-size: 11px;
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 10.5px;
       font-weight: 700;
       cursor: pointer;
       transition: all 0.2s;
@@ -513,9 +489,9 @@
       background: #fafaf9;
       color: var(--coffee-800);
       border: 1px solid var(--border);
-      padding: 6px 10px;
-      border-radius: 8px;
-      font-size: 11px;
+      padding: 5px 8px;
+      border-radius: 6px;
+      font-size: 10.5px;
       font-weight: 700;
       cursor: pointer;
     }
@@ -524,24 +500,23 @@
       background: #f4f4f5;
     }
 
-    /* KPI metric grid */
+    /* KPI Grid in Cockpit */
     .kpi-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 6px;
-      margin-bottom: 8px;
     }
 
     .kpi-card {
       background: #fbf9f5;
       border: 1px solid var(--border);
       border-radius: 8px;
-      padding: 5px 8px;
+      padding: 4px 6px;
       text-align: center;
     }
 
     .kpi-label {
-      font-size: 9.5px;
+      font-size: 8.5px;
       color: var(--coffee-600);
       margin-bottom: 2px;
       font-weight: 600;
@@ -549,26 +524,25 @@
 
     .kpi-val {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 13.5px;
+      font-size: 12.5px;
       font-weight: 800;
       color: var(--coffee-950);
     }
 
     .kpi-sub {
-      font-size: 9px;
+      font-size: 8.5px;
       font-weight: 700;
     }
 
     /* Datacenter Load Progress Bars */
     .dc-meters-box {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
       background: #f8fafc;
       border: 1px solid #e2e8f0;
       border-radius: 8px;
-      padding: 5px 10px;
-      margin-bottom: 7px;
+      padding: 5px 8px;
     }
 
     .dc-meter-item {
@@ -580,12 +554,12 @@
     .dc-meter-info {
       display: flex;
       justify-content: space-between;
-      font-size: 9.5px;
+      font-size: 9px;
       color: var(--coffee-800);
     }
 
     .meter-track {
-      height: 6px;
+      height: 5px;
       background: #e2e8f0;
       border-radius: 9999px;
       overflow: hidden;
@@ -594,7 +568,7 @@
     .meter-fill {
       height: 100%;
       border-radius: 9999px;
-      transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.4s;
+      transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s;
     }
 
     .fill-sky { background: #0284c7; }
@@ -607,14 +581,14 @@
     .sim-status-banner {
       background: #f0fdf4;
       border: 1px solid #bbf7d0;
-      border-radius: 8px;
-      padding: 5px 10px;
-      font-size: 10.5px;
+      border-radius: 6px;
+      padding: 4px 8px;
+      font-size: 10px;
       color: #166534;
       display: flex;
       align-items: center;
-      gap: 8px;
-      line-height: 1.35;
+      gap: 6px;
+      line-height: 1.25;
     }
 
     .sim-status-banner.danger {
@@ -666,11 +640,14 @@
     </div>
   </header>
 
-  <!-- Presentation Dual Viewport: Slides on Left, 3D Canvas on Right -->
-  <div class="presentation-container">
+  <!-- Main Presentation Container: 3 Bagian (Penjelasan, Animasi, Controller) -->
+  <main class="presentation-container">
     
-    <!-- LEFT: SLIDES CONTAINER -->
-    <div class="slides-wrapper">
+    <!-- TOP ROW: Bagian 1 (Penjelasan) & Bagian 2 (Animasi 3D) -->
+    <div class="top-row">
+
+      <!-- Bagian 1: Left Slide Panel (Penjelasan) -->
+      <div class="slides-wrapper">
       
       <!-- Slide 1: Cover -->
       <div class="slide active" data-3d-mode="topology">
@@ -1037,7 +1014,7 @@
 
     </div>
 
-    <!-- RIGHT: 3D THREE.JS CANVAS STAGE -->
+    <!-- Bagian 2: Animasi 3D Three.js Stage (Bebas Halangan 100%) -->
     <div class="stage-wrapper">
       
       <!-- Top HUD on 3D Stage -->
@@ -1057,134 +1034,6 @@
       <!-- Three.js Canvas Mount Point -->
       <div id="threeCanvas"></div>
 
-      <!-- Live Interactive Simulator Console Overlay -->
-      <div class="sim-console" id="simConsolePanel">
-        <!-- Console Header -->
-        <div class="sim-console-header">
-          <div style="display: flex; align-items: center; gap: 8px;">
-            <span class="pulse-dot" id="simStatusDot"></span>
-            <span style="font-weight: 800; font-size: 11.5px; color: var(--coffee-950); text-transform: uppercase; letter-spacing: 0.5px;">
-              🎮 Konsol Simulasi Real-Time: Random vs AOA
-            </span>
-            <span id="simActiveTag" class="badge-top" style="font-size: 9.5px; padding: 1px 7px;">AOA Aktif</span>
-          </div>
-          <div style="display: flex; gap: 6px;">
-            <button class="btn-sm" id="btnToggleConsole" onclick="toggleSimConsole()" title="Sembunyikan / Tampilkan Panel Detail">
-              <span id="toggleConsoleText">▼ Perkecil</span>
-            </button>
-          </div>
-        </div>
-
-        <div id="simConsoleBody">
-          <!-- Controls Row -->
-          <div class="sim-ctrl-row">
-            <div class="ctrl-group">
-              <label>Pilih Algoritma</label>
-              <select id="algoSelect" onchange="onAlgoChange()">
-                <option value="aoa">✨ AOA (Arithmetic Optimization - Yang Baru)</option>
-                <option value="random">⚠️ Random Scheduling (Baseline Minggu 3)</option>
-              </select>
-            </div>
-
-            <div class="ctrl-group">
-              <label>Dataset Cloudlets</label>
-              <select id="datasetSelect" onchange="onDatasetChange()">
-                <option value="100">100 Cloudlets (Riil)</option>
-                <option value="200">200 Cloudlets (Riil)</option>
-                <option value="300">300 Cloudlets (Riil)</option>
-                <option value="400">400 Cloudlets (Riil)</option>
-                <option value="500">500 Cloudlets (Riil)</option>
-              </select>
-            </div>
-
-            <div class="ctrl-group">
-              <label>Lingkungan Uji</label>
-              <select id="envSelect" onchange="onEnvChange()">
-                <option value="real-world">🌐 Real-World Network (Python)</option>
-                <option value="cloudsim">☕ CloudSim 7.0.1 (Java)</option>
-              </select>
-            </div>
-
-            <div class="ctrl-actions">
-              <button class="btn-run" id="btnRunSim" onclick="triggerRunSimulation()">
-                <span>▶ Jalankan Alokasi</span>
-              </button>
-              <button class="btn-benchmark" onclick="triggerBenchmarkModal()" title="Lihat komparasi lengkap seluruh skenario">
-                <span>⚡ Komparasi (100-500)</span>
-              </button>
-              <button class="btn-reset" onclick="reset3DSimulation()" title="Reset Beban Antrean">
-                <span>↺ Reset</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- KPI Metric Grid -->
-          <div class="kpi-grid">
-            <div class="kpi-card" id="kpiMakespanCard">
-              <div class="kpi-label">Makespan (Waktu Selesai)</div>
-              <div class="kpi-val" id="kpiMakespan">206.99 s</div>
-              <div class="kpi-sub text-green" id="kpiMakespanDelta">-53.4% Lebih Cepat</div>
-            </div>
-            <div class="kpi-card">
-              <div class="kpi-label">Ketimpangan Beban (LBI)</div>
-              <div class="kpi-val" id="kpiLBI">1.96</div>
-              <div class="kpi-sub text-green" id="kpiLBIBadge">Seimbang & Proporsional</div>
-            </div>
-            <div class="kpi-card">
-              <div class="kpi-label">Throughput Sistem</div>
-              <div class="kpi-val" id="kpiThroughput">0.48 t/s</div>
-              <div class="kpi-sub text-sky" id="kpiThroughputSub">+108% Kapasitas Selesai</div>
-            </div>
-            <div class="kpi-card">
-              <div class="kpi-label">Estimasi Biaya Cloud</div>
-              <div class="kpi-val" id="kpiCost">$58.48</div>
-              <div class="kpi-sub text-green" id="kpiCostDelta">Hemat $34.49 (37.1%)</div>
-            </div>
-          </div>
-
-          <!-- 3 Datacenter Load Progress Bars -->
-          <div class="dc-meters-box">
-            <div class="dc-meter-item">
-              <div class="dc-meter-info">
-                <span><strong>Surabaya</strong> (Host 0 &bull; 6.000 MIPS)</span>
-                <span id="dcSbyLoadText" class="text-sky font-mono">54.2% (Optimal)</span>
-              </div>
-              <div class="meter-track">
-                <div class="meter-fill fill-sky" id="dcSbyBar" style="width: 54.2%;"></div>
-              </div>
-            </div>
-
-            <div class="dc-meter-item">
-              <div class="dc-meter-info">
-                <span><strong>Jakarta</strong> (Host 1 &bull; 3.600 MIPS)</span>
-                <span id="dcJktLoadText" class="text-purple font-mono">52.8% (Optimal)</span>
-              </div>
-              <div class="meter-track">
-                <div class="meter-fill fill-purple" id="dcJktBar" style="width: 52.8%;"></div>
-              </div>
-            </div>
-
-            <div class="dc-meter-item">
-              <div class="dc-meter-info">
-                <span><strong>Yogyakarta</strong> (Host 2 &bull; 800 MIPS)</span>
-                <span id="dcYogLoadText" class="text-green font-mono">55.1% (Optimal)</span>
-              </div>
-              <div class="meter-track">
-                <div class="meter-fill fill-green" id="dcYogBar" style="width: 55.1%;"></div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Live Status Banner -->
-          <div class="sim-status-banner" id="simStatusBanner">
-            <span id="simStatusIcon">✅</span>
-            <span id="simStatusText">
-              <strong>AOA Berhasil:</strong> Tugas terberat dialokasikan presisi ke VM 6.000 MIPS Surabaya. Beban ketiga datacenter seimbang dan Makespan terpangkas hingga 53.4%!
-            </span>
-          </div>
-        </div>
-      </div>
-
       <!-- Bottom HUD on 3D Stage -->
       <div class="stage-overlay-bottom">
         <div class="telemetry-tag" id="stageTelemetry">
@@ -1197,7 +1046,142 @@
 
     </div>
 
+  </div> <!-- End .top-row -->
+
+  <!-- Bagian 3: Controller Simulator Dashboard (Tersusun Rapi di Bawah Penjelasan & Animasi) -->
+  <div class="sim-dashboard" id="simConsolePanel">
+    
+    <!-- Header Row: Title, Mode Indicator & Live Simulation Clock -->
+    <div class="sim-header-row">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span class="pulse-dot" id="simStatusDot"></span>
+        <span style="font-weight: 800; font-size: 11px; color: var(--coffee-950); text-transform: uppercase; letter-spacing: 0.5px;">
+          🎮 Konsol Simulasi Penjadwalan: Random vs AOA
+        </span>
+        <span id="simActiveTag" class="badge-top" style="font-size: 9px; padding: 1px 7px;">AOA (Teroptimasi)</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 14px;">
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; color: #0284c7;" id="liveClockDisplay">
+          ⏱️ Waktu Eksekusi: <span id="clockValue">0.00s</span>
+        </div>
+        <button class="btn-sm" onclick="triggerBenchmarkModal()" style="background: #f5f3ff; color: #6d28d9; border-color: #ddd6fe;">
+          ⚡ Buka Tabel Lengkap (100-500)
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Cockpit Grid: 3 Columns (Controls, KPIs, Datacenter Meters) -->
+    <div class="sim-cockpit-grid">
+      
+      <!-- Col 1: Form Selector & Action Buttons -->
+      <div class="sim-ctrl-box">
+        <div class="sim-selectors-row">
+          <div class="ctrl-group">
+            <label>Pilih Algoritma</label>
+            <select id="algoSelect" onchange="onAlgoChange()">
+              <option value="aoa">✨ AOA (Algoritma Baru)</option>
+              <option value="random">⚠️ Random (Baseline Minggu 3)</option>
+            </select>
+          </div>
+          <div class="ctrl-group">
+            <label>Dataset Tugas</label>
+            <select id="datasetSelect" onchange="onDatasetChange()">
+              <option value="100">100 Cloudlets</option>
+              <option value="200">200 Cloudlets</option>
+              <option value="300">300 Cloudlets</option>
+              <option value="400">400 Cloudlets</option>
+              <option value="500">500 Cloudlets</option>
+            </select>
+          </div>
+          <div class="ctrl-group">
+            <label>Lingkungan</label>
+            <select id="envSelect" onchange="onEnvChange()">
+              <option value="real-world">🌐 Real-World (Python)</option>
+              <option value="cloudsim">☕ CloudSim 7.0.1 (Java)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="ctrl-actions">
+          <button class="btn-run" id="btnRunSim" onclick="triggerRunSimulation()">
+            <span>▶ Jalankan Alokasi</span>
+          </button>
+          <button class="btn-reset" onclick="reset3DSimulation()" title="Reset Antrean">
+            <span>↺ Reset</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Col 2: Live KPI Tiles -->
+      <div class="kpi-grid">
+        <div class="kpi-card" id="kpiMakespanCard">
+          <div class="kpi-label">Makespan Selesai</div>
+          <div class="kpi-val" id="kpiMakespan">206.99 s</div>
+          <div class="kpi-sub text-green" id="kpiMakespanDelta">-53.4% Lebih Cepat</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Ketimpangan (LBI)</div>
+          <div class="kpi-val" id="kpiLBI">1.96</div>
+          <div class="kpi-sub text-green" id="kpiLBIBadge">Seimbang</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Throughput Sistem</div>
+          <div class="kpi-val" id="kpiThroughput">0.48 t/s</div>
+          <div class="kpi-sub text-sky" id="kpiThroughputSub">+108% Cepat</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Estimasi Biaya</div>
+          <div class="kpi-val" id="kpiCost">$58.48</div>
+          <div class="kpi-sub text-green" id="kpiCostDelta">Hemat $34.49</div>
+        </div>
+      </div>
+
+      <!-- Col 3: 3 Datacenter Real-Time Processing Bars -->
+      <div class="dc-meters-box">
+        <div class="dc-meter-item">
+          <div class="dc-meter-info">
+            <span><strong>Surabaya</strong> (Host 0 &bull; 6.000 MIPS)</span>
+            <span id="dcSbyLoadText" class="text-sky font-mono">54.2% (Optimal Heavy)</span>
+          </div>
+          <div class="meter-track">
+            <div class="meter-fill fill-sky" id="dcSbyBar" style="width: 54.2%;"></div>
+          </div>
+        </div>
+
+        <div class="dc-meter-item">
+          <div class="dc-meter-info">
+            <span><strong>Jakarta</strong> (Host 1 &bull; 3.600 MIPS)</span>
+            <span id="dcJktLoadText" class="text-purple font-mono">52.8% (Optimal Med)</span>
+          </div>
+          <div class="meter-track">
+            <div class="meter-fill fill-purple" id="dcJktBar" style="width: 52.8%;"></div>
+          </div>
+        </div>
+
+        <div class="dc-meter-item">
+          <div class="dc-meter-info">
+            <span><strong>Yogyakarta</strong> (Host 2 &bull; 800 MIPS)</span>
+            <span id="dcYogLoadText" class="text-green font-mono">55.1% (Optimal Light)</span>
+          </div>
+          <div class="meter-track">
+            <div class="meter-fill fill-green" id="dcYogBar" style="width: 55.1%;"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bottom Status Banner -->
+    <div class="sim-status-banner" id="simStatusBanner">
+      <span id="simStatusIcon">✅</span>
+      <span id="simStatusText">
+        <strong>AOA Berhasil:</strong> Tugas terberat dialokasikan presisi ke Surabaya (6.000 MIPS). Beban 3 DC seimbang merata dan Makespan terpangkas 53.4%!
+      </span>
+    </div>
+
   </div>
+
+</main> <!-- End .presentation-container -->
 
   <!-- Bottom Navigation Footer -->
   <footer>
@@ -1438,7 +1422,7 @@
     };
 
     // ============================================================================
-    // 2. THREE.JS GLOBAL STATE & OBJECTS
+    // 2. THREE.JS GLOBAL STATE & SCENE ASSETS
     // ============================================================================
     let scene, camera, renderer, controls;
     let current3DMode = 'topology';
@@ -1446,7 +1430,7 @@
     let aoaExploreDrones = [];
     let aoaExploitDrones = [];
     let laserLines = [];
-    let beaconGroup, goldenCrown;
+    let goldenCrown, goldenBeam;
     let animId;
 
     // Registry Datacenter Towers & Dynamic Assets
@@ -1457,18 +1441,24 @@
     let isSimRunning = false;
     let currentSimAlgo = 'aoa';
 
+    // Simulation Clock State
+    let simClockTime = 0.0;
+    let targetClockTime = 206.99;
+    let clockRunning = false;
+
     function init3D() {
       const container = document.getElementById('threeCanvas');
       const width = container.clientWidth;
       const height = container.clientHeight;
 
-      // 1. Scene & Warm Lighting
+      // 1. Scene & Warm Studio Lighting
       scene = new THREE.Scene();
       scene.background = new THREE.Color(0xfcf8f2);
-      scene.fog = new THREE.FogExp2(0xfcf8f2, 0.009);
+      scene.fog = new THREE.FogExp2(0xfcf8f2, 0.01);
 
+      // Camera angled for balanced isometric view of all 3 DCs & Dispatcher
       camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
-      camera.position.set(0, 32, 44);
+      camera.position.set(0, 24, 34);
 
       renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
       renderer.setSize(width, height);
@@ -1477,76 +1467,80 @@
       renderer.shadowMap.type = THREE.PCFSoftShadowMap;
       container.appendChild(renderer.domElement);
 
-      // Controls
+      // OrbitControls with polite damping
       controls = new THREE.OrbitControls(camera, renderer.domElement);
       controls.enableDamping = true;
       controls.dampingFactor = 0.05;
       controls.maxPolarAngle = Math.PI / 2 - 0.05;
-      controls.target.set(0, 3, 0);
+      controls.target.set(0, 3.5, 0);
 
       // Lights
       const ambientLight = new THREE.AmbientLight(0xffffff, 0.95);
       scene.add(ambientLight);
 
-      const sunLight = new THREE.DirectionalLight(0xfffaed, 1.3);
-      sunLight.position.set(25, 45, 30);
+      const sunLight = new THREE.DirectionalLight(0xfffaed, 1.25);
+      sunLight.position.set(22, 40, 25);
       sunLight.castShadow = true;
+      sunLight.shadow.mapSize.width = 1024;
+      sunLight.shadow.mapSize.height = 1024;
       scene.add(sunLight);
 
-      const fillLight = new THREE.DirectionalLight(0xfef3c7, 0.6);
-      fillLight.position.set(-20, 30, -20);
+      const fillLight = new THREE.DirectionalLight(0xfef3c7, 0.55);
+      fillLight.position.set(-20, 25, -20);
       scene.add(fillLight);
 
-      // Grid Floor
+      // Floor
       const floor = new THREE.Mesh(
-        new THREE.PlaneGeometry(90, 90),
-        new THREE.MeshStandardMaterial({ color: 0xf3ede2, roughness: 0.9 })
+        new THREE.PlaneGeometry(80, 80),
+        new THREE.MeshStandardMaterial({ color: 0xf4ede2, roughness: 0.9 })
       );
       floor.rotation.x = -Math.PI / 2;
       floor.receiveShadow = true;
       scene.add(floor);
 
-      const gridHelper = new THREE.GridHelper(90, 45, 0x0284c7, 0xdcd0be);
+      const gridHelper = new THREE.GridHelper(80, 40, 0x0284c7, 0xdcd0be);
       gridHelper.position.y = 0.02;
       scene.add(gridHelper);
 
-      // 2. Build 3 Datacenters
-      // Surabaya: Host 0, 6.000 MIPS (Large)
-      buildDatacenterTower('sby', 'DC_Surabaya (Host 0)', 'VM 0, 1, 2 | 6.000 MIPS', [-14, 0, -4], 8.5, 0x0284c7, 0x38bdf8);
-      // Jakarta: Host 1, 3.600 MIPS (Medium)
-      buildDatacenterTower('jkt', 'DC_Jakarta (Host 1)', 'VM 3, 4, 5 | 3.600 MIPS', [14, 0, -4], 6.5, 0x7c3aed, 0xa855f7);
-      // Yogyakarta: Host 2, 800 MIPS (Small)
-      buildDatacenterTower('yog', 'DC_Yogyakarta (Host 2)', 'VM 6..9 | 800 MIPS', [0, 0, 10], 4.8, 0x059669, 0x10b981);
+      // 2. Build 3 Datacenter Towers (Framed in Triangle Topology)
+      // Surabaya: Host 0, Large MIPS (6.000 MIPS) at Left [-11, 0, -2]
+      buildDatacenterTower('sby', 'DC_SURABAYA (Host 0)', 'VM 0,1,2 • 6.000 MIPS', [-11, 0, -2], 8.5, 0x0284c7, 0x38bdf8);
+      
+      // Jakarta: Host 1, Medium MIPS (3.600 MIPS) at Right [11, 0, -2]
+      buildDatacenterTower('jkt', 'DC_JAKARTA (Host 1)', 'VM 3,4,5 • 3.600 MIPS', [11, 0, -2], 6.5, 0x7c3aed, 0xa855f7);
+      
+      // Yogyakarta: Host 2, Small MIPS (800 MIPS) at Center-Front [0, 0, 7]
+      buildDatacenterTower('yog', 'DC_YOGYAKARTA (Host 2)', 'VM 6..9 • 800 MIPS', [0, 0, 7], 4.5, 0x059669, 0x10b981);
 
-      // 3. Network Laser Trunks
-      buildNetworkTrunk('sby_jkt', [-14, 0.5, -4], [14, 0.5, -4], 0x0284c7);
-      buildNetworkTrunk('sby_yog', [-14, 0.5, -4], [0, 0.5, 10], 0x059669);
-      buildNetworkTrunk('jkt_yog', [14, 0.5, -4], [0, 0.5, 10], 0x7c3aed);
+      // 3. Network Laser Lines connecting Datacenters
+      buildNetworkTrunk('sby_jkt', [-11, 0.5, -2], [11, 0.5, -2], 0x0284c7);
+      buildNetworkTrunk('sby_yog', [-11, 0.5, -2], [0, 0.5, 7], 0x059669);
+      buildNetworkTrunk('jkt_yog', [11, 0.5, -2], [0, 0.5, 7], 0x7c3aed);
 
-      // 4. Build Client Workload Dispatcher Platform
-      buildDispatcherPlatform([0, 15, -14]);
+      // 4. Build Client Workload Dispatcher (Elevated at Center-Back [0, 9, -12])
+      buildDispatcherPlatform([0, 9, -12]);
 
-      // 5. Golden Beacon for Best Solution atop Surabaya
-      beaconGroup = new THREE.Group();
-      const beamGeo = new THREE.CylinderGeometry(0.18, 0.18, 32, 16);
-      const beamMat = new THREE.MeshBasicMaterial({ color: 0xd97706, transparent: true, opacity: 0.85 });
-      const beam = new THREE.Mesh(beamGeo, beamMat);
-      beam.position.y = 16;
-      beaconGroup.add(beam);
+      // Connect Dispatcher to 3 Datacenters via Network Trunks
+      buildNetworkTrunk('disp_sby', [0, 9, -12], [-11, 4.5, -2], 0x38bdf8);
+      buildNetworkTrunk('disp_jkt', [0, 9, -12], [11, 3.5, -2], 0xa855f7);
+      buildNetworkTrunk('disp_yog', [0, 9, -12], [0, 2.5, 7], 0x10b981);
 
+      // 5. Golden Beacon & Crown atop Surabaya (Clean vertical beam, no giant diagonal!)
       goldenCrown = new THREE.Mesh(
-        new THREE.OctahedronGeometry(0.7, 0),
+        new THREE.OctahedronGeometry(0.65, 0),
         new THREE.MeshStandardMaterial({ color: 0xf59e0b, emissive: 0xf59e0b, emissiveIntensity: 0.9 })
       );
-      goldenCrown.position.y = 9.8;
-      beaconGroup.add(goldenCrown);
-      beaconGroup.position.set(-14, 0, -4);
-      scene.add(beaconGroup);
+      goldenCrown.position.set(-11, 9.8, -2);
+      scene.add(goldenCrown);
 
-      // 6. Base Cloudlet Cubes (Initial Demo)
-      createDataCubes();
+      const beamGeo = new THREE.CylinderGeometry(0.12, 0.12, 8, 16);
+      const beamMat = new THREE.MeshBasicMaterial({ color: 0xf59e0b, transparent: true, opacity: 0.85 });
+      goldenBeam = new THREE.Mesh(beamGeo, beamMat);
+      goldenBeam.position.set(-11, 13.5, -2);
+      goldenBeam.visible = false;
+      scene.add(goldenBeam);
 
-      // 7. AOA Drones
+      // 6. AOA Drones
       createAOAExploreDrones();
       createAOAExploitDrones();
 
@@ -1566,8 +1560,9 @@
     function buildDatacenterTower(id, name, subtitle, pos, height, bodyColor, ledColor) {
       const tower = new THREE.Group();
       
+      // Main Server Tower Body
       const body = new THREE.Mesh(
-        new THREE.BoxGeometry(4.2, height, 4.2),
+        new THREE.BoxGeometry(3.8, height, 3.8),
         new THREE.MeshStandardMaterial({ color: 0x3d2d22, metalness: 0.5, roughness: 0.4 })
       );
       body.position.set(pos[0], height / 2, pos[2]);
@@ -1578,40 +1573,35 @@
       // LED Ring Top
       const ledMat = new THREE.MeshBasicMaterial({ color: ledColor });
       const led = new THREE.Mesh(
-        new THREE.BoxGeometry(4.3, 0.4, 4.3),
+        new THREE.BoxGeometry(3.9, 0.35, 3.9),
         ledMat
       );
-      led.position.set(pos[0], height + 0.2, pos[2]);
+      led.position.set(pos[0], height + 0.18, pos[2]);
       tower.add(led);
 
-      // Dynamic PointLight for Alert & Glow
-      const dcLight = new THREE.PointLight(ledColor, 1.2, 18);
-      dcLight.position.set(pos[0], height + 1.5, pos[2]);
+      // Dynamic Alert PointLight
+      const dcLight = new THREE.PointLight(ledColor, 1.2, 16);
+      dcLight.position.set(pos[0], height + 1.2, pos[2]);
       scene.add(dcLight);
 
       // Satellite VM Racks
-      for (let i = 0; i < 3; i++) {
-        const satH = height * (0.6 + i * 0.15);
+      const rackCount = id === 'yog' ? 4 : 3;
+      for (let i = 0; i < rackCount; i++) {
+        const satH = height * (0.55 + i * 0.1);
         const sat = new THREE.Mesh(
-          new THREE.BoxGeometry(1.6, satH, 1.6),
+          new THREE.BoxGeometry(1.4, satH, 1.4),
           new THREE.MeshStandardMaterial({ color: 0x5a4335, metalness: 0.3 })
         );
-        const ang = (i * Math.PI * 2) / 3;
-        sat.position.set(pos[0] + Math.cos(ang) * 4.2, satH / 2, pos[2] + Math.sin(ang) * 4.2);
+        const ang = (i * Math.PI * 2) / rackCount;
+        sat.position.set(pos[0] + Math.cos(ang) * 3.6, satH / 2, pos[2] + Math.sin(ang) * 3.6);
         sat.castShadow = true;
         tower.add(sat);
       }
 
-      // Main Title Sprite
-      const sprite = createTextSprite(name, subtitle, ledColor);
-      sprite.position.set(pos[0], height + 2.4, pos[2]);
-      tower.add(sprite);
-
-      // Dynamic Holographic Status Badge Sprite
-      const statusBadge = createDynamicBadgeSprite('SIAP ALOKASI', '#0284c7');
-      statusBadge.position.set(pos[0], height + 4.2, pos[2]);
-      statusBadge.visible = false;
-      tower.add(statusBadge);
+      // Single Unified Crisp Billboard Sprite (Placed cleanly above tower)
+      const billboard = createUnifiedBillboard(name, subtitle, 'STATUS: SIAP ALOKASI', ledColor);
+      billboard.position.set(pos[0], height + 2.5, pos[2]);
+      tower.add(billboard);
 
       scene.add(tower);
 
@@ -1622,116 +1612,123 @@
         bodyMesh: body,
         ledMesh: led,
         light: dcLight,
-        titleSprite: sprite,
-        statusBadgeSprite: statusBadge,
+        billboard,
         pos: new THREE.Vector3(...pos),
         height,
         name,
+        subtitle,
         baseColor: bodyColor,
         baseLedColor: ledColor,
-        state: 'normal' // 'normal', 'optimal', 'overload', 'idle'
+        state: 'normal',
+        landedCount: 0
       };
+    }
+
+    function createUnifiedBillboard(title, subtitle, status, colorHex) {
+      const canvas = document.createElement('canvas');
+      canvas.width = 512;
+      canvas.height = 140;
+      updateBillboardCanvas(canvas, title, subtitle, status, colorHex);
+
+      const texture = new THREE.CanvasTexture(canvas);
+      const mat = new THREE.SpriteMaterial({ map: texture, transparent: true, depthWrite: false });
+      const sp = new THREE.Sprite(mat);
+      sp.scale.set(6.8, 1.85, 1);
+      sp.userData = { canvas, texture, title, subtitle };
+      return sp;
+    }
+
+    function updateBillboardCanvas(canvas, title, subtitle, status, colorHex) {
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Background rounded pill
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.94)';
+      ctx.roundRect ? ctx.roundRect(8, 8, 496, 124, 18) : ctx.fillRect(8, 8, 496, 124);
+      ctx.fill();
+
+      // Border with status color
+      ctx.lineWidth = 7;
+      ctx.strokeStyle = typeof colorHex === 'number' ? `#${colorHex.toString(16).padStart(6, '0')}` : colorHex;
+      ctx.stroke();
+
+      // Title
+      ctx.fillStyle = '#1c1917';
+      ctx.font = 'bold 34px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(title, 256, 46);
+
+      // Subtitle
+      ctx.fillStyle = '#78716c';
+      ctx.font = 'bold 22px monospace';
+      ctx.fillText(subtitle, 256, 82);
+
+      // Live Status
+      ctx.fillStyle = typeof colorHex === 'number' ? `#${colorHex.toString(16).padStart(6, '0')}` : colorHex;
+      ctx.font = 'bold 22px sans-serif';
+      ctx.fillText(status, 256, 116);
+    }
+
+    function setDatacenterBillboardStatus(id, statusText, colorHex) {
+      const node = datacenterNodes[id];
+      if (!node) return;
+      const sp = node.billboard;
+      updateBillboardCanvas(sp.userData.canvas, node.name, node.subtitle, statusText, colorHex);
+      sp.userData.texture.needsUpdate = true;
     }
 
     function buildDispatcherPlatform(pos) {
       dispatcherPlatform = new THREE.Group();
 
-      // Platform Ring Base
-      const platGeo = new THREE.CylinderGeometry(3.5, 3.8, 0.6, 32);
+      // Platform Disc Base
+      const platGeo = new THREE.CylinderGeometry(2.8, 3.0, 0.4, 32);
       const platMat = new THREE.MeshStandardMaterial({ color: 0x292524, metalness: 0.7, roughness: 0.3 });
       const plat = new THREE.Mesh(platGeo, platMat);
       dispatcherPlatform.add(plat);
 
-      // Pulsing Ring
-      const ringGeo = new THREE.TorusGeometry(3.6, 0.12, 12, 36);
+      // Pulsing Cyan Ring
+      const ringGeo = new THREE.TorusGeometry(3.0, 0.08, 12, 36);
       const ringMat = new THREE.MeshBasicMaterial({ color: 0x0284c7 });
       const ring = new THREE.Mesh(ringGeo, ringMat);
       ring.rotation.x = Math.PI / 2;
       dispatcherPlatform.add(ring);
 
-      // Dispatcher Hologram Sprite
-      const dispSprite = createTextSprite('🌐 Cloud Client Dispatcher', 'Antrean Batch Dataset (100 - 500 Tasks)', 0x0284c7);
-      dispSprite.position.set(0, 2.5, 0);
-      dispatcherPlatform.add(dispSprite);
+      // Holographic Title Sprite
+      const canvas = document.createElement('canvas');
+      canvas.width = 460;
+      canvas.height = 100;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.92)';
+      ctx.roundRect ? ctx.roundRect(6, 6, 448, 88, 16) : ctx.fillRect(6, 6, 448, 88);
+      ctx.fill();
+      ctx.lineWidth = 5;
+      ctx.strokeStyle = '#0284c7';
+      ctx.stroke();
+
+      ctx.fillStyle = '#1c1917';
+      ctx.font = 'bold 30px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('🌐 Client Workload Dispatcher', 230, 44);
+
+      ctx.fillStyle = '#0284c7';
+      ctx.font = 'bold 20px monospace';
+      ctx.fillText('Antrean Tugas Ilmiah Riil (100 - 500 Tasks)', 230, 78);
+
+      const texture = new THREE.CanvasTexture(canvas);
+      const mat = new THREE.SpriteMaterial({ map: texture, transparent: true, depthWrite: false });
+      const sp = new THREE.Sprite(mat);
+      sp.scale.set(5.5, 1.2, 1);
+      sp.position.set(0, 1.8, 0);
+      dispatcherPlatform.add(sp);
 
       dispatcherPlatform.position.set(...pos);
       scene.add(dispatcherPlatform);
     }
 
-    function createTextSprite(title, subtitle, colorHex) {
-      const canvas = document.createElement('canvas');
-      canvas.width = 512;
-      canvas.height = 140;
-      const ctx = canvas.getContext('2d');
-      if (ctx) {
-        ctx.fillStyle = '#ffffff';
-        ctx.roundRect ? ctx.roundRect(10, 10, 492, 120, 20) : ctx.fillRect(10, 10, 492, 120);
-        ctx.fill();
-        ctx.lineWidth = 8;
-        ctx.strokeStyle = typeof colorHex === 'number' ? `#${colorHex.toString(16).padStart(6, '0')}` : colorHex;
-        ctx.stroke();
-
-        ctx.fillStyle = '#1c1917';
-        ctx.font = 'bold 36px sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText(title, 256, 52);
-
-        ctx.fillStyle = '#78716c';
-        ctx.font = 'bold 24px monospace';
-        ctx.fillText(subtitle, 256, 96);
-      }
-      const texture = new THREE.CanvasTexture(canvas);
-      const mat = new THREE.SpriteMaterial({ map: texture, transparent: true, depthWrite: false });
-      const sp = new THREE.Sprite(mat);
-      sp.scale.set(7.5, 2.05, 1);
-      return sp;
-    }
-
-    function createDynamicBadgeSprite(text, borderColorHex) {
-      const canvas = document.createElement('canvas');
-      canvas.width = 380;
-      canvas.height = 90;
-      updateBadgeCanvas(canvas, text, borderColorHex);
-
-      const texture = new THREE.CanvasTexture(canvas);
-      const mat = new THREE.SpriteMaterial({ map: texture, transparent: true, depthWrite: false });
-      const sp = new THREE.Sprite(mat);
-      sp.scale.set(5.5, 1.3, 1);
-      sp.userData = { canvas, texture };
-      return sp;
-    }
-
-    function updateBadgeCanvas(canvas, text, borderColorHex) {
-      const ctx = canvas.getContext('2d');
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
-      ctx.roundRect ? ctx.roundRect(6, 6, 368, 78, 16) : ctx.fillRect(6, 6, 368, 78);
-      ctx.fill();
-
-      ctx.lineWidth = 6;
-      ctx.strokeStyle = borderColorHex;
-      ctx.stroke();
-
-      ctx.fillStyle = borderColorHex;
-      ctx.font = 'bold 28px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText(text, 190, 52);
-    }
-
-    function setDatacenterBadge(id, text, colorHex, isVisible = true) {
-      const node = datacenterNodes[id];
-      if (!node) return;
-      const sp = node.statusBadgeSprite;
-      updateBadgeCanvas(sp.userData.canvas, text, colorHex);
-      sp.userData.texture.needsUpdate = true;
-      sp.visible = isVisible;
-    }
-
     function buildNetworkTrunk(id, p1, p2, color) {
       const points = [new THREE.Vector3(...p1), new THREE.Vector3(...p2)];
       const geom = new THREE.BufferGeometry().setFromPoints(points);
-      const mat = new THREE.LineBasicMaterial({ color, linewidth: 2, transparent: true, opacity: 0.7 });
+      const mat = new THREE.LineBasicMaterial({ color, linewidth: 2, transparent: true, opacity: 0.75 });
       const line = new THREE.Line(geom, mat);
       line.userData = { id, baseColor: color, p1, p2 };
       scene.add(line);
@@ -1739,44 +1736,25 @@
     }
 
     // ============================================================================
-    // 4. TASK CUBES & AOA DRONES
+    // 4. AOA EXPLORATION & EXPLOITATION DRONES
     // ============================================================================
-    function createDataCubes() {
-      const sizes = [1.5, 1.3, 1.1, 0.9, 0.8, 0.7, 0.6, 0.5];
-      sizes.forEach((s, idx) => {
-        const cube = new THREE.Mesh(
-          new THREE.BoxGeometry(s, s, s),
-          new THREE.MeshStandardMaterial({
-            color: idx < 2 ? 0x0284c7 : idx < 5 ? 0x7c3aed : 0xf59e0b,
-            emissive: idx < 2 ? 0x0284c7 : idx < 5 ? 0x7c3aed : 0xf59e0b,
-            emissiveIntensity: 0.5,
-            roughness: 0.2
-          })
-        );
-        cube.position.set(-14 + idx * 3.5, 5 + Math.sin(idx) * 1.5, 2);
-        cube.castShadow = true;
-        scene.add(cube);
-        dataCubes.push(cube);
-      });
-    }
-
     function createAOAExploreDrones() {
-      for (let i = 0; i < 6; i++) {
+      for (let i = 0; i < 5; i++) {
         const drone = new THREE.Group();
         const body = new THREE.Mesh(
-          new THREE.BoxGeometry(1.3, 0.35, 1.3),
+          new THREE.BoxGeometry(1.1, 0.3, 1.1),
           new THREE.MeshStandardMaterial({ color: 0x0284c7, metalness: 0.6 })
         );
         drone.add(body);
 
         const ring = new THREE.Mesh(
-          new THREE.TorusGeometry(0.8, 0.05, 8, 24),
+          new THREE.TorusGeometry(0.7, 0.04, 8, 20),
           new THREE.MeshBasicMaterial({ color: 0x38bdf8 })
         );
         ring.rotation.x = Math.PI / 2;
         drone.add(ring);
 
-        drone.position.set((Math.random() - 0.5) * 34, 7 + Math.random() * 4, (Math.random() - 0.5) * 26);
+        drone.position.set((Math.random() - 0.5) * 28, 6.5 + Math.random() * 3.5, (Math.random() - 0.5) * 20);
         drone.visible = false;
         scene.add(drone);
         aoaExploreDrones.push(drone);
@@ -1784,22 +1762,22 @@
     }
 
     function createAOAExploitDrones() {
-      for (let i = 0; i < 6; i++) {
+      for (let i = 0; i < 4; i++) {
         const drone = new THREE.Group();
         const body = new THREE.Mesh(
-          new THREE.BoxGeometry(1.2, 0.35, 1.2),
+          new THREE.BoxGeometry(1.0, 0.28, 1.0),
           new THREE.MeshStandardMaterial({ color: 0x059669, metalness: 0.5 })
         );
         drone.add(body);
 
         const laser = new THREE.Mesh(
-          new THREE.CylinderGeometry(0.04, 0.04, 5.0, 8),
+          new THREE.CylinderGeometry(0.03, 0.03, 4.0, 8),
           new THREE.MeshBasicMaterial({ color: 0x10b981, transparent: true, opacity: 0.85 })
         );
-        laser.position.y = -2.5;
+        laser.position.y = -2.0;
         drone.add(laser);
 
-        drone.position.set(-14 + (Math.random() - 0.5) * 8, 9 + Math.random() * 2, -4 + (Math.random() - 0.5) * 8);
+        drone.position.set(-11 + (Math.random() - 0.5) * 6, 8.5 + Math.random() * 2, -2 + (Math.random() - 0.5) * 6);
         drone.visible = false;
         scene.add(drone);
         aoaExploitDrones.push(drone);
@@ -1807,7 +1785,7 @@
     }
 
     // ============================================================================
-    // 5. INTERACTIVE SIMULATION ENGINE & 3D ANIMATION
+    // 5. INTERACTIVE SIMULATION & ANIMATION (FAITHFUL TO PROGRAM)
     // ============================================================================
     function triggerRunSimulation() {
       const algo = document.getElementById('algoSelect').value;
@@ -1817,14 +1795,21 @@
       currentSimAlgo = algo;
       isSimRunning = true;
 
-      // Clear previous cubes
+      // 1. Reset visual tasks cleanly
       clearSimulationCubes();
 
-      // Update HUD & KPI Tiles
+      // 2. Fetch authentic data
+      const record = BENCHMARK_DATA[env][dataset];
+      const targetMakespan = record[algo].makespan;
+      targetClockTime = targetMakespan;
+      simClockTime = 0.0;
+      clockRunning = true;
+
+      // 3. Update HUD & Datacenter Meter UI
       updateHUDDisplay();
 
-      // Launch Visual Tasks along 3D Arcs
-      spawnInteractiveTasks(algo, parseInt(dataset));
+      // 4. Launch visual tasks along Bezier flight arcs
+      spawnRealisticTasks(algo, parseInt(dataset));
     }
 
     function runDemoAlgo(algoType) {
@@ -1832,46 +1817,52 @@
       triggerRunSimulation();
     }
 
-    function spawnInteractiveTasks(algo, taskCount) {
-      const startP = new THREE.Vector3(0, 15, -14); // Client Dispatcher Platform
-      const sampleTotal = 24; // 24 representative visual task cubes
+    function spawnRealisticTasks(algo, taskCount) {
+      const startP = new THREE.Vector3(0, 9, -12); // Client Dispatcher Platform
+      const sampleCount = 20;
 
-      // Define distribution
-      let targets = [];
+      // Realistic task assignment based on algorithm logic:
+      let assignedTargets = [];
       if (algo === 'random') {
-        // Random Scheduling: 15 tasks flood Yogyakarta, 6 Jakarta, only 3 Surabaya
-        for (let i = 0; i < 15; i++) targets.push('yog');
-        for (let i = 0; i < 6; i++) targets.push('jkt');
-        for (let i = 0; i < 3; i++) targets.push('sby');
-        // Shuffle
-        targets = targets.sort(() => Math.random() - 0.5);
+        // Random Scheduling: Blindly assigns. 11 tasks flood Yogyakarta (800 MIPS), 6 Jakarta, 3 Surabaya
+        for (let i = 0; i < 11; i++) assignedTargets.push('yog');
+        for (let i = 0; i < 6; i++)  assignedTargets.push('jkt');
+        for (let i = 0; i < 3; i++)  assignedTargets.push('sby');
+        assignedTargets = assignedTargets.sort(() => Math.random() - 0.5);
 
-        // Turn Drones OFF
+        // Turn Drones OFF, hide golden beam
         aoaExploreDrones.forEach(d => d.visible = false);
         aoaExploitDrones.forEach(d => d.visible = false);
+        if (goldenBeam) goldenBeam.visible = false;
       } else {
-        // AOA Scheduling: Proportional to capacity (Surabaya 6000 MIPS gets heavy tasks, Yogya gets light)
-        for (let i = 0; i < 12; i++) targets.push('sby'); // 50% Heavy tasks
-        for (let i = 0; i < 7; i++) targets.push('jkt');  // 30% Medium tasks
-        for (let i = 0; i < 5; i++) targets.push('yog');  // 20% Light tasks
+        // AOA: Capacitated matching! Surabaya (15.600 MIPS) takes heavy tasks, Jakarta medium, Yogya light
+        for (let i = 0; i < 10; i++) assignedTargets.push('sby'); // 50% Workload
+        for (let i = 0; i < 6; i++)  assignedTargets.push('jkt'); // 30% Workload
+        for (let i = 0; i < 4; i++)  assignedTargets.push('yog'); // 20% Workload
 
-        // Turn Drones ON!
+        // Turn Drones ON, show golden beam!
         aoaExploreDrones.forEach(d => d.visible = true);
         aoaExploitDrones.forEach(d => d.visible = true);
+        if (goldenBeam) goldenBeam.visible = true;
       }
 
-      targets.forEach((targetId, idx) => {
+      assignedTargets.forEach((targetId, idx) => {
         const destNode = datacenterNodes[targetId];
-        const isHeavy = (algo === 'aoa' && targetId === 'sby') || (algo === 'random' && idx % 3 === 0);
-        const cubeSize = isHeavy ? 1.4 : (targetId === 'jkt' ? 1.0 : 0.7);
-        const cubeColor = targetId === 'sby' ? 0x0284c7 : (targetId === 'jkt' ? 0x7c3aed : 0x059669);
+        
+        // Task Weighting:
+        // Heavy tasks (45k-60k MI): Large size (1.2), Cyan/Blue
+        // Medium tasks (18k-32k MI): Medium size (0.9), Purple
+        // Light tasks (2k-10k MI): Small size (0.65), Green
+        const isHeavy = (algo === 'aoa' && targetId === 'sby') || (algo === 'random' && idx % 2 === 0);
+        const cubeSize = isHeavy ? 1.2 : (targetId === 'jkt' ? 0.9 : 0.65);
+        const cubeColor = isHeavy ? 0x0284c7 : (targetId === 'jkt' ? 0x7c3aed : 0x059669);
 
         const mesh = new THREE.Mesh(
           new THREE.BoxGeometry(cubeSize, cubeSize, cubeSize),
           new THREE.MeshStandardMaterial({
             color: cubeColor,
             emissive: cubeColor,
-            emissiveIntensity: 0.6,
+            emissiveIntensity: 0.55,
             roughness: 0.3
           })
         );
@@ -1879,7 +1870,7 @@
         mesh.castShadow = true;
         scene.add(mesh);
 
-        // Calculate landing slot at datacenter
+        // Calculate landing slot at datacenter racks
         const landOffset = calculateLandingSlot(targetId, algo);
         const endP = new THREE.Vector3(
           destNode.pos.x + landOffset.x,
@@ -1887,10 +1878,10 @@
           destNode.pos.z + landOffset.z
         );
 
-        // Control point for parabolic flight arc
+        // Control point for smooth curved flight trajectory
         const midX = (startP.x + endP.x) / 2;
         const midZ = (startP.z + endP.z) / 2;
-        const midY = Math.max(startP.y, endP.y) + 4.5 + Math.random() * 2.5;
+        const midY = Math.max(startP.y, endP.y) + 3.8 + Math.random() * 2.0;
         const ctrlP = new THREE.Vector3(midX, midY, midZ);
 
         activeFlyingTasks.push({
@@ -1899,10 +1890,9 @@
           startP,
           ctrlP,
           endP,
-          progress: -(idx * 0.05), // staggered launch delay
-          speed: 0.016 + Math.random() * 0.005,
-          isHeavy,
-          landOffset
+          progress: -(idx * 0.05), // Staggered launch
+          speed: 0.018 + Math.random() * 0.004,
+          isHeavy
         });
       });
     }
@@ -1913,18 +1903,18 @@
       node.landedCount = count + 1;
 
       if (algo === 'random' && targetId === 'yog') {
-        // Dangerous chaotic wobbling pile on Yogyakarta
-        const stackH = count * 0.55;
-        const wobbleX = (Math.random() - 0.5) * 0.7;
-        const wobbleZ = (Math.random() - 0.5) * 0.7;
-        return { x: wobbleX, y: node.height + 0.4 + stackH, z: wobbleZ };
+        // Chaotic wobbling pile on overloaded Yogyakarta
+        const stackH = count * 0.48;
+        const wobbleX = (Math.random() - 0.5) * 0.5;
+        const wobbleZ = (Math.random() - 0.5) * 0.5;
+        return { x: wobbleX, y: node.height + 0.3 + stackH, z: wobbleZ };
       } else {
-        // Neat orderly circular dock around datacenter racks
-        const ang = (count * Math.PI * 2) / 6;
-        const radius = 2.6;
+        // Neat orderly circular tray around datacenter satellite racks
+        const ang = (count * Math.PI * 2) / 5;
+        const radius = 2.4;
         return {
           x: Math.cos(ang) * radius,
-          y: 0.4 + (Math.floor(count / 6) * 0.8),
+          y: 0.35 + (Math.floor(count / 5) * 0.75),
           z: Math.sin(ang) * radius
         };
       }
@@ -1939,20 +1929,25 @@
       landedTasks.forEach(mesh => scene.remove(mesh));
       landedTasks = [];
 
-      // Reset node counters
+      // Reset node counters & billboards
       Object.values(datacenterNodes).forEach(node => {
         node.landedCount = 0;
         node.state = 'normal';
         node.ledMesh.material.color.setHex(node.baseLedColor);
         node.light.color.setHex(node.baseLedColor);
         node.light.intensity = 1.2;
-        node.statusBadgeSprite.visible = false;
+        setDatacenterBillboardStatus(node.id, 'STATUS: SIAP ALOKASI', node.baseLedColor);
       });
 
-      // Reset laser trunks
+      // Reset network lines
       laserLines.forEach(line => {
         line.material.color.setHex(line.userData.baseColor);
       });
+
+      if (goldenBeam) goldenBeam.visible = false;
+      clockRunning = false;
+      simClockTime = 0.0;
+      document.getElementById('clockValue').innerText = '0.00s';
     }
 
     function reset3DSimulation() {
@@ -2145,10 +2140,27 @@
     // ============================================================================
     // 7. 3D ANIMATION LOOP
     // ============================================================================
+    const setDatacenterBadge = setDatacenterBillboardStatus;
+
     function animate() {
       animId = requestAnimationFrame(animate);
 
       const t = Date.now() * 0.001;
+
+      // Update Simulation Clock Progress smoothly
+      if (clockRunning) {
+        if (simClockTime < targetClockTime) {
+          simClockTime += (targetClockTime / 90);
+          if (simClockTime > targetClockTime) simClockTime = targetClockTime;
+          const clockEl = document.getElementById('clockValue');
+          if (clockEl) clockEl.innerText = simClockTime.toFixed(2) + 's';
+        } else {
+          simClockTime = targetClockTime;
+          const clockEl = document.getElementById('clockValue');
+          if (clockEl) clockEl.innerText = targetClockTime.toFixed(2) + 's';
+          clockRunning = false;
+        }
+      }
 
       // Rotate golden crown & pulse beacon
       if (goldenCrown) {
@@ -2227,20 +2239,22 @@
           node.ledMesh.material.color.setHex(0xef4444); // Flash Red
           node.light.color.setHex(0xef4444);
           node.light.intensity = 3.5;
-          setDatacenterBadge('yog', '⚠️ OVERLOAD 99% (BOTTLENECK)', '#ef4444', true);
+          setDatacenterBillboardStatus('yog', '⚠️ OVERLOAD 98% (BOTTLENECK)', '#ef4444');
 
           // Congest Network Trunk to Yogyakarta
-          const line = laserLines.find(l => l.userData.id === 'sby_yog');
-          if (line) line.material.color.setHex(0xef4444);
+          const line1 = laserLines.find(l => l.userData.id === 'sby_yog');
+          if (line1) line1.material.color.setHex(0xef4444);
+          const line2 = laserLines.find(l => l.userData.id === 'disp_yog');
+          if (line2) line2.material.color.setHex(0xef4444);
         } else if (targetId === 'sby') {
           // Surabaya Underutilized / Idle
           node.state = 'idle';
           node.ledMesh.material.color.setHex(0x64748b); // Dim Gray
           node.light.color.setHex(0x64748b);
           node.light.intensity = 0.4;
-          setDatacenterBadge('sby', '💤 IDLE 14% (KAPASITAS TERBUANG)', '#64748b', true);
+          setDatacenterBillboardStatus('sby', '💤 IDLE 14% (KAPASITAS TERBUANG)', '#64748b');
         } else {
-          setDatacenterBadge('jkt', 'BEBAN 36% (SEDANG)', '#7c3aed', true);
+          setDatacenterBillboardStatus('jkt', 'BEBAN 36% (SEDANG)', '#7c3aed');
         }
       } else {
         // AOA: All nodes reach harmonious optimal balance
@@ -2249,9 +2263,9 @@
         node.light.color.setHex(0x10b981);
         node.light.intensity = 2.0;
 
-        setDatacenterBadge('sby', '✅ OPTIMAL 54% (HEAVY LOAD)', '#0284c7', true);
-        setDatacenterBadge('jkt', '✅ OPTIMAL 53% (MEDIUM LOAD)', '#7c3aed', true);
-        setDatacenterBadge('yog', '✅ OPTIMAL 55% (LIGHT LOAD)', '#059669', true);
+        setDatacenterBillboardStatus('sby', '✅ OPTIMAL 54% (HEAVY LOAD)', '#0284c7');
+        setDatacenterBillboardStatus('jkt', '✅ OPTIMAL 53% (MEDIUM LOAD)', '#7c3aed');
+        setDatacenterBillboardStatus('yog', '✅ OPTIMAL 55% (LIGHT LOAD)', '#059669');
 
         // Synchronized Green Flow on Network Trunks
         laserLines.forEach(l => l.material.color.setHex(0x10b981));
