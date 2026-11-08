@@ -47,31 +47,42 @@ File hasil build akan berada di direktori `dist/` dan siap diunggah ke GitHub Pa
 
 ---
 
-## 🛠️ Struktur Direktori Proyek
+## 📁 Struktur Direktori Proyek & Pemenuhan Tugas
+
+Proyek ini telah memenuhi seluruh 6 poin tugas perkuliahan yang diorganisasikan ke dalam modul-modul berikut:
 
 ```
-├── .github/workflows/deploy.yml   # Workflow otomatis deployment ke GitHub Pages
-├── src/
+├── 01_Presentasi/                     # [TUGAS 1] Modul Slide Presentasi Lengkap
+│   ├── index.html                     # Slide presentasi interaktif HTML (Bisa dibuka langsung di browser)
+│   ├── SLIDES.md                      # Format naskah presentasi Markdown (Marp ready)
+│   └── README.md                      # Panduan navigasi dan materi slide
+│
+├── 02_Implementasi_Real_World/        # [TUGAS 5 & 6] Implementasi Nyata & Ujicoba Dataset Minggu 3
+│   ├── datasets/                      # Dataset tugas Minggu 3 (100, 200, 300, 400, 500 Cloudlets)
+│   ├── scheduler_realworld.py         # Program Python Real-World Scheduler (AOA, ES, Random)
+│   ├── DOKUMENTASI_PROGRAM.md         # Dokumentasi teknis & penjelasan kode program mendalam
+│   ├── hasil_real_world_per_run.csv   # Hasil lengkap 150 run pengujian independen
+│   ├── hasil_real_world_ringkasan.csv # Ringkasan statistik performa (Mean & Std Dev)
+│   └── run.bat                        # Script eksekusi instan 1-klik
+│
+├── src/                               # [TUGAS 2, 3, 4] Simulator Interaktif 3D (Vite + React + Three.js)
 │   ├── algorithms/
-│   │   ├── aoa.ts                 # Logika matematika AOA (Abualigah et al., 2021)
-│   │   ├── es.ts                  # Logika (μ, λ)-ES & Elitisme (Lončar & Lončar, 2022)
-│   │   └── benchmarks.ts          # Evaluasi 5 Data Center CERN LHC ALICE heterogen
+│   │   ├── aoa.ts                     # Engine algoritma AOA
+│   │   ├── es.ts                      # Engine algoritma (μ, λ)-ES & LJF
+│   │   └── benchmarks.ts              # Topologi Data Center & pemetaan beban
 │   ├── components/
-│   │   ├── Header.tsx             # Navigasi & switch mode algoritma (AOA, ES, Split)
-│   │   ├── ThreeCanvas.tsx        # Viewport 3D Three.js 60 FPS & OrbitControls
-│   │   ├── MetricsDashboard.tsx   # Dashboard Makespan, Imbalance (DI), MOA/MOP, & Grafik
-│   │   ├── EducationalCards.tsx   # Kartu penjelasan materi AOA (Analogi helikopter vs cangkul)
-│   │   ├── ESEducationalCards.tsx # Kartu penjelasan materi ES (Jurnal CERN ALICE, LJF, & 1:7 rule)
-│   │   └── InteractiveSandbox.tsx # Slider uji parameter interaktif
-│   ├── types/
-│   │   └── index.ts               # Interface TypeScript
-│   ├── App.tsx                    # Komponen utama & state manager simulasi
-│   ├── main.tsx                   # Entry point React
-│   └── index.css                  # Styling tema Cyber-Deck & KaTeX
-├── index.html                     # Entry point HTML Vite
-├── package.json                   # Dependensi dan skrip proyek
-├── tailwind.config.js             # Konfigurasi Tailwind CSS
-└── vite.config.ts                 # Konfigurasi Vite bundler
+│   │   ├── ThreeCanvas.tsx            # Visualisasi 3D Three.js & animasi seleksi dissolve
+│   │   ├── DatacenterLoadCard.tsx     # Kartu pembagian beban 5 Data Center & % utilisasi
+│   │   ├── LJFQueueVisualizer.tsx     # Animasi antrean sorting Longest Job First (LJF)
+│   │   ├── VisualFAQ.tsx              # Pusat Tanya-Jawab Visual 3D dinamis
+│   │   ├── StepInspector.tsx          # Inspektur langkah per putaran
+│   │   ├── MetricsDashboard.tsx       # Metrik Makespan, Imbalance (DI), & grafik
+│   │   └── InteractiveSandbox.tsx     # Parameter tuning slider
+│   ├── App.tsx                        # Root application logic
+│   └── main.tsx                       # Entry point React
+├── .github/workflows/deploy.yml       # Otomasi deployment ke GitHub Pages
+├── package.json
+└── README.md
 ```
 
 ---
