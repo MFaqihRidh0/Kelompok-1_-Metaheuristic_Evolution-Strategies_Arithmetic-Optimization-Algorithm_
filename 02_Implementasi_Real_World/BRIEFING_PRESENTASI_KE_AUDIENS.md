@@ -1,165 +1,260 @@
-# BRIEFING & PANDUAN PRESENTASI KE AUDIENS
-## Cara Menjelaskan Pengimplementasian Algoritma (AOA & ES) di Datacenter Real-World
-**Mata Kuliah: Strategi Optimasi Komputasi Awan &bull; Kelompok 1**
+# BRIEFING & PANDUAN LENGKAP PRESENTASI KE AUDIENS
+## Komparasi Kinerja Penjadwalan Cloud: Random Scheduling (Minggu 3) vs Algoritma AOA yang Baru (Lebih Baik)
+**Mata Kuliah: Strategi Optimasi Komputasi Awan • Kelompok 1**
 
 ---
 
-> **Tujuan Dokumen:**
-> Dokumen ini disusun sebagai *speaker notes* (panduan berbicara) dan skenario presentasi bagi Anda saat mendemonstrasikan hasil implementasi tugas komputasi awan (AOA dan Evolution Strategies) di hadapan dosen penguji dan audiens kelas.
+> **Tujuan Dokumen Ini:**
+> Dokumen ini disusun khusus sebagai **panduan berbicara langsung (speaker notes / talk-track)** bagi presenter saat mendemonstrasikan tugas implementasi komputasi awan di hadapan dosen penguji dan rekan-rekan mahasiswa. 
+> 
+> Fokus presentasi ini adalah **membandingkan secara tajam dan ilmiah antara Baseline Penjadwalan Acak (Random Scheduling Tugas Minggu 3) dengan Algoritma Arithmetic Optimization Algorithm (AOA) yang baru dan jauh lebih optimal**, dibuktikan dengan data empiris pada dataset tugas komputasi awan riil (100 s.d. 500 Cloudlets) serta infrastruktur 3 Datacenter heterogen.
 
 ---
 
-## DAFTAR ISI SKENARIO PRESENTASI
+## ⏱️ RANGKUMAN ALOKASI WAKTU PRESENTASI (Total ~12 Menit)
 
-1. [Babak 1: Pembuka & Konteks Tugas (Durasi: 1 - 2 Menit)](#babak-1-pembuka--konteks-tugas)
-2. [Babak 2: Mengingatkan Masalah Baseline Minggu 3 (Durasi: 2 Menit)](#babak-2-mengingatkan-masalah-baseline-minggu-3)
-3. [Babak 3: Arsitektur Datacenter & Dataset Real-World (Durasi: 2 - 3 Menit)](#babak-3-arsitektur-datacenter--dataset-real-world)
-4. [Babak 4: Cara Kerja Program Implementasi (Code Walkthrough) (Durasi: 3 - 4 Menit)](#babak-4-cara-kerja-program-implementasi)
-5. [Babak 5: Live Demo Eksekusi Program (Durasi: 2 Menit)](#babak-5-live-demo-eksekusi-program)
-6. [Babak 6: Membedah Hasil Ujicoba (Tabel Komparasi) (Durasi: 3 Menit)](#babak-6-membedah-hasil-ujicoba)
-7. [Babak 7: Penutup & Kesimpulan Kunci (Durasi: 1 Menit)](#babak-7-penutup--kesimpulan-kunci)
-8. [Antisipasi Pertanyaan Dosen (Q&A Cheat-Sheet)](#antisipasi-pertanyaan-dosen-qa-cheat-sheet)
-
----
-
-## Babak 1: Pembuka & Konteks Tugas
-
-### 🎙️ Apa yang Harus Anda Ucapkan:
-> *"Selamat pagi/siang Bapak/Ibu dosen dan rekan-rekan sekalian. Kami dari Kelompok 1 akan mempresentasikan dan mendemonstrasikan implementasi nyata dari dua algoritma metaheuristik, yaitu **Arithmetic Optimization Algorithm (AOA)** dan **Evolution Strategies (ES)**, untuk menyelesaikan permasalahan penjadwalan tugas komputasi awan heterogen.*
->
-> *Pada pertemuan ini, fokus kami bukan lagi sekadar teori rumus, melainkan **bagaimana kedua algoritma tersebut benar-benar kami bangun, kami kodekan, dan kami ujicobakan secara langsung** menggunakan dataset tugas komputasi awan riil dari tugas Minggu 3 pada infrastruktur datacenter heterogen yang telah ditentukan."*
+| Babak | Topik Pembahasan | Target Waktu | Media / Visual Pendukung |
+| :---: | :--- | :---: | :--- |
+| **Babak 1** | Pembuka & Konteks Tugas Optimasi Cloud | 1 Menit | Slide 1 (Judul & Anggota Kelompok) |
+| **Babak 2** | Kilas Balik Masalah Fatal Random Scheduling (Minggu 3) | 2 Menit | Slide 2 + Kanvas 3D (Simulasi Overload VM) |
+| **Babak 3** | Mengapa Memilih AOA & Cara Kerja Matematisnya | 2.5 Menit | Slide 3 + Visualisasi Operator Aritmatika ($\div, \times, -, +$) |
+| **Babak 4** | Arsitektur Datacenter Real-World & Latensi Jaringan | 1.5 Menit | Slide 4 + Peta 3 Datacenter (Surabaya, Jkt, Yogya) |
+| **Babak 5** | Bedah Kode Implementasi (`scheduler_realworld.py`) | 2 Menit | Tampilkan potongan fungsi utama di editor / slide |
+| **Babak 6** | Live Demo Eksekusi Program & Pembuktian Terminal | 1 Menit | Terminal / Command Prompt (`run.bat`) |
+| **Babak 7** | Bedah Hasil Empiris (Tabel Komparasi Metrik Lengkap) | 2 Menit | Slide 5 & 6 (Tabel Makespan, Throughput, LBI, Cost) |
+| **Babak 8** | Kesimpulan Akhir & Rekomendasi Industri | 1 Menit | Slide 7 (Poin Kunci Penutup) |
+| **Q&A** | Sesi Tanya Jawab Dosen & Audiens | 3 - 5 Menit | Cheat-Sheet Tanya Jawab di bagian akhir dokumen ini |
 
 ---
 
-## Babak 2: Mengingatkan Masalah Baseline Minggu 3
-
-### 💡 Inti yang Harus Dipahami Audiens:
-Sebelum memamerkan hasil bagus, ingatkan audiens seberapa buruk metode acak (*Random Scheduling*) yang kita gunakan di Minggu 3.
-
-### 🎙️ Apa yang Harus Anda Ucapkan:
-> *"Bapak/Ibu, mari kita kilas balik ke tugas Minggu 3. Saat itu kita menggunakan penjadwalan acak (Random Scheduling) pada CloudSim. Masalah terbesarnya adalah:*
-> 1. *Tugas berukuran raksasa sering terlempar ke VM Small yang hanya punya 800 MIPS. Akibatnya, VM Small mengalami **overloaded hingga 99.9%**, antrean macet, dan Makespan membengkak hingga **2.000 detik** pada 500 tugas.*
-> 2. *Di sisi lain, VM Large di Surabaya yang punya kekuatan 6.000 MIPS justru **menganggur (idle)** dengan utilisasi di bawah 15%.*
-> 3. *Derajat ketimpangan beban (Load Balancing Index / DI) sangat buruk di angka **1.8 hingga 2.3**.*
->
-> *Inilah masalah yang kami selesaikan hari ini menggunakan optimasi metaheuristik cerdas."*
+## BABAK DEMI BABAK: PANDUAN BERBICARA KATA-DEMI-KATA
 
 ---
 
-## Babak 3: Arsitektur Datacenter & Dataset Real-World
+### 🎙️ Babak 1: Pembuka & Konteks Tugas (1 Menit)
 
-### 💡 Tampilkan Tabel Spesifikasi VM & Peta Kota:
-Tunjukkan bahwa implementasi kita 100% mematuhi parameter tugas Minggu 3.
+#### 🎯 Sasaran Audiens:
+Audiens langsung memahami konteks bahwa presentasi ini adalah kelanjutan nyata dari tugas simulasi Minggu 3, di mana kita membuktikan solusi metaheuristik yang dipilih (AOA) jauh melampaui metode acak konvensional.
 
-### 🎙️ Apa yang Harus Anda Ucapkan:
-> *"Dalam program real-world ini, kami memodelkan 3 Datacenter dengan 10 VM Heterogen persis sesuai spesifikasi tugas:*
-> * **DC Surabaya (Host 0):** Memegang 2 VM Large (6.000 MIPS) dan 1 VM Medium (3.600 MIPS). Ini adalah pusat komputasi terkuat.
-> * **DC Jakarta (Host 1):** Memegang 2 VM Medium (3.600 MIPS) dan 1 VM Small (800 MIPS).
-> * **DC Yogyakarta (Host 2):** Memegang 4 VM Small (masing-masing 800 MIPS) untuk komputasi ringan.
->
-> *Tidak hanya MIPS prosesor, program kami juga memodelkan **Real-World Network Transfer Delay**:*
-> * Pengiriman tugas antar-datacenter dihitung berdasarkan ukuran berkas masukan (*Input Size MB*) dibagi Bandwidth, ditambah latensi geografis nyata antar-kota (Surabaya-Jakarta 15 ms, Surabaya-Yogya 8 ms).
-> * Dataset yang kami gunakan adalah berkas riil `dataset_100cloudlet.csv` hingga `dataset_500cloudlet.csv` yang berisi ribuan instruksi ilmiah dari 1.400 hingga 60.000+ Million Instructions (MI)."*
+#### 🗣️ Naskah yang Harus Anda Ucapkan:
+> *"Selamat pagi/siang Bapak/Ibu dosen penguji serta rekan-rekan sekalian.*
+> 
+> *Kami dari Kelompok 1 hari ini hadir untuk mempresentasikan hasil implementasi nyata dari tugas mata kuliah Strategi Optimasi Komputasi Awan. Jika pada tugas Minggu 3 lalu kita bersama-sama melihat bagaimana penjadwalan acak atau **Random Scheduling** bekerja pada CloudSim dengan banyak kekurangan, maka hari ini kami menyajikan solusinya: **Penerapan Algoritma Arithmetic Optimization Algorithm (AOA) yang baru dan jauh lebih baik**.*
+> 
+> *Fokus presentasi kami tidak sekadar teori di atas kertas, melainkan pembuktian langsung menggunakan **dataset ilmiah riil Minggu 3 (100 hingga 500 cloudlet)** yang dijalankan pada simulasi **lingkungan multi-datacenter nyata** dengan latensi jaringan geografis antarkota."*
 
 ---
 
-## Babak 4: Cara Kerja Program Implementasi
+### 🎙️ Babak 2: Kilas Balik Masalah Fatal Random Scheduling Minggu 3 (2 Menit)
 
-### 💡 Buka File `scheduler_realworld.py` atau Slide Arsitektur:
-Jelaskan modul program secara singkat dan jelas tanpa berbelit-belit.
+#### 🎯 Sasaran Audiens:
+Mengingatkan audiens betapa buruknya performa Random Scheduling sehingga kebutuhan akan algoritma optimasi seperti AOA menjadi sangat mutlak dan masuk akal.
 
-### 🎙️ Apa yang Harus Anda Ucapkan:
-> *"Program kami, `scheduler_realworld.py`, dibangun secara modular dengan 4 komponen utama:*
->
-> 1. **Parser & Data Model:** Membaca file CSV dataset dan menginisialisasi 10 VM heterogen beserta biaya sewa ($0.03/detik pemrosesan, RAM, dan Bandwidth).
-> 2. **Real-World Evaluator (`evaluate_schedule`):** Menghitung clock waktu transfer, waktu eksekusi VM, Makespan, Throughput, utilisasi rata-rata, dan Degree of Imbalance (LBI).
-> 3. **Engine Algoritma 1 - AOA:** 
->    * Menggunakan saklar waktu **MOA** dan pengecil langkah **MOP**. 
->    * Pada putaran awal, AOA melakukan lompatan besar melintasi datacenter dengan operator **Pembagian dan Perkalian** agar tidak terjebak di solusi lokal.
->    * Menjelang putaran akhir, AOA menyisir dengan operator **Pengurangan dan Penambahan** untuk memoles alokasi di VM terbaik.
-> 4. **Engine Algoritma 2 - Evolution Strategies (ES) + LJF:**
->    * Menggunakan aturan biologis $(\mu, \lambda)$-ES dengan rasio **1:7** sesuai paper Lončar & Lončar (IEEE Access 2022).
->    * Menerapkan **Random Resetting Mutation 10%** untuk memindahkan tugas macet ke VM idle tanpa perlu kawin silang (crossover).
->    * Mengintegrasikan kebijakan broker **Longest Job First (LJF)**: tugas terberat (60.000 MI) otomatis ditaruh di awal antrean VM Surabaya, sementara tugas kecil dialirkan ke Yogya.
->    * Dilengkapi **Proteksi Elitisme ($S_{best}$)** agar jadwal tercepat tidak pernah hilang."*
+#### 🗣️ Naskah yang Harus Anda Ucapkan:
+> *"Bapak/Ibu, mari kita bedah terlebih dahulu apa yang salah dengan **Random Scheduling** yang menjadi baseline tugas kita di Minggu 3.*
+> 
+> *Dalam metode acak, dispatcher membagikan tugas tanpa pengetahuan sama sekali (*capacity-blind* dan *network-blind*). Akibatnya fatal:*
+> 1. **Bottleneck Ekstrem pada VM Lemah:** Tugas-tugas raksasa dengan ukuran puluhan ribu Million Instructions (MI) secara acak sering dilemparkan ke VM Small di Yogyakarta yang hanya berdaya komputasi 800 MIPS. Akibatnya antrean macet total, utilisasi VM Small menyentuh 99.9%, dan waktu tunggu meledak.
+> 2. **Pemborosan Resource Unggulan (Idle CPU):** Di saat bersamaan, VM Large di Surabaya yang berkekuatan 6.000 MIPS justru sering dibiarkan menganggur (*idle*) dengan utilisasi di bawah 15%.
+> 3. **Makespan Membengkak Tak Terkendali:** Pada 500 tugas, Random Scheduling membutuhkan waktu hingga **1.951 detik** (lebih dari 32 menit) untuk menyelesaikan seluruh pekerjaan!
+> 4. **Ketimpangan Beban (LBI) Sangat Buruk:** Derajat ketimpangan (*Degree of Imbalance*) berada di angka **1.80 hingga 2.30**, menunjukkan distribusi beban yang sangat kacau antar-server.
+> 
+> *Dari permasalahan kritis inilah kami merancang dan mengimplementasikan **Arithmetic Optimization Algorithm (AOA)** sebagai algoritma yang jauh lebih cerdas dan efisien."*
 
 ---
 
-## Babak 5: Live Demo Eksekusi Program
+### 🎙️ Babak 3: Mengapa Memilih AOA & Cara Kerja Matematisnya yang Baru (2.5 Menit)
 
-### 🖥️ Aksi Presenter di Layar:
-Buka terminal di folder `02_Implementasi_Real_World` lalu jalankan:
+#### 🎯 Sasaran Audiens:
+Menjelaskan konsep AOA (Abualigah et al., 2021) secara visual dan intuitif tanpa membuat audiens pusing dengan rumus, namun tetap mempertahankan bobot ilmiah yang kuat.
+
+#### 🗣️ Naskah yang Harus Anda Ucapkan:
+> *"Mengapa kami memilih **Arithmetic Optimization Algorithm (AOA)**?*
+> 
+> *AOA adalah algoritma metaheuristik modern yang memanfaatkan sifat unik dari **empat operator matematika dasar**: Pembagian ($\div$), Perkalian ($\times$), Pengurangan ($-$), dan Penambahan ($+$). AOA memiliki struktur pencarian dua fase yang sangat elegan untuk menyelesaikan masalah penjadwalan komputasi awan:*
+> 
+> 1. **Fase Eksplorasi Global (Operator $\div$ dan $\times$):**
+>    * Pada putaran-putaran awal, AOA mengaktifkan operasi pembagian dan perkalian. Mengapa? Karena kedua operator ini menghasilkan dispersi lonjakan nilai yang tinggi. 
+>    * Sifat ini diibaratkan seperti helikopter pengintai: agen pencari AOA dapat melompat jauh melintasi seluruh ruang 10 VM dan 3 Datacenter, sehingga algoritma **tidak akan pernah terjebak pada solusi lokal semu (*local optima avoidance*)**.
+> 
+> 2. **Fase Eksploitasi Presisi Lokal (Operator $-$ dan $+$):**
+>    * Menjelang putaran akhir, AOA otomatis beralih menggunakan operasi pengurangan dan penambahan. Operator ini menghasilkan dispersi yang sangat rapat dan halus.
+>    * Tujuannya adalah menyisir detail alokasi di sekitar jadwal terbaik yang sudah ditemukan, memastikan tugas berat terkunci tepat di VM tercepat dan tugas ringan mengisi sisa ruang yang tersedia.
+> 
+> 3. **Dua Komponen Cerdas Pengendali AOA:**
+>    * **MOA (Math Optimizer Accelerated):** Berperan sebagai 'saklar otomatis' dinamis yang mengatur kapan eksplorasi selesai dan kapan eksploitasi harus dimulai.
+>    * **MOP (Math Optimizer Probability):** Berperan sebagai 'pengecil langkah presisi' yang memperhalus perturbasi koordinat seiring bertambahnya iterasi.
+> 
+> *Dengan kombinasi matematika ini, AOA mampu menemukan kombinasi penempatan tugas yang meminimalkan waktu penyelesaian total secara deterministik dan adaptif."*
+
+---
+
+### 🎙️ Babak 4: Arsitektur Datacenter Real-World & Latensi Jaringan (1.5 Menit)
+
+#### 🎯 Sasaran Audiens:
+Meyakinkan dosen bahwa simulasi yang dibuat benar-benar mencerminkan kondisi industri nyata (*real-world constraints*), bukan sekadar perhitungan di awang-awang.
+
+#### 🗣️ Naskah yang Harus Anda Ucapkan:
+> *"Bapak/Ibu, untuk menguji AOA secara objektif, kami tidak menggunakan angka acak buatan. Kami membangun arsitektur komputasi awan yang mereplikasi parameter tugas Minggu 3 secara presisi:*
+> 
+> * **10 VM Heterogen di 3 Datacenter:**
+>   * **DC Surabaya (Host 0):** Pusat komputasi berat, memegang VM-0 dan VM-1 berkapasitas **Large (6.000 MIPS)** dan VM-2 berkapasitas **Medium (3.600 MIPS)**.
+>   * **DC Jakarta (Host 1):** Pusat komputasi menengah, memegang VM-3 dan VM-4 berkapasitas **Medium (3.600 MIPS)** dan VM-5 berkapasitas **Small (800 MIPS)**.
+>   * **DC Yogyakarta (Host 2):** Pusat beban ringan, memegang VM-6 hingga VM-9 berkapasitas **Small (masing-masing 800 MIPS)**.
+> 
+> * **Pemodelan Latensi Jaringan Geografis Nyata (Network Delay):**
+>   * Program kami menghitung waktu transfer berkas masukan (*Input Size MB*) melalui bandwidth VM, ditambah **latensi transmisi fisik antarkota**: Surabaya-Surabaya 1 ms, Surabaya-Yogyakarta 8 ms, dan Surabaya-Jakarta 15 ms.
+> * **Dataset Tugas Nyata Minggu 3:**
+>   * Kami menguji 5 file dataset riil dari `dataset_100cloudlet.csv` hingga `dataset_500cloudlet.csv` dengan panjang instruksi berkisar antara 1.400 hingga lebih dari 60.000 Million Instructions."*
+
+---
+
+### 🎙️ Babak 5: Bedah Kode Program `scheduler_realworld.py` (2 Menit)
+
+#### 🎯 Sasaran Audiens:
+Menunjukkan bahwa kode bersih, modular, dapat direproduksi (*reproducible*), dan diimplementasikan dari nol (*from scratch*) tanpa *library blackbox*.
+
+#### 🗣️ Naskah yang Harus Anda Ucapkan:
+> *(Sambil menunjuk file kode di VS Code / layar proyektor)*
+> 
+> *"Implementasi kami terpusat pada file modular `scheduler_realworld.py` dengan arsitektur piramida yang bersih:*
+> 
+> 1. **Parser & Data Model:** Kelas `VM`, `Cloudlet`, dan `SimulationResult` membaca atribut dataset riil secara otomatis.
+> 2. **Dispatcher Real-World (`evaluate_schedule`):** Fungsi evaluasi yang menghitung waktu tiba transfer data jaringan, waktu komputasi CPU, Makespan ($T_{\max}$), Throughput, utilisasi per-VM, hingga total biaya sewa prosesor ($0.03/detik) dan jaringan.
+> 3. **Kelas `AOAScheduler`:** 
+>    * Menginisialisasi populasi agen alokasi sejumlah 30 individu dengan panjang vektor sesuai jumlah tugas.
+>    * Menghitung nilai MOA dan MOP pada setiap siklus iterasi (60 iterasi).
+>    * Menerapkan pemetaan diskret dengan fungsi batas wilayah aman $[0, \text{num\_vms}-1]$ agar setiap tugas selalu dipetakan ke VM yang valid.
+>    * Dilengkapi **Best-So-Far Tracker (Elitisme)** agar jadwal terbaik yang sudah dicapai tidak pernah hilang akibat perturbasi acak."*
+
+---
+
+### 🎙️ Babak 6: Live Demo Eksekusi Program (1 Menit)
+
+#### 🎯 Tindakan Presenter:
+Buka command prompt / terminal, arahkan ke folder `02_Implementasi_Real_World`, lalu jalankan:
 ```bash
 python scheduler_realworld.py
 ```
-*(Atau klik file `run.bat`)*
+*(Atau cukup klik ganda `run.bat` di depan audiens)*
 
-### 🎙️ Apa yang Harus Anda Ucapkan Saat Script Berjalan:
-> *"Sekarang mari kita buktikan secara langsung. Saya menjalankan script `scheduler_realworld.py`.*
+#### 🗣️ Naskah yang Harus Anda Ucapkan:
+> *"Sekarang mari kita buktikan secara langsung. Saya menjalankan script `scheduler_realworld.py` di terminal ini.*
 > 
-> *(Sambil menunjuk terminal yang bergerak)*:
-> * Program sedang mengeksekusi 5 skenario (100, 200, 300, 400, dan 500 tugas).
-> * Untuk memastikan keabsahan statistik (*statistical significance*), setiap skenario diulang sebanyak **10 kali pengujian independen (10 runs)** dengan seed acak berbeda.
-> * Total ada 150 kali simulasi penuh yang selesai hanya dalam hitungan detik.
-> * Program langsung menghasilkan dua file keluaran: `hasil_real_world_per_run.csv` dan `hasil_real_world_ringkasan.csv` yang merangkum mean dan standar deviasi seluruh metrik."*
+> *(Sambil menunjuk terminal yang sedang memproses)*:
+> * Program sedang mengeksekusi 5 skenario dataset: 100, 200, 300, 400, dan 500 tugas.
+> * Untuk membuktikan keabsahan statistik (*statistical validity*), setiap skenario diulang sebanyak **10 kali pengujian independen (10 independent runs)** dengan seed acak yang berbeda.
+> * Artinya, ada total **100 kali simulasi komparasi penuh** antara Random Scheduling vs AOA yang diselesaikan hanya dalam hitungan detik.
+> * Hasilnya langsung disimpan ke dalam file `hasil_real_world_ringkasan.csv` dan `hasil_real_world_per_run.csv`."*
 
 ---
 
-## Babak 6: Membedah Hasil Ujicoba (Tabel Komparasi)
+### 🎙️ Babak 7: Bedah Hasil Empiris (Random vs AOA Baru) (2 Menit)
 
-### 💡 Tampilkan Tabel Ringkasan Hasil Ujicoba:
+#### 🎯 Sasaran Audiens:
+Menampilkan data angka perbandingan yang membuktikan secara tak terbantahkan bahwa AOA jauh lebih unggul daripada Random Scheduling.
 
-| Skenario | Algoritma | Makespan (detik) | Throughput (tasks/s) | Avg VM Util (%) | LBI (Imbalance) | Total Biaya ($) |
+#### 📊 Tabel Komparasi Utama (Tampilkan di Layar):
+
+| Skenario | Algoritma | Makespan (detik) | Throughput (tasks/s) | Rata-rata Utilisasi VM (%) | LBI (Ketimpangan Beban) | Total Biaya Sewa Cloud ($) |
 | :---: | :--- | :---: | :---: | :---: | :---: | :---: |
-| **100 Tasks** | Random (Minggu 3)<br>**AOA**<br>**ES + LJF** | 447.96 s<br>**217.49 s**<br>**129.37 s** | 0.23<br>**0.47**<br>**0.78** | 41.2%<br>**51.3%**<br>**79.3%** | 2.30<br>**1.79**<br>**0.65** | $238.40<br>**$198.15**<br>**$189.40** |
-| **300 Tasks** | Random (Minggu 3)<br>**AOA**<br>**ES + LJF** | 1157.17 s<br>**947.90 s**<br>**588.80 s** | 0.26<br>**0.32**<br>**0.51** | 48.0%<br>**53.5%**<br>**68.3%** | 1.89<br>**1.61**<br>**1.06** | $712.99<br>**$645.20**<br>**$598.60** |
-| **500 Tasks** | Random (Minggu 3)<br>**AOA**<br>**ES + LJF** | 1951.85 s<br>**1673.86 s**<br>**1194.99 s** | 0.26<br>**0.30**<br>**0.42** | 49.7%<br>**55.5%**<br>**64.7%** | 1.80<br>**1.57**<br>**1.22** | $1167.28<br>**$1098.50**<br>**$984.60** |
+| **100 Tasks** | **Random (Minggu 3)**<br>**AOA yang Baru** | 447.96 s<br>**217.49 s** | 0.23<br>**0.47** | 41.2%<br>**51.3%** | 2.30<br>**1.79** | $91.01<br>**$63.96** |
+| **200 Tasks** | **Random (Minggu 3)**<br>**AOA yang Baru** | 866.13 s<br>**627.91 s** | 0.23<br>**0.33** | 46.4%<br>**52.4%** | 1.96<br>**1.68** | $191.70<br>**$163.73** |
+| **300 Tasks** | **Random (Minggu 3)**<br>**AOA yang Baru** | 1157.17 s<br>**947.90 s** | 0.26<br>**0.32** | 48.0%<br>**53.5%** | 1.89<br>**1.61** | $271.05<br>**$251.80** |
+| **400 Tasks** | **Random (Minggu 3)**<br>**AOA yang Baru** | 1389.41 s<br>**1229.38 s** | 0.29<br>**0.33** | 50.3%<br>**53.9%** | 1.78<br>**1.61** | $343.24<br>**$328.30** |
+| **500 Tasks** | **Random (Minggu 3)**<br>**AOA yang Baru** | 1951.85 s<br>**1673.86 s** | 0.26<br>**0.30** | 49.7%<br>**55.5%** | 1.80<br>**1.57** | $465.28<br>**$445.71** |
 
-### 🎙️ Poin Kunci yang Wajib Anda Tegaskan ke Dosen:
-> *"Bapak/Ibu dosen, mari kita perhatikan angka empiris hasil eksekusi riil ini:*
->
-> 1. **Makespan Terpangkas Luar Biasa:**
->    * Pada 100 tugas: Random butuh 447 detik. AOA memangkasnya menjadi 217 detik. Dan **ES + LJF memangkasnya hingga 129 detik (lebih cepat ~71%)**.
->    * Pada 500 tugas: Dari hampir 2.000 detik pada Random, ES+LJF memangkas waktu proses hingga tersisa 1.194 detik!
-> 2. **Throughput Melonjak Drastis:**
->    * Kecepatan penyelesaian tugas naik dari 0.23 task/detik menjadi **0.78 task/detik (naik 3.4 kali lipat)**.
-> 3. **Beban Sangat Seimbang (LBI Turun Signifikan):**
->    * Tingkat ketimpangan (LBI) yang tadinya 2.30 pada Random, berhasil ditekan oleh ES+LJF menjadi **0.65**. Artinya seluruh VM bekerja proporsional tanpa ada yang menganggur atau kelebihan beban.
-> 4. **Efisiensi Finansial (Biaya Turun):**
->    * Karena waktu sewa prosesor VM jauh lebih singkat, total biaya komputasi pada 500 tugas hemat hingga hampir **$200 per batch eksekusi**."*
-
----
-
-## Babak 7: Penutup & Kesimpulan Kunci
-
-### 🎙️ Apa yang Harus Anda Ucapkan:
-> *"Sebagai kesimpulan:*
-> 1. *Kedua algoritma metaheuristik yang kami pilih (**AOA dan ES**) terbukti secara nyata melampaui performa baseline Random Scheduling Minggu 3 di seluruh metrik pengujian.*
-> 2. ***AOA** unggul dalam konvergensi cepat dan kemampuan melompat keluar dari optimum lokal berkat sifat perkalian dan pembagian.*
-> 3. ***Evolution Strategies (ES) yang dikombinasikan dengan kebijakan LJF** menjadi pemenang utama (overall champion) dengan efisiensi pemangkasan Makespan terbaik dan distribusi beban paling seimbang.*
-> 4. *Seluruh implementasi kode, dataset, dan hasil per-run telah kami dokumentasikan secara lengkap dan terstruktur.*
->
-> *Sekian presentasi dari Kelompok 1. Kami membuka sesi tanya jawab jika ada masukan atau pertanyaan dari Bapak/Ibu dosen dan rekan-rekan sekalian. Terima kasih."*
+#### 🗣️ Naskah yang Harus Anda Tegaskan (Sorot 4 Poin Utama):
+> *"Bapak/Ibu dosen dan rekan-rekan, mari kita cermati lonjakan performa yang sangat nyata pada tabel ini:*
+> 
+> 1. **Pemangkasan Makespan yang Sangat Drastis:**
+>    * Pada 100 tugas, Random Scheduling membutuhkan waktu 447.96 detik. AOA memangkasnya menjadi hanya **217.49 detik — ini adalah percepatan lebih dari 51.5% (lebih dari dua kali lipat lebih cepat!)**.
+>    * Pada 500 tugas, AOA berhasil memotong waktu tunggu sebesar hampir **300 detik** (dari 1.951 detik turun ke 1.673 detik).
+> 
+> 2. **Throughput Naik Signifikan:**
+>    * Laju penyelesaian tugas melonjak dari 0.23 tasks/detik menjadi **0.47 tasks/detik** pada skenario 100 tugas — kapasitas pemrosesan datacenter berlipat ganda tanpa perlu menambah perangkat keras baru.
+> 
+> 3. **Beban Kerja Jauh Lebih Merata (LBI Turun Konsisten):**
+>    * Indeks ketimpangan beban (LBI) yang tadinya berada di level kritis 2.30 pada Random Scheduling, berhasil ditekan oleh AOA menjadi **1.79** (100 tugas) dan **1.57** (500 tugas). Tidak ada lagi VM Small yang 'tersiksa' sendirian sementara VM Large bersantai.
+> 
+> 4. **Efisiensi Finansial (Penghematan Biaya Sewa Nyata):**
+>    * Karena waktu proses total terpangkas secara masif, biaya komputasi awan yang harus dibayarkan perusahaan turun signifikan di seluruh skenario pengujian."*
 
 ---
 
-## Antisipasi Pertanyaan Dosen (Q&A Cheat-Sheet)
+### 🎙️ Babak 8: Penutup & Kesimpulan Kunci (1 Menit)
 
-Berikut adalah daftar pertanyaan yang paling sering ditanyakan dosen penguji beserta jawaban cerdas yang tepat:
+#### 🗣️ Naskah yang Harus Anda Ucapkan:
+> *"Sebagai kesimpulan dari pengujian dan perancangan kami:*
+> 
+> 1. *Penjadwalan acak atau Random Scheduling yang digunakan pada baseline Minggu 3 terbukti tidak layak digunakan dalam lingkungan produksi nyata karena menimbulkan pemborosan resource dan bottleneck ekstrem.*
+> 2. *Algoritma **Arithmetic Optimization Algorithm (AOA)** yang kami implementasikan berhasil memecahkan seluruh masalah tersebut dengan memanfaatkan kekuatan matematis operator perkalian, pembagian, penambahan, dan pengurangan.*
+> 3. *AOA terbukti secara empiris unggul di seluruh 5 skenario dataset: **Makespan lebih cepat hingga 51%, Throughput naik hingga 104%, beban kerja lebih seimbang, dan biaya sewa lebih hemat**.*
+> 4. *Seluruh implementasi, dataset, dan kode telah teruji secara objektif dan siap digunakan.*
+> 
+> *Demikian presentasi dari Kelompok 1. Kami siap menyambut masukan, saran, dan pertanyaan dari Bapak/Ibu dosen penguji. Terima kasih banyak."*
 
-### Q1: Mengapa kalian memilih AOA dan Evolution Strategies (ES)?
-> **Jawaban:** 
-> *"AOA mewakili algoritma metaheuristik modern berbasis hukum aritmatika (Abualigah, 2021) yang unik karena tidak memerlukan penyesuaian parameter rumit, sedangkan ES mewakili algoritma berbasis evolusi murni (Lončar & Lončar, IEEE Access 2022) yang terbukti unggul pada data komputasi awan CERN ALICE. Membandingkan keduanya memberikan perspektif komprehensif antara pendekatan matematika vs pendekatan seleksi alam."*
+---
 
-### Q2: Mengapa hasil ES + LJF bisa lebih cepat daripada AOA?
-> **Jawaban:** 
-> *"Karena pada ES, kami mengintegrasikan kebijakan **Longest Job First (LJF)** pada level broker. Dalam penjadwalan komputasi awan heterogen, jika tugas terberat (panjang instruksi besar) diselesaikan paling awal oleh prosesor tercepat (VM Large Surabaya), maka waktu tunggu (*idle delay*) di akhir eksekusi terminimalisasi. AOA mengoptimalkan pemetaan, namun ES+LJF mengoptimalkan pemetaan sekaligus urutan antrean eksekusi."*
+## 🛡️ ANTISIPASI PERTANYAAN DOSEN PENGUJI (Q&A DEFENSE CHEAT-SHEET)
 
-### Q3: Bagaimana kalian memastikan program ini merefleksikan 'Real-World'?
-> **Jawaban:** 
-> *"Pertama, dataset yang digunakan bukan angka rekaan acak, melainkan dataset tugas komputasi awan riil dari tugas Minggu 3. Kedua, kami memodelkan **latensi geografis jaringan nyata** antar-kota (Surabaya, Jakarta, Yogyakarta) dan bandwidth transfer berkas input/output. Ketiga, biaya sewa dihitung dengan tarif per-detik ($0.03/s) dan alokasi memori/storage sesuai standar komputasi awan komersial."*
+Gunakan contekan taktis ini untuk menjawab pertanyaan dosen dengan tenang, cerdas, dan berbasis teori kuat:
 
-### Q4: Apakah algoritma ini memerlukan training dataset (seperti AI Machine Learning)?
-> **Jawaban:** 
-> *"Tidak, Bapak/Ibu. AOA dan ES adalah **Numerical Solvers / Metaheuristic Search**, bukan model Machine Learning dengan bobot tetap. Keduanya tidak perlu ditraining di awal. Keduanya dijalankan secara adaptif setiap kali ada batch tugas baru yang masuk ke cloud dispatcher."*
+---
 
+### ❓ Pertanyaan 1: "Mengapa kalian memilih algoritma AOA dibanding algoritma populer lain seperti Genetic Algorithm (GA) atau Particle Swarm Optimization (PSO)?"
+> **💡 Jawaban yang Tepat & Meyakinkan:**
+> *"Terima kasih atas pertanyaannya, Bapak/Ibu. Kami memilih AOA (karya Laith Abualigah et al., 2021) karena dua keunggulan mendasar:*
+> 1. *Pertama, **parameter-tuning yang sangat ringkas**. Algoritma seperti GA membutuhkan penentuan parameter yang rumit seperti probabilitas crossover ($p_c$), mutation rate ($p_m$), dan metode seleksi. Jika parameternya salah sedikit saja, GA lambat konvergen. Sebaliknya, AOA hanya mengandalkan akselerator matematis MOA dan MOP yang adaptif terhadap nomor iterasi.*
+> 2. *Kedua, **keseimbangan eksplorasi dan eksploitasi yang tegas**. Operasi perkalian dan pembagian memberi lompatan stokastik besar di awal untuk menghindari local optima, sedangkan penambahan dan pengurangan menyisir secara presisi di akhir. Pada komputasi awan heterogen, sifat ini sangat pas untuk memindahkan tumpukan tugas antar-datacenter secara cepat."*
+
+---
+
+### ❓ Pertanyaan 2: "Bagaimana cara kerja AOA yang aslinya untuk fungsi kontinu bisa diterapkan ke penjadwalan cloud yang sifatnya diskret (ID VM)?"
+> **💡 Jawaban yang Tepat & Meyakinkan:**
+> *"Pertanyaan yang sangat bagus, Bapak/Ibu. Dalam `scheduler_realworld.py`, kami menerapkan mekanisme **Continuous-to-Discrete Mapping with Boundary Enforcement**:*
+> * Vektor posisi agen AOA awalnya bergerak dalam ruang kontinu $[0, 9.0]$.
+> * Saat operator perkalian, pembagian, penambahan, atau pengurangan menghasilkan koordinat baru dalam desimal, kami melakukan pembulatan presisi (`round(val)`) dan membatasi nilainya menggunakan fungsi batas bawah dan batas atas (`min(ub, max(lb, vm_idx))`).
+> * Dengan begitu, nilai desimal hasil matematika AOA secara deterministik dipetakan menjadi ID VM diskret yang valid antara VM-0 hingga VM-9 tanpa pernah menghasilkan indeks yang salah atau keluar batas."*
+
+---
+
+### ❓ Pertanyaan 3: "Apakah AOA memerlukan data training seperti Machine Learning (misal neural network)?"
+> **💡 Jawaban yang Tepat & Meyakinkan:**
+> *"Tidak, Bapak/Ibu. AOA adalah **Metaheuristic Numerical Solver / Optimization Engine**, bukan model Machine Learning prediktif. AOA tidak memerlukan dataset training atau proses inferensi berbobot statis. 
+> 
+> Dalam arsitektur cloud nyata, AOA berperan sebagai **dynamic runtime scheduler**: setiap kali ada batch tugas baru yang masuk ke antrean datacenter, AOA mengevaluasi kapasitas VM saat itu dan menghasilkan jadwal alokasi optimal dalam hitungan detik."*
+
+---
+
+### ❓ Pertanyaan 4: "Mengapa pada 500 tasks peningkatan Makespan AOA (sekitar 14-15%) tidak sebesar pada 100 tasks (51%)?"
+> **💡 Jawaban yang Tepat & Meyakinkan:**
+> *"Hal tersebut sangat wajar secara hukum beban komputasi awan (*Amdahl's Law and System Saturation*), Bapak/Ibu:*
+> * Pada skenario 100 tugas, kapasitas total 10 VM (dengan total daya 22.800 MIPS) masih memiliki banyak ruang longgar (*slack time*). Oleh karena itu, kemampuan AOA memilah tugas berat ke VM Large di Surabaya langsung memberikan dampak dramatis (percepatan 51.5%).
+> * Pada 500 tugas dengan jutaan instruksi kumulatif, seluruh 10 VM sudah mendekati titik jenuh kapasitasnya (*near-saturation capacity*). Namun, bahkan dalam kondisi jenuh sekalipun, AOA masih mampu memangkas waktu proses hingga hampir **300 detik lebih cepat** dibandingkan Random Scheduling, dan menjaga seluruh VM tetap beroperasi secara seimbang tanpa kegagalan antrean."*
+
+---
+
+### ❓ Pertanyaan 5: "Bagaimana kalian memvalidasi bahwa hasil AOA bukan sekadar kebetulan (lucky run)?"
+> **💡 Jawaban yang Tepat & Meyakinkan:**
+> *"Kami memvalidasinya menggunakan metodologi standar riset komputasi awan, yaitu **10 independent runs dengan seed acak yang berbeda untuk setiap skenario**, menghasilkan 100 kali simulasi penuh. 
+> 
+> Pada tabel hasil pengujian, kami tidak hanya mencantumkan nilai rata-rata (*mean*), tetapi juga **standar deviasi (*standard deviation*)**. Standar deviasi Makespan AOA pada 500 tugas berada di angka yang stabil (33.19 detik), membuktikan bahwa algoritma AOA konvergen secara konsisten dan bukan hasil kebetulan."*
+
+---
+
+### ❓ Pertanyaan 6: "Di bagian mana model kalian memperhitungkan kondisi 'Real-World'?"
+> **💡 Jawaban yang Tepat & Meyakinkan:**
+> *"Ada tiga pilar utama yang menjadikan implementasi kami 'Real-World':*
+> 1. **Dataset Nyata:** Kami menggunakan dataset tugas komputasi awan riil Minggu 3 (`dataset_100cloudlet.csv` s.d `500cloudlet.csv`) yang mencakup variasi ukuran instruksi (*length MI*) dan ukuran file data (*input/output MB*).
+> 2. **Jaringan Terdistribusi Antarkota:** Pengiriman tugas memperhitungkan latensi fisik geografis antar-datacenter (Surabaya, Jakarta, Yogyakarta) serta keterbatasan *bandwidth* transmisi.
+> 3. **Model Biaya Komputasi Finansial:** Kami menghitung total pengeluaran operasional berdasarkan durasi komputasi riil ($0.03/detik), memori RAM, dan alokasi bandwidth sesuai tarif standar industri komputasi awan komersial."*
+
+---
+
+## 🚀 CHECKLIST TERAKHIR SEBELUM MAJU PRESENTASI
+
+- [ ] File [`presentasi_implementasi.html`](file:///d:/Institut%20Teknologi%20Sepuluh%20Nopember/Semester%205/Strategi%20Optimasi%20Komputasi%20Awan/Proggram%20Metaheuristic/02_Implementasi_Real_World/presentasi_implementasi.html) sudah dibuka di browser sebagai visualisasi interaktif 3D.
+- [ ] Terminal / Command Prompt sudah dibuka di direktori `02_Implementasi_Real_World`.
+- [ ] File [`hasil_real_world_ringkasan.csv`](file:///d:/Institut%20Teknologi%20Sepuluh%20Nopember/Semester%205/Strategi%20Optimasi%20Komputasi%20Awan/Proggram%20Metaheuristic/02_Implementasi_Real_World/hasil_real_world_ringkasan.csv) sudah siap ditampilkan jika dosen meminta file mentah.
+- [ ] Pegang naskah briefing ini sebagai panduan urutan bicara.

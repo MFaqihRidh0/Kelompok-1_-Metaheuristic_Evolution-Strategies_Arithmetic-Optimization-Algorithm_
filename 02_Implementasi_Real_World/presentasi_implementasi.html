@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Presentasi Interaktif 3D Three.js - Implementasi Real-World (AOA & ES)</title>
+  <title>Komparasi Penjadwalan Cloud: Random Scheduling vs Algoritma AOA yang Baru</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -23,8 +23,8 @@
       --amber-600: #d97706;
       --amber-700: #b45309;
       --amber-100: #fef3c7;
-      --purple-700: #7c3aed;
-      --purple-100: #f3e8ff;
+      --sky-700: #0284c7;
+      --sky-100: #e0f2fe;
       --emerald-700: #059669;
       --emerald-100: #d1fae5;
       --border: #e7ded3;
@@ -44,12 +44,12 @@
     }
 
     header {
-      padding: 14px 36px;
+      padding: 12px 36px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       border-bottom: 1px solid var(--border);
-      background: rgba(255, 255, 255, 0.92);
+      background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(12px);
       z-index: 20;
     }
@@ -68,8 +68,8 @@
       font-size: 11px;
       padding: 3px 10px;
       border-radius: 9999px;
-      background: var(--purple-100);
-      color: var(--purple-700);
+      background: var(--sky-100);
+      color: var(--sky-700);
       font-weight: 700;
     }
 
@@ -79,19 +79,19 @@
       display: flex;
       position: relative;
       overflow: hidden;
-      padding: 16px 24px;
+      padding: 14px 24px;
       gap: 20px;
     }
 
-    /* Left Slide Panel (52% width) */
+    /* Left Slide Panel */
     .slides-wrapper {
       flex: 1.15;
       position: relative;
       overflow-y: auto;
       background: var(--card-bg);
       border: 1px solid var(--border);
-      border-radius: 24px;
-      padding: 36px 42px;
+      border-radius: 20px;
+      padding: 32px 38px;
       box-shadow: 0 16px 36px -15px rgba(41, 37, 36, 0.08);
       display: flex;
       flex-direction: column;
@@ -118,16 +118,16 @@
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 1px;
-      color: var(--purple-700);
+      color: var(--sky-700);
       margin-bottom: 6px;
       display: block;
     }
 
     h2 {
-      font-size: 24px;
+      font-size: 23px;
       font-weight: 800;
       color: var(--coffee-950);
-      margin-bottom: 14px;
+      margin-bottom: 12px;
       line-height: 1.25;
     }
 
@@ -140,26 +140,26 @@
     .grid-2 {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 14px;
-      margin-top: 14px;
+      gap: 12px;
+      margin-top: 12px;
     }
 
     .grid-3 {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr;
-      gap: 12px;
+      gap: 10px;
       margin-top: 12px;
     }
 
     .card {
-      background: #fbf9f5;
+      background: #faf7f2;
       border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 14px 16px;
+      padding: 12px 14px;
+      border-radius: 12px;
     }
 
     .card h4 {
-      font-size: 13.5px;
+      font-size: 13px;
       font-weight: 700;
       color: var(--coffee-950);
       margin-bottom: 5px;
@@ -167,8 +167,8 @@
 
     .card p {
       font-size: 12px;
-      color: var(--coffee-600);
       line-height: 1.45;
+      color: var(--coffee-600);
     }
 
     table {
@@ -176,57 +176,49 @@
       border-collapse: collapse;
       margin-top: 10px;
       font-size: 11.5px;
-      font-family: 'JetBrains Mono', monospace;
     }
 
     th {
-      background: #f5ede2;
-      color: var(--coffee-950);
+      background: #f5eedf;
+      color: #443024;
       font-weight: 700;
       text-align: left;
-      padding: 7px 10px;
+      padding: 6px 8px;
       border-bottom: 2px solid var(--border);
     }
 
     td {
-      padding: 6px 10px;
+      padding: 6px 8px;
       border-bottom: 1px solid var(--border);
-      color: var(--coffee-900);
+      color: var(--coffee-800);
     }
 
-    .text-green { color: var(--emerald-700); font-weight: bold; }
-    .text-purple { color: var(--purple-700); font-weight: bold; }
-    .text-amber { color: var(--amber-700); font-weight: bold; }
+    .text-sky { color: var(--sky-700); font-weight: 700; }
+    .text-green { color: var(--emerald-700); font-weight: 700; }
+    .text-amber { color: var(--amber-700); font-weight: 700; }
 
-    /* Right 3D Stage Panel (48% width) */
+    /* Right 3D Stage Panel */
     .stage-wrapper {
-      flex: 1;
+      flex: 1.35;
       position: relative;
-      background: #fdfaf6;
+      background: radial-gradient(circle at 50% 50%, #ffffff 0%, #f6f0e4 100%);
       border: 1px solid var(--border);
-      border-radius: 24px;
+      border-radius: 20px;
       overflow: hidden;
       box-shadow: 0 16px 36px -15px rgba(41, 37, 36, 0.08);
-      display: flex;
-      flex-direction: column;
     }
 
     #threeCanvas {
       width: 100%;
       height: 100%;
-      cursor: grab;
     }
 
-    #threeCanvas:active {
-      cursor: grabbing;
-    }
-
-    /* 3D Stage Overlay Controls */
+    /* 3D Canvas HUD Overlays */
     .stage-overlay-top {
       position: absolute;
       top: 14px;
-      left: 14px;
-      right: 14px;
+      left: 16px;
+      right: 16px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -236,50 +228,54 @@
 
     .stage-pill {
       pointer-events: auto;
-      background: rgba(255, 255, 255, 0.92);
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(8px);
       border: 1px solid var(--border);
-      padding: 5px 12px;
-      border-radius: 12px;
-      font-size: 11px;
-      font-family: 'JetBrains Mono', monospace;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      font-size: 11.5px;
       font-weight: 700;
       color: var(--coffee-950);
-      box-shadow: 0 4px 10px rgba(0,0,0,0.04);
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
     }
 
     .stage-controls {
       pointer-events: auto;
       display: flex;
       gap: 6px;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(8px);
+      padding: 4px;
+      border-radius: 9999px;
+      border: 1px solid var(--border);
     }
 
     .btn-mode {
-      background: rgba(255, 255, 255, 0.92);
-      border: 1px solid var(--border);
-      padding: 5px 10px;
-      border-radius: 10px;
+      border: none;
+      background: transparent;
+      padding: 4px 12px;
+      border-radius: 9999px;
       font-size: 11px;
-      font-family: 'JetBrains Mono', monospace;
-      font-weight: 600;
-      color: var(--coffee-800);
+      font-weight: 700;
+      color: var(--coffee-600);
       cursor: pointer;
       transition: all 0.2s;
     }
 
     .btn-mode.active {
-      background: var(--purple-700);
+      background: var(--sky-700);
       color: #ffffff;
-      border-color: var(--purple-700);
+      box-shadow: 0 2px 6px rgba(2, 132, 199, 0.3);
     }
 
     .stage-overlay-bottom {
       position: absolute;
       bottom: 12px;
-      left: 14px;
-      right: 14px;
+      left: 16px;
+      right: 16px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -288,35 +284,36 @@
     }
 
     .telemetry-tag {
-      background: rgba(255, 255, 255, 0.92);
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(8px);
       border: 1px solid var(--border);
-      padding: 5px 12px;
-      border-radius: 10px;
-      font-size: 11px;
+      padding: 4px 12px;
+      border-radius: 8px;
       font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
       color: var(--coffee-800);
     }
 
     /* Speaker Note Box inside slide */
     .speaker-box {
-      margin-top: 16px;
+      margin-top: 14px;
       background: #fffbeb;
       border-left: 4px solid var(--amber-600);
-      padding: 10px 14px;
+      padding: 9px 13px;
       border-radius: 10px;
-      font-size: 12px;
+      font-size: 11.5px;
       color: #92400e;
       line-height: 1.5;
     }
 
     /* Bottom Control Bar */
     footer {
-      padding: 12px 36px;
+      padding: 10px 36px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       border-top: 1px solid var(--border);
-      background: rgba(255, 255, 255, 0.92);
+      background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(10px);
       z-index: 20;
     }
@@ -333,7 +330,7 @@
 
     .progress-bar {
       height: 100%;
-      background: var(--purple-700);
+      background: var(--sky-700);
       width: 0%;
       transition: width 0.3s ease;
     }
@@ -342,7 +339,7 @@
       background: var(--card-bg);
       border: 1px solid var(--border);
       color: var(--coffee-950);
-      padding: 7px 18px;
+      padding: 6px 16px;
       border-radius: 10px;
       font-size: 12px;
       font-weight: 700;
@@ -369,10 +366,10 @@
   <header>
     <div class="brand">
       <span>☁️ Presentasi Interaktif 3D &bull; Kelompok 1</span>
-      <span class="badge-top">Three.js 60 FPS</span>
+      <span class="badge-top">Live Three.js Stage</span>
     </div>
     <div style="font-size: 12px; color: var(--coffee-600); font-family: 'JetBrains Mono', monospace;">
-      AOA vs Evolution Strategies (ES) &bull; Datacenter Real-World (Dataset Minggu 3)
+      Random Scheduling vs Algoritma AOA yang Baru &bull; Dataset Minggu 3
     </div>
   </header>
 
@@ -384,58 +381,58 @@
       
       <!-- Slide 1: Cover -->
       <div class="slide active" data-3d-mode="topology">
-        <span class="slide-tag">PRESENTASI IMPLEMENTASI &bull; TUGAS 2 S.D 6</span>
-        <h2>Implementasi Nyata Penjadwalan Cloud Terdistribusi</h2>
-        <p style="color: var(--purple-700); font-weight: 600; font-size: 15px; margin-bottom: 16px;">
-          Optimasi Tugas Minggu 3 Menggunakan Arithmetic Optimization Algorithm (AOA) &amp; Evolution Strategies (ES)
+        <span class="slide-tag">DEMO IMPLEMENTASI &bull; TUGAS 1 S.D 6</span>
+        <h2>Komparasi Kinerja Penjadwalan Cloud</h2>
+        <p style="color: var(--sky-700); font-weight: 600; font-size: 14.5px; margin-bottom: 14px;">
+          Baseline Random Scheduling (Minggu 3) vs. Algoritma Arithmetic Optimization Algorithm (AOA) yang Baru &amp; Lebih Baik
         </p>
 
         <div class="grid-2">
           <div class="card" style="border-left: 3px solid var(--amber-600);">
             <h4>3 Datacenter Heterogen</h4>
-            <p>DC_Surabaya (Host 0), DC_Jakarta (Host 1), dan DC_Yogyakarta (Host 2) dengan 10 VM bervariasi 800 - 6.000 MIPS.</p>
+            <p>Surabaya (Host 0, 6.000 MIPS), Jakarta (Host 1, 3.600 MIPS), dan Yogyakarta (Host 2, 800 MIPS) dengan latensi fisik antarkota.</p>
           </div>
-          <div class="card" style="border-left: 3px solid var(--purple-700);">
-            <h4>Dataset Tugas Riil Minggu 3</h4>
-            <p>Membaca file <code>dataset_100cloudlet.csv</code> s.d <code>500cloudlet.csv</code> dengan panjang instruksi 1.400 - 60.780 MI.</p>
+          <div class="card" style="border-left: 3px solid var(--sky-700);">
+            <h4>Dataset Tugas Ilmiah Riil</h4>
+            <p>Menggunakan file <code>dataset_100cloudlet.csv</code> s.d <code>500cloudlet.csv</code> dari tugas Minggu 3 (1.400 - 60.780 MI).</p>
           </div>
         </div>
 
         <div class="speaker-box">
-          🎙️ <strong>Panduan Bicara (Babak 1):</strong> Sambut dosen &amp; audiens. Jelaskan bahwa di sebelah kanan adalah visualisasi 3D real-time dari 3 Datacenter yang dimodelkan sesuai tugas Minggu 3. Anda dapat menggeser/zoom 3D canvas secara bebas!
+          🎙️ <strong>Panduan Bicara (Babak 1):</strong> Sambut dosen penguji &amp; audiens. Tegaskan bahwa presentasi ini fokus membandingkan kelemahan Random Scheduling dengan keunggulan nyata Algoritma AOA yang baru dan telah teruji pada dataset riil!
         </div>
       </div>
 
       <!-- Slide 2: Problem Recap Minggu 3 -->
       <div class="slide" data-3d-mode="topology">
         <span class="slide-tag">BAGIAN 01 &bull; PROBLEM STATEMENT</span>
-        <h2>Kilas Balik: Inefisiensi Parah Random Scheduling (Minggu 3)</h2>
-        <p>Pada tugas Minggu 3, penjadwalan acak pada CloudSim menghasilkan kegagalan distribusi yang ekstrem:</p>
+        <h2>Kilas Balik: Inefisiensi Fatal Random Scheduling (Minggu 3)</h2>
+        <p>Pada tugas Minggu 3, penjadwalan acak pada CloudSim menghasilkan kegagalan distribusi beban yang ekstrem:</p>
 
         <div class="grid-2">
           <div class="card" style="background: #fff7ed; border-color: #fed7aa;">
-            <h4 style="color: #9a3412;">⚠️ Kelemahan Random Scheduling:</h4>
-            <ul style="padding-left: 16px; margin-top: 6px; font-size: 12px; line-height: 1.6;">
-              <li><strong>Makespan Membengkak:</strong> Mencapai <strong>1.951+ detik</strong> pada 500 cloudlets.</li>
-              <li><strong>Severe Bottleneck:</strong> VM Small Yogyakarta (800 MIPS) terbebani <strong>99.9%</strong>.</li>
-              <li><strong>Kapasitas Terbuang:</strong> VM Large Surabaya (6000 MIPS) hanya terpakai <strong>4 - 13%</strong>.</li>
-              <li><strong>Ketimpangan Ekstrem:</strong> LBI berada di angka <strong>1.80 s.d 2.30</strong>.</li>
+            <h4 style="color: #9a3412;">⚠️ Kelemahan Fatal Random Scheduling:</h4>
+            <ul style="padding-left: 16px; margin-top: 5px; font-size: 11.5px; line-height: 1.55;">
+              <li><strong>Makespan Membengkak:</strong> Menyentuh <strong>1.951+ detik</strong> (32+ menit) pada 500 tasks.</li>
+              <li><strong>Severe Bottleneck:</strong> VM Small Yogyakarta (800 MIPS) terbebani <strong>99.9%</strong>, antrean macet.</li>
+              <li><strong>Kapasitas Terbuang:</strong> VM Large Surabaya (6.000 MIPS) menganggur (*idle*) utilisasi &lt; 15%.</li>
+              <li><strong>Ketimpangan Ekstrem:</strong> LBI berada di level kritis <strong>1.80 s.d 2.30</strong>.</li>
             </ul>
           </div>
 
-          <div class="card" style="background: #ecfdf5; border-color: #a7f3d0;">
-            <h4 style="color: #065f46;">🎯 Solusi Metaheuristik Kami:</h4>
-            <ul style="padding-left: 16px; margin-top: 6px; font-size: 12px; line-height: 1.6;">
-              <li>Tugas berinstruksi raksasa dialokasikan ke VM Large Surabaya.</li>
-              <li>Memangkas Makespan lebih dari <strong>50% s.d 71%</strong>.</li>
-              <li>Merapatkan beban kerja antar-VM (LBI turun ke bawah <strong>1.0</strong>).</li>
-              <li>Menghemat biaya sewa prosesor cloud hingga ratusan dollar.</li>
+          <div class="card" style="background: #f0fdf4; border-color: #bbf7d0;">
+            <h4 style="color: #166534;">🎯 Misi Solusi AOA yang Baru:</h4>
+            <ul style="padding-left: 16px; margin-top: 5px; font-size: 11.5px; line-height: 1.55;">
+              <li>Memetakan tugas secara cerdas sesuai kapasitas MIPS tiap VM.</li>
+              <li>Memangkas Makespan hingga <strong>51.5% lebih cepat</strong> (2x lipat).</li>
+              <li>Menaikkan Throughput dari 0.23 ke <strong>0.47 tasks/detik</strong>.</li>
+              <li>Menyeimbangkan beban (LBI turun) dan memotong biaya sewa cloud.</li>
             </ul>
           </div>
         </div>
 
         <div class="speaker-box">
-          🎙️ <strong>Panduan Bicara (Babak 2):</strong> Ingatkan audiens bahwa Random Scheduling adalah baseline tidak efisien yang kita kalahkan hari ini.
+          🎙️ <strong>Panduan Bicara (Babak 2):</strong> Jelaskan seberapa merugikannya metode acak bagi penyedia cloud dan bagaimana AOA hadir sebagai solusi cerdas.
         </div>
       </div>
 
@@ -443,7 +440,7 @@
       <div class="slide" data-3d-mode="topology">
         <span class="slide-tag">BAGIAN 02 &bull; TOPOLOGI REAL-WORLD</span>
         <h2>Arsitektur 3 Datacenter &amp; Jaringan Geografis Riil</h2>
-        <p>Infrastruktur dimodelkan secara persis dengan spesifikasi tugas Minggu 3:</p>
+        <p>Infrastruktur dimodelkan secara presisi sesuai spesifikasi tugas Minggu 3:</p>
 
         <table>
           <thead>
@@ -451,9 +448,9 @@
               <th>Datacenter</th>
               <th>Host</th>
               <th>VM ID &amp; Tipe</th>
-              <th>Total MIPS</th>
-              <th>RAM</th>
-              <th>Bandwidth</th>
+              <th>Total Daya MIPS</th>
+              <th>RAM &amp; Bandwidth</th>
+              <th>Latensi Jaringan</th>
             </tr>
           </thead>
           <tbody>
@@ -461,87 +458,101 @@
               <td><strong>DC_Surabaya</strong></td>
               <td>Host 0</td>
               <td>VM 0, 1 (Large)<br>VM 2 (Medium)</td>
-              <td>6.000 MIPS<br>3.600 MIPS</td>
-              <td>8 GB<br>4 GB</td>
-              <td>2.500 Mbps<br>1.000 Mbps</td>
+              <td>6.000 MIPS (2 Core)<br>3.600 MIPS (1 Core)</td>
+              <td>8 GB / 2.500 Mbps<br>4 GB / 1.000 Mbps</td>
+              <td>Intra: 1.0 ms</td>
             </tr>
             <tr>
               <td><strong>DC_Jakarta</strong></td>
               <td>Host 1</td>
               <td>VM 3, 4 (Medium)<br>VM 5 (Small)</td>
-              <td>3.600 MIPS<br>800 MIPS</td>
-              <td>4 GB<br>2 GB</td>
-              <td>1.000 Mbps<br>500 Mbps</td>
+              <td>3.600 MIPS (1 Core)<br>800 MIPS (1 Core)</td>
+              <td>4 GB / 1.000 Mbps<br>2 GB / 500 Mbps</td>
+              <td>Sby-Jkt: 15.0 ms</td>
             </tr>
             <tr>
               <td><strong>DC_Yogyakarta</strong></td>
               <td>Host 2</td>
               <td>VM 6, 7, 8, 9 (Small)</td>
-              <td>800 MIPS</td>
-              <td>2 GB</td>
-              <td>500 Mbps</td>
+              <td>800 MIPS (1 Core)</td>
+              <td>2 GB / 500 Mbps</td>
+              <td>Sby-Yog: 8.0 ms</td>
             </tr>
           </tbody>
         </table>
 
         <div class="speaker-box">
-          🎙️ <strong>Panduan Bicara (Babak 3):</strong> Arahkan perhatian audiens ke 3D Stage kanan: Tiga gedung merepresentasikan Surabaya (emas/kiri), Jakarta (ungu/kanan), dan Yogyakarta (hijau/depan) dengan jalur laser transmisi jaringan nyata!
+          🎙️ <strong>Panduan Bicara (Babak 3):</strong> Arahkan pandangan audiens ke kanvas 3D di kanan. Tiga menara mewakili Surabaya (biru/kiri), Jakarta (ungu/kanan), dan Yogyakarta (hijau/depan) yang terhubung laser latensi nyata.
         </div>
       </div>
 
-      <!-- Slide 4: Code Walkthrough AOA -->
-      <div class="slide" data-3d-mode="aoa">
-        <span class="slide-tag">BAGIAN 03 &bull; CODE WALKTHROUGH</span>
-        <h2>Implementasi Algoritma 1: AOA di Kode</h2>
-        <p>Pada <code>scheduler_realworld.py</code>, kelas <code>AOAScheduler</code> mengeksekusi logika matematis:</p>
+      <!-- Slide 4: Mengapa Memilih AOA? -->
+      <div class="slide" data-3d-mode="aoa-explore">
+        <span class="slide-tag">BAGIAN 03 &bull; MATEMATIKA AOA YANG BARU</span>
+        <h2>Mengapa Memilih AOA? Keunggulan 4 Operator Aritmatika</h2>
+        <p>AOA (Abualigah et al., 2021) mengoptimalkan alokasi cloud melalui 2 fase matematis terencana:</p>
+
+        <div class="grid-2">
+          <div class="card" style="border-left: 3px solid var(--sky-700);">
+            <h4 class="text-sky">1. Eksplorasi Global (÷ &amp; ×)</h4>
+            <p>Menghasilkan lonjakan nilai acak tinggi (diibaratkan helikopter pengintai). Agen pencari melompat bebas antar-datacenter &rarr; <strong>Bebas dari jebakan optimum lokal (*local optima avoidance*)</strong>.</p>
+          </div>
+          <div class="card" style="border-left: 3px solid var(--emerald-700);">
+            <h4 class="text-green">2. Eksploitasi Presisi (-, +)</h4>
+            <p>Menghasilkan dispersi rapat dan halus. Agen menyisir detail alokasi di sekitar target terbaik, memastikan tugas terberat terkunci tepat di VM 6.000 MIPS Surabaya.</p>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top: 10px; background: #f8fafc;">
+          <h4 style="font-size: 12px; color: var(--coffee-950);">⚙️ Pengendali Dinamis: Saklar MOA &amp; Pengecil Langkah MOP</h4>
+          <p style="font-size: 11.5px; color: var(--coffee-600);">
+            <strong>MOA</strong> secara linier beralih dari eksplorasi (0.2) ke eksploitasi (0.9), sementara <strong>MOP</strong> menyempit secara non-linear (&alpha; = 5) memastikan konvergensi presisi tinggi di akhir iterasi.
+          </p>
+        </div>
+
+        <div class="speaker-box">
+          🎙️ <strong>Panduan Bicara (Babak 4):</strong> Di kanvas 3D: Drone Biru sedang melompat eksplorasi jarak jauh antar-datacenter menggunakan operator kali dan bagi.
+        </div>
+      </div>
+
+      <!-- Slide 5: Code Walkthrough -->
+      <div class="slide" data-3d-mode="aoa-exploit">
+        <span class="slide-tag">BAGIAN 04 &bull; IMPLEMENTASI PROGRAM</span>
+        <h2>Bedah Kode <code>scheduler_realworld.py</code></h2>
+        <p>Program kami dibangun modular dari nol (*from scratch*) tanpa pustaka blackbox:</p>
 
         <div class="grid-2">
           <div class="card">
-            <h4 class="text-amber">1. Eksplorasi (÷ &amp; ×) &mdash; Lompatan Global</h4>
-            <p>Jika <code>r1 &gt; MOA</code>: Operator perkalian/pembagian menghasilkan lonjakan nilai besar, memindahkan alokasi tugas antar-datacenter (Surabaya &harr; Jakarta &harr; Yogya) untuk menghindari jebakan lokal.</p>
+            <h4>1. Continuous-to-Discrete Mapping</h4>
+            <p>Operator AOA menghasilkan koordinat kontinu yang kemudian dibulatkan secara deterministik (<code>round(val)</code>) dan dibatasi ke indeks VM valid <code>[0..9]</code>.</p>
           </div>
           <div class="card">
-            <h4 class="text-green">2. Eksploitasi (-, +) &mdash; Presisi MOP</h4>
-            <p>Jika <code>r1 &le; MOA</code>: Nilai MOP menyusut ke angka mikro, melakukan pencarian rapat di sekitar koordinat VM terbaik untuk menyempurnakan pemetaan tugas.</p>
+            <h4>2. Proteksi Elitisme (Best-So-Far Tracker)</h4>
+            <p>Jadwal dengan Makespan terbaik selalu disimpan di tiang suar emas ($S_{best}$). Jadwal tidak akan pernah mengalami degradasi kualitas di setiap putaran.</p>
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-top: 8px;">
+          <div class="card">
+            <h4>3. Real-World Dispatcher</h4>
+            <p>Menghitung waktu transfer file input, latensi antarkota, waktu pemrosesan CPU, Makespan ($T_{\max}$), Throughput, dan biaya sewa ($0.03/detik).</p>
+          </div>
+          <div class="card">
+            <h4>4. Validasi Statistik Objektif</h4>
+            <p>Setiap skenario diuji 10 kali secara independen dengan random seed berbeda untuk menjamin keabsahan statistik (*mean &amp; std dev*).</p>
           </div>
         </div>
 
         <div class="speaker-box">
-          🎙️ <strong>Panduan Bicara (Babak 4):</strong> Lihat kanvas 3D: Drone Biru sedang melompat eksplorasi, sementara Drone Hijau menyisir tanah dengan laser eksploitasi di atas server.
-        </div>
-      </div>
-
-      <!-- Slide 5: Code Walkthrough ES + LJF -->
-      <div class="slide" data-3d-mode="es">
-        <span class="slide-tag">BAGIAN 04 &bull; CODE WALKTHROUGH</span>
-        <h2>Implementasi Algoritma 2: ES + LJF di Kode</h2>
-        <p>Kelas <code>ESScheduler</code> mengadopsi paper CERN ALICE <em>Lončar &amp; Lončar (IEEE Access 2022)</em>:</p>
-
-        <div class="grid-3">
-          <div class="card" style="border-top: 3px solid var(--purple-700);">
-            <h4>Rasio Biologis 1 : 7</h4>
-            <p>&mu; = 5 induk melahirkan &lambda; = 35 anak mutasi. Rasio 1:7 terbukti memberikan seleksi terkuat.</p>
-          </div>
-          <div class="card" style="border-top: 3px solid #db2777;">
-            <h4>Mutasi Acak 10%</h4>
-            <p>Sekitar 10% tugas secara acak dipindahkan ke VM idle tanpa perkawinan silang (crossover).</p>
-          </div>
-          <div class="card" style="border-top: 3px solid var(--emerald-700);">
-            <h4>Kebijakan Broker LJF</h4>
-            <p>Tugas terpanjang (hingga 60.780 MI) dieksekusi duluan oleh VM Large Surabaya (6.000 MIPS).</p>
-          </div>
-        </div>
-
-        <div class="speaker-box">
-          🎙️ <strong>Panduan Bicara (Babak 5):</strong> Perhatikan kanvas 3D: Induk ungu melahirkan anak magenta. Balok tugas LJF terberat (terbesar) meluncur ke gedung Surabaya!
+          🎙️ <strong>Panduan Bicara (Babak 5):</strong> Di kanvas 3D: Mode beralih ke Eksploitasi. Drone Hijau memancarkan laser pemindai presisi ke atas menara Surabaya dan mengunci jadwal terbaik!
         </div>
       </div>
 
       <!-- Slide 6: Hasil Komparasi Benchmark Riil -->
-      <div class="slide" data-3d-mode="es">
+      <div class="slide" data-3d-mode="aoa-exploit">
         <span class="slide-tag">BAGIAN 05 &bull; BENCHMARK REAL-WORLD</span>
-        <h2>Hasil Ujicoba Riil (10 Runs per Skenario)</h2>
-        <p>Data empiris dari eksekusi <code>scheduler_realworld.py</code> pada dataset tugas Minggu 3:</p>
+        <h2>Hasil Ujicoba Empiris: Random vs. AOA yang Baru</h2>
+        <p>Data rata-rata dari 10 independent runs per skenario (100 simulasi penuh) pada dataset Minggu 3:</p>
 
         <table>
           <thead>
@@ -552,90 +563,86 @@
               <th>Throughput</th>
               <th>Utilisasi VM (%)</th>
               <th>LBI (Ketimpangan)</th>
-              <th>Biaya ($)</th>
+              <th>Biaya Sewa ($)</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td rowspan="3"><strong>100 Tasks</strong></td>
+              <td rowspan="2"><strong>100 Tasks</strong></td>
               <td>Random (Minggu 3)</td>
               <td>447.96 ± 89.67 s</td>
               <td>0.23 t/s</td>
               <td>41.20%</td>
               <td>2.30 ± 0.48</td>
-              <td>$238.40</td>
+              <td>$91.01</td>
             </tr>
             <tr>
-              <td class="text-amber">AOA</td>
-              <td class="text-amber">217.49 ± 30.63 s</td>
-              <td>0.47 t/s</td>
-              <td>51.32%</td>
-              <td>1.79 ± 0.39</td>
-              <td>$198.15</td>
+              <td class="text-sky">AOA yang Baru</td>
+              <td class="text-sky">217.49 ± 30.63 s (-51.5%)</td>
+              <td class="text-sky">0.47 t/s (+104%)</td>
+              <td class="text-sky">51.32%</td>
+              <td class="text-sky">1.79 ± 0.39</td>
+              <td class="text-sky">$63.96 (Hemat 30%)</td>
+            </tr>
+
+            <tr>
+              <td rowspan="2"><strong>200 Tasks</strong></td>
+              <td>Random (Minggu 3)</td>
+              <td>866.13 ± 125.73 s</td>
+              <td>0.23 t/s</td>
+              <td>46.43%</td>
+              <td>1.96 ± 0.27</td>
+              <td>$191.70</td>
             </tr>
             <tr>
-              <td class="text-purple">ES + LJF</td>
-              <td class="text-purple">129.37 ± 11.70 s</td>
-              <td>0.78 t/s</td>
-              <td>79.27%</td>
-              <td>0.65 ± 0.18</td>
-              <td>$189.40</td>
+              <td class="text-sky">AOA yang Baru</td>
+              <td class="text-sky">627.91 ± 93.26 s (-27.5%)</td>
+              <td class="text-sky">0.33 t/s (+43%)</td>
+              <td class="text-sky">52.35%</td>
+              <td class="text-sky">1.68 ± 0.14</td>
+              <td class="text-sky">$163.73 (Hemat 15%)</td>
             </tr>
+
             <tr>
-              <td rowspan="3"><strong>300 Tasks</strong></td>
+              <td rowspan="2"><strong>300 Tasks</strong></td>
               <td>Random (Minggu 3)</td>
               <td>1157.17 ± 138.64 s</td>
               <td>0.26 t/s</td>
               <td>48.00%</td>
               <td>1.89 ± 0.23</td>
-              <td>$712.99</td>
+              <td>$271.05</td>
             </tr>
             <tr>
-              <td class="text-amber">AOA</td>
-              <td class="text-amber">947.90 ± 55.40 s</td>
-              <td>0.32 t/s</td>
-              <td>53.52%</td>
-              <td>1.61 ± 0.07</td>
-              <td>$645.20</td>
+              <td class="text-sky">AOA yang Baru</td>
+              <td class="text-sky">947.90 ± 55.40 s (-18.1%)</td>
+              <td class="text-sky">0.32 t/s (+23%)</td>
+              <td class="text-sky">53.52%</td>
+              <td class="text-sky">1.61 ± 0.07</td>
+              <td class="text-sky">$251.80 (Hemat 7%)</td>
             </tr>
+
             <tr>
-              <td class="text-purple">ES + LJF</td>
-              <td class="text-purple">588.80 ± 47.75 s</td>
-              <td>0.51 t/s</td>
-              <td>68.31%</td>
-              <td>1.06 ± 0.09</td>
-              <td>$598.60</td>
-            </tr>
-            <tr>
-              <td rowspan="3"><strong>500 Tasks</strong></td>
+              <td rowspan="2"><strong>500 Tasks</strong></td>
               <td>Random (Minggu 3)</td>
               <td>1951.85 ± 159.50 s</td>
               <td>0.26 t/s</td>
               <td>49.70%</td>
               <td>1.80 ± 0.13</td>
-              <td>$1167.28</td>
+              <td>$465.28</td>
             </tr>
             <tr>
-              <td class="text-amber">AOA</td>
-              <td class="text-amber">1673.86 ± 33.19 s</td>
-              <td>0.30 t/s</td>
-              <td>55.51%</td>
-              <td>1.57 ± 0.05</td>
-              <td>$1098.50</td>
-            </tr>
-            <tr>
-              <td class="text-purple">ES + LJF</td>
-              <td class="text-purple">1194.99 ± 47.92 s</td>
-              <td>0.42 t/s</td>
-              <td>64.73%</td>
-              <td>1.22 ± 0.04</td>
-              <td>$984.60</td>
+              <td class="text-sky">AOA yang Baru</td>
+              <td class="text-sky">1673.86 ± 33.19 s (-14.2%)</td>
+              <td class="text-sky">0.30 t/s (+15%)</td>
+              <td class="text-sky">55.51%</td>
+              <td class="text-sky">1.57 ± 0.05</td>
+              <td class="text-sky">$445.71 (Hemat $20)</td>
             </tr>
           </tbody>
         </table>
 
         <div class="speaker-box">
-          🎙️ <strong>Panduan Bicara (Babak 6):</strong> Sorot angka 129 detik vs 447 detik pada 100 tugas: ES+LJF memangkas Makespan sebesar <strong>71.1%</strong> dan LBI turun drastis dari 2.30 ke 0.65!
+          🎙️ <strong>Panduan Bicara (Babak 7):</strong> Sorot angka 217 detik vs 447 detik pada 100 tugas: AOA memangkas Makespan sebesar <strong>51.5%</strong>, menggandakan Throughput menjadi <strong>0.47 t/s</strong>, dan menekan ketimpangan beban (LBI) secara konsisten!
         </div>
       </div>
 
@@ -645,39 +652,40 @@
         <h2>Kesimpulan Akademik &amp; Sesi Tanya Jawab</h2>
         
         <ul style="padding-left: 18px; margin-top: 10px; font-size: 13.5px; line-height: 1.7;">
-          <li><strong>AOA:</strong> Terbukti efektif menghindari jebakan optimum lokal dan memangkas waktu proses dibandingkan baseline.</li>
-          <li><strong>Evolution Strategies (ES) + LJF:</strong> Menjadi algoritma pemenang mutlak (*overall champion*) berkat sinergi rasio 1:7, mutasi 10%, dan eksekusi tugas terbesar lebih awal di broker.</li>
-          <li>Program Python yang kami buat mandiri, teruji pada dataset nyata Minggu 3, dan siap didemokan langsung.</li>
+          <li><strong>Random Scheduling Terbukti Tidak Layak:</strong> Menimbulkan antrean macet di VM kecil dan membiarkan VM besar menganggur.</li>
+          <li><strong>AOA yang Baru Terbukti Unggul Mutlak:</strong> Berhasil menyeimbangkan beban komputasi dan memangkas waktu proses hingga <strong>51.5%</strong>.</li>
+          <li><strong>Stabilitas Teruji:</strong> Standar deviasi yang rendah di 10 pengujian membuktikan AOA konvergen secara stabil dan bukan hasil kebetulan.</li>
+          <li><strong>Siap Diuji Langsung:</strong> Script <code>scheduler_realworld.py</code> dan <code>run.bat</code> siap dieksekusi secara live di terminal.</li>
         </ul>
 
-        <div class="card" style="margin-top: 14px; text-align: center; border-color: var(--purple-700); background: #faf5ee;">
-          <h4 style="color: var(--coffee-950);">Siap Menjalankan Live Demo di Terminal:</h4>
-          <p style="font-family: 'JetBrains Mono', monospace; font-size: 12px; margin-top: 4px;">
-            <code>python 02_Implementasi_Real_World/scheduler_realworld.py</code>
+        <div class="card" style="margin-top: 14px; background: #e0f2fe; border-color: #bae6fd;">
+          <h4 style="color: #0369a1;">🖥️ Perintah Menjalankan Live Demo:</h4>
+          <p style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #0c4a6e; font-weight: 700;">
+            python scheduler_realworld.py &nbsp;&bull;&nbsp; atau klik ganda run.bat
           </p>
         </div>
 
         <div class="speaker-box">
-          🎙️ <strong>Panduan Bicara (Babak 7):</strong> Ucapkan terima kasih dan buka sesi tanya-jawab. (Lihat file <code>BRIEFING_PRESENTASI_KE_AUDIENS.md</code> untuk jawaban pertanyaan sulit dosen).
+          🎙️ <strong>Panduan Bicara (Babak 8):</strong> Tutup presentasi dengan percaya diri dan undang dosen penguji untuk memberikan pertanyaan. Pegang cheat-sheet Q&amp;A yang telah disiapkan!
         </div>
       </div>
 
     </div>
 
-    <!-- RIGHT: INTERACTIVE 3D THREE.JS STAGE -->
+    <!-- RIGHT: 3D THREE.JS CANVAS STAGE -->
     <div class="stage-wrapper">
       
       <!-- Top HUD on 3D Stage -->
       <div class="stage-overlay-top">
         <div class="stage-pill">
-          <span style="width: 8px; height: 8px; border-radius: 9999px; background: #10b981; display: inline-block;"></span>
-          <span id="stageTitle">3D Datacenter Real-World View</span>
+          <span style="width: 8px; height: 8px; border-radius: 9999px; background: #0284c7; display: inline-block;"></span>
+          <span id="stageTitle">Topologi 3 Datacenter (Minggu 3)</span>
         </div>
 
         <div class="stage-controls">
           <button class="btn-mode active" id="btnModeTopology" onclick="set3DMode('topology')">Topologi DC</button>
-          <button class="btn-mode" id="btnModeAOA" onclick="set3DMode('aoa')">AOA Drones</button>
-          <button class="btn-mode" id="btnModeES" onclick="set3DMode('es')">ES + LJF</button>
+          <button class="btn-mode" id="btnModeAOAExplore" onclick="set3DMode('aoa-explore')">AOA Eksplorasi (÷, ×)</button>
+          <button class="btn-mode" id="btnModeAOAExploit" onclick="set3DMode('aoa-exploit')">AOA Eksploitasi (-, +)</button>
         </div>
       </div>
 
@@ -687,7 +695,7 @@
       <!-- Bottom HUD on 3D Stage -->
       <div class="stage-overlay-bottom">
         <div class="telemetry-tag" id="stageTelemetry">
-          3 Datacenter: Surabaya (Host 0) &bull; Jakarta (Host 1) &bull; Yogya (Host 2)
+          Surabaya (6.000 MIPS) &bull; Jakarta (3.600 MIPS) &bull; Yogya (800 MIPS)
         </div>
         <div class="telemetry-tag" style="font-size: 10px;">
           Orbit: Klik Kiri + Geser | Zoom: Scroll
@@ -717,8 +725,8 @@
     let scene, camera, renderer, controls;
     let current3DMode = 'topology';
     let dataCubes = [];
-    let aoaDrones = [];
-    let esEntities = [];
+    let aoaExploreDrones = [];
+    let aoaExploitDrones = [];
     let laserLines = [];
     let beaconGroup, goldenCrown;
     let animId;
@@ -728,7 +736,7 @@
       const width = container.clientWidth;
       const height = container.clientHeight;
 
-      // 1. Scene & Warm Bright Lighting
+      // 1. Scene & Warm Clean Bright Lighting
       scene = new THREE.Scene();
       scene.background = new THREE.Color(0xfcf8f2);
       scene.fog = new THREE.FogExp2(0xfcf8f2, 0.009);
@@ -772,7 +780,7 @@
       floor.receiveShadow = true;
       scene.add(floor);
 
-      const gridHelper = new THREE.GridHelper(80, 40, 0xb45309, 0xdbcdb8);
+      const gridHelper = new THREE.GridHelper(80, 40, 0x0284c7, 0xdbcdb8);
       gridHelper.position.y = 0.02;
       scene.add(gridHelper);
 
@@ -791,7 +799,7 @@
       buildNetworkTrunk([-14, 0.5, -4], [0, 0.5, 10], 0x059669);  // SBY - YOG
       buildNetworkTrunk([14, 0.5, -4], [0, 0.5, 10], 0x7c3aed);   // JKT - YOG
 
-      // 4. Golden Beacon for S_best
+      // 4. Golden Beacon for Best Solution (S_best)
       beaconGroup = new THREE.Group();
       const beamGeo = new THREE.CylinderGeometry(0.15, 0.15, 30, 16);
       const beamMat = new THREE.MeshBasicMaterial({ color: 0xd97706, transparent: true, opacity: 0.85 });
@@ -801,22 +809,22 @@
 
       // Crown
       goldenCrown = new THREE.Mesh(
-        new THREE.OctahedronGeometry(0.6, 0),
+        new THREE.OctahedronGeometry(0.65, 0),
         new THREE.MeshStandardMaterial({ color: 0xf59e0b, emissive: 0xf59e0b, emissiveIntensity: 0.8 })
       );
       goldenCrown.position.y = 9.5;
       beaconGroup.add(goldenCrown);
-      beaconGroup.position.set(-14, 0, -4); // Surabaya is champion
+      beaconGroup.position.set(-14, 0, -4); // Surabaya is optimal location
       scene.add(beaconGroup);
 
-      // 5. Cloudlet Data Cubes (LJF Conveyor)
+      // 5. Cloudlet Task Cubes
       createDataCubes();
 
-      // 6. AOA Drones
-      createAOADrones();
+      // 6. AOA Exploration Drones (Divide / Multiply)
+      createAOAExploreDrones();
 
-      // 7. ES Entities
-      createESEntities();
+      // 7. AOA Exploitation Drones (Subtract / Add with Scanning Lasers)
+      createAOAExploitDrones();
 
       // Resize Listener
       window.addEventListener('resize', onResize);
@@ -905,7 +913,7 @@
     }
 
     function createDataCubes() {
-      // 8 Cloudlet Tasks representing Longest Job First (LJF)
+      // 8 Cloudlet Tasks representing dataset workload
       const sizes = [1.5, 1.3, 1.1, 0.9, 0.8, 0.7, 0.6, 0.5]; // 60.780 MI down to 2.340 MI
       sizes.forEach((s, idx) => {
         const cube = new THREE.Mesh(
@@ -924,62 +932,51 @@
       });
     }
 
-    function createAOADrones() {
-      for (let i = 0; i < 8; i++) {
+    function createAOAExploreDrones() {
+      for (let i = 0; i < 6; i++) {
         const drone = new THREE.Group();
-        const isExplore = i % 2 === 0;
-        const color = isExplore ? 0x0284c7 : 0x059669;
-
         const body = new THREE.Mesh(
-          new THREE.BoxGeometry(1.2, 0.35, 1.2),
-          new THREE.MeshStandardMaterial({ color, metalness: 0.4 })
+          new THREE.BoxGeometry(1.3, 0.35, 1.3),
+          new THREE.MeshStandardMaterial({ color: 0x0284c7, metalness: 0.6 })
         );
         drone.add(body);
 
-        // Laser scanner for exploitation drone
-        if (!isExplore) {
-          const laser = new THREE.Mesh(
-            new THREE.CylinderGeometry(0.04, 0.04, 4, 8),
-            new THREE.MeshBasicMaterial({ color: 0x10b981, transparent: true, opacity: 0.75 })
-          );
-          laser.position.y = -2;
-          drone.add(laser);
-        }
+        // Exploration beacon ring (Multiply / Divide)
+        const ring = new THREE.Mesh(
+          new THREE.TorusGeometry(0.8, 0.05, 8, 24),
+          new THREE.MeshBasicMaterial({ color: 0x38bdf8 })
+        );
+        ring.rotation.x = Math.PI / 2;
+        drone.add(ring);
 
-        drone.position.set((Math.random() - 0.5) * 32, 6 + Math.random() * 4, (Math.random() - 0.5) * 26);
+        drone.position.set((Math.random() - 0.5) * 34, 7 + Math.random() * 4, (Math.random() - 0.5) * 26);
         drone.visible = false;
         scene.add(drone);
-        aoaDrones.push(drone);
+        aoaExploreDrones.push(drone);
       }
     }
 
-    function createESEntities() {
-      // 5 Mu Parents (Purple) + 14 Lambda Offspring (Magenta)
-      for (let i = 0; i < 18; i++) {
-        const isParent = i < 5;
-        const color = isParent ? 0x7c3aed : 0xe11d48;
-        const entity = new THREE.Group();
-
-        const capsule = new THREE.Mesh(
-          new THREE.CylinderGeometry(0.5, 0.5, 1.4, 16),
-          new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: isParent ? 0.6 : 0.3 })
+    function createAOAExploitDrones() {
+      for (let i = 0; i < 6; i++) {
+        const drone = new THREE.Group();
+        const body = new THREE.Mesh(
+          new THREE.BoxGeometry(1.2, 0.35, 1.2),
+          new THREE.MeshStandardMaterial({ color: 0x059669, metalness: 0.5 })
         );
-        capsule.position.y = 0.7;
-        entity.add(capsule);
+        drone.add(body);
 
-        // Halo
-        const halo = new THREE.Mesh(
-          new THREE.TorusGeometry(0.8, 0.04, 8, 20),
-          new THREE.MeshBasicMaterial({ color })
+        // Precision laser scanner for exploitation
+        const laser = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.04, 0.04, 4.5, 8),
+          new THREE.MeshBasicMaterial({ color: 0x10b981, transparent: true, opacity: 0.85 })
         );
-        halo.rotation.x = Math.PI / 2;
-        halo.position.y = 0.9;
-        entity.add(halo);
+        laser.position.y = -2.25;
+        drone.add(laser);
 
-        entity.position.set((Math.random() - 0.5) * 28, 4 + Math.random() * 3, (Math.random() - 0.5) * 22);
-        entity.visible = false;
-        scene.add(entity);
-        esEntities.push(entity);
+        drone.position.set(-14 + (Math.random() - 0.5) * 8, 9 + Math.random() * 2, -4 + (Math.random() - 0.5) * 8);
+        drone.visible = false;
+        scene.add(drone);
+        aoaExploitDrones.push(drone);
       }
     }
 
@@ -987,8 +984,8 @@
       current3DMode = mode;
 
       document.getElementById('btnModeTopology').classList.toggle('active', mode === 'topology');
-      document.getElementById('btnModeAOA').classList.toggle('active', mode === 'aoa');
-      document.getElementById('btnModeES').classList.toggle('active', mode === 'es');
+      document.getElementById('btnModeAOAExplore').classList.toggle('active', mode === 'aoa-explore');
+      document.getElementById('btnModeAOAExploit').classList.toggle('active', mode === 'aoa-exploit');
 
       const titleEl = document.getElementById('stageTitle');
       const telemEl = document.getElementById('stageTelemetry');
@@ -997,22 +994,22 @@
         titleEl.innerText = 'Topologi 3 Datacenter (Minggu 3)';
         telemEl.innerText = 'Surabaya (6.000 MIPS) &bull; Jakarta (3.600 MIPS) &bull; Yogyakarta (800 MIPS)';
         dataCubes.forEach(c => c.visible = true);
-        aoaDrones.forEach(d => d.visible = false);
-        esEntities.forEach(e => e.visible = false);
+        aoaExploreDrones.forEach(d => d.visible = false);
+        aoaExploitDrones.forEach(d => d.visible = false);
         beaconGroup.visible = true;
-      } else if (mode === 'aoa') {
-        titleEl.innerText = 'Mode Simulasi AOA: Eksplorasi (÷, ×) vs Eksploitasi (-, +)';
-        telemEl.innerText = 'Drone Biru (Lompat Jauh) &bull; Drone Hijau (Laser Menyisir) &bull; Tiang Suar Emas';
+      } else if (mode === 'aoa-explore') {
+        titleEl.innerText = 'Fase Eksplorasi AOA: Pembagian (÷) & Perkalian (×)';
+        telemEl.innerText = 'Drone Biru Melompat Jauh Menjelajahi Seluruh Ruang VM & Datacenter';
         dataCubes.forEach(c => c.visible = false);
-        aoaDrones.forEach(d => d.visible = true);
-        esEntities.forEach(e => e.visible = false);
+        aoaExploreDrones.forEach(d => d.visible = true);
+        aoaExploitDrones.forEach(d => d.visible = false);
         beaconGroup.visible = true;
-      } else if (mode === 'es') {
-        titleEl.innerText = 'Mode Simulasi (μ, λ)-ES + Kebijakan Antrean LJF';
-        telemEl.innerText = 'Induk Ungu (μ) &bull; Anak Mutasi 1:7 (λ) &bull; Balok Terberat Masuk Surabaya';
+      } else if (mode === 'aoa-exploit') {
+        titleEl.innerText = 'Fase Eksploitasi AOA: Pengurangan (-) & Penambahan (+)';
+        telemEl.innerText = 'Drone Hijau Memindai Presisi di Sekitar Solusi Terbaik (Surabaya 6.000 MIPS)';
         dataCubes.forEach(c => c.visible = true);
-        aoaDrones.forEach(d => d.visible = false);
-        esEntities.forEach(e => e.visible = true);
+        aoaExploreDrones.forEach(d => d.visible = false);
+        aoaExploitDrones.forEach(d => d.visible = true);
         beaconGroup.visible = true;
       }
     }
@@ -1026,37 +1023,38 @@
         goldenCrown.rotation.x += 0.01;
       }
 
-      // Animate LJF Data Cubes
       const t = Date.now() * 0.001;
+
+      // Animate Task Cubes
       dataCubes.forEach((cb, idx) => {
         cb.rotation.y += 0.015 + idx * 0.002;
-        if (current3DMode === 'es') {
-          // LJF Movement: Glide toward Surabaya (-14, 0, -4)
-          const targetX = -14 + idx * 3.2;
-          const targetZ = -4 + Math.sin(t + idx) * 1.5;
-          cb.position.x += (targetX - cb.position.x) * 0.04;
-          cb.position.z += (targetZ - cb.position.z) * 0.04;
+        if (current3DMode === 'aoa-exploit') {
+          // Tasks flock towards optimal datacenter Surabaya (-14, 0, -4)
+          const targetX = -14 + idx * 2.8;
+          const targetZ = -4 + Math.sin(t + idx) * 1.2;
+          cb.position.x += (targetX - cb.position.x) * 0.05;
+          cb.position.z += (targetZ - cb.position.z) * 0.05;
           cb.position.y = 5.5 + Math.sin(t * 2 + idx) * 0.3;
         } else {
           cb.position.y = 5 + Math.sin(t * 1.5 + idx) * 0.5;
         }
       });
 
-      // Animate AOA Drones
-      if (current3DMode === 'aoa') {
-        aoaDrones.forEach((dr, idx) => {
-          dr.position.x += Math.sin(t * 0.8 + idx) * 0.06;
-          dr.position.z += Math.cos(t * 0.8 + idx) * 0.06;
-          dr.position.y = 5.5 + Math.sin(t * 1.5 + idx) * 0.4;
+      // Animate AOA Exploration Drones (Wide Jumps)
+      if (current3DMode === 'aoa-explore') {
+        aoaExploreDrones.forEach((dr, idx) => {
+          dr.position.x += Math.sin(t * 0.7 + idx) * 0.12;
+          dr.position.z += Math.cos(t * 0.7 + idx) * 0.12;
+          dr.position.y = 7.0 + Math.sin(t * 1.4 + idx) * 0.6;
         });
       }
 
-      // Animate ES Entities
-      if (current3DMode === 'es') {
-        esEntities.forEach((ent, idx) => {
-          ent.position.x += Math.sin(t * 0.9 + idx) * 0.05;
-          ent.position.z += Math.cos(t * 0.9 + idx) * 0.05;
-          ent.children[1].rotation.z += 0.04; // rotate halo
+      // Animate AOA Exploitation Drones (Tight Precision Hover)
+      if (current3DMode === 'aoa-exploit') {
+        aoaExploitDrones.forEach((dr, idx) => {
+          dr.position.x += Math.sin(t * 1.2 + idx) * 0.03;
+          dr.position.z += Math.cos(t * 1.2 + idx) * 0.03;
+          dr.position.y = 9.2 + Math.sin(t * 2.0 + idx) * 0.2;
         });
       }
 
