@@ -13,3 +13,4 @@ $env:JAVA_HOME = $JAVA_PATH
 $env:PATH = "$JAVA_PATH\bin;$MAVEN_PATH;$env:PATH"
 
 & "$MAVEN_PATH\mvn.cmd" compile exec:java
+
