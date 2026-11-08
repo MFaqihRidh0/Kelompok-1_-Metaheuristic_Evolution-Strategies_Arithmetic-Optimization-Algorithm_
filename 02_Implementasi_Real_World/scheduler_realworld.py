@@ -489,7 +489,9 @@ def run_benchmarks(datasets_dir: str, output_dir: str, num_runs: int = 10):
     for n in scenarios:
         dataset_file = os.path.join(datasets_dir, f"dataset_{n}cloudlet.csv")
         if not os.path.exists(dataset_file):
-            print(f"[!] Warning: File {dataset_file} tidak ditemukan. Melewati skenario {n}.")
+            dataset_file = os.path.join(output_dir, f"dataset_{n}cloudlet.csv")
+        if not os.path.exists(dataset_file):
+            print(f"[!] Warning: File dataset_{n}cloudlet.csv tidak ditemukan. Melewati skenario {n}.")
             continue
             
         cloudlets = load_cloudlets_from_csv(dataset_file)

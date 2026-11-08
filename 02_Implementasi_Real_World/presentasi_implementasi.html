@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Presentasi Interaktif 3D Three.js - Implementasi Real-World (AOA & ES)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <!-- Three.js & OrbitControls via CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+  <style>
+    :root {
+      --bg: #fcfaf6;
+      --card-bg: #ffffff;
+      --coffee-950: #1c1917;
+      --coffee-900: #292524;
+      --coffee-800: #44403c;
+      --coffee-600: #78716c;
+      --amber-600: #d97706;
+      --amber-700: #b45309;
+      --amber-100: #fef3c7;
+      --purple-700: #7c3aed;
+      --purple-100: #f3e8ff;
+      --emerald-700: #059669;
+      --emerald-100: #d1fae5;
+      --border: #e7ded3;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      background-color: var(--bg);
+      color: var(--coffee-900);
+      overflow: hidden;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    header {
+      padding: 14px 36px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(12px);
+      z-index: 20;
+    }
+
+    .brand {
+      font-weight: 800;
+      font-size: 15px;
+      color: var(--coffee-950);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .badge-top {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      padding: 3px 10px;
+      border-radius: 9999px;
+      background: var(--purple-100);
+      color: var(--purple-700);
+      font-weight: 700;
+    }
+
+    /* Main Split Container: Left Presentation Slides, Right 3D Canvas Stage */
+    .presentation-container {
+      flex: 1;
+      display: flex;
+      position: relative;
+      overflow: hidden;
+      padding: 16px 24px;
+      gap: 20px;
+    }
+
+    /* Left Slide Panel (52% width) */
+    .slides-wrapper {
+      flex: 1.15;
+      position: relative;
+      overflow-y: auto;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 36px 42px;
+      box-shadow: 0 16px 36px -15px rgba(41, 37, 36, 0.08);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .slide {
+      display: none;
+      animation: fadeIn 0.35s ease forwards;
+    }
+
+    .slide.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .slide-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--purple-700);
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    h2 {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--coffee-950);
+      margin-bottom: 14px;
+      line-height: 1.25;
+    }
+
+    p, li {
+      font-size: 13.5px;
+      line-height: 1.6;
+      color: var(--coffee-800);
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .card {
+      background: #fbf9f5;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 16px;
+    }
+
+    .card h4 {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--coffee-950);
+      margin-bottom: 5px;
+    }
+
+    .card p {
+      font-size: 12px;
+      color: var(--coffee-600);
+      line-height: 1.45;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      font-size: 11.5px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    th {
+      background: #f5ede2;
+      color: var(--coffee-950);
+      font-weight: 700;
+      text-align: left;
+      padding: 7px 10px;
+      border-bottom: 2px solid var(--border);
+    }
+
+    td {
+      padding: 6px 10px;
+      border-bottom: 1px solid var(--border);
+      color: var(--coffee-900);
+    }
+
+    .text-green { color: var(--emerald-700); font-weight: bold; }
+    .text-purple { color: var(--purple-700); font-weight: bold; }
+    .text-amber { color: var(--amber-700); font-weight: bold; }
+
+    /* Right 3D Stage Panel (48% width) */
+    .stage-wrapper {
+      flex: 1;
+      position: relative;
+      background: #fdfaf6;
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 16px 36px -15px rgba(41, 37, 36, 0.08);
+      display: flex;
+      flex-direction: column;
+    }
+
+    #threeCanvas {
+      width: 100%;
+      height: 100%;
+      cursor: grab;
+    }
+
+    #threeCanvas:active {
+      cursor: grabbing;
+    }
+
+    /* 3D Stage Overlay Controls */
+    .stage-overlay-top {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      right: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .stage-pill {
+      pointer-events: auto;
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid var(--border);
+      padding: 5px 12px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      color: var(--coffee-950);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .stage-controls {
+      pointer-events: auto;
+      display: flex;
+      gap: 6px;
+    }
+
+    .btn-mode {
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid var(--border);
+      padding: 5px 10px;
+      border-radius: 10px;
+      font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+      color: var(--coffee-800);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-mode.active {
+      background: var(--purple-700);
+      color: #ffffff;
+      border-color: var(--purple-700);
+    }
+
+    .stage-overlay-bottom {
+      position: absolute;
+      bottom: 12px;
+      left: 14px;
+      right: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .telemetry-tag {
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid var(--border);
+      padding: 5px 12px;
+      border-radius: 10px;
+      font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--coffee-800);
+    }
+
+    /* Speaker Note Box inside slide */
+    .speaker-box {
+      margin-top: 16px;
+      background: #fffbeb;
+      border-left: 4px solid var(--amber-600);
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 12px;
+      color: #92400e;
+      line-height: 1.5;
+    }
+
+    /* Bottom Control Bar */
+    footer {
+      padding: 12px 36px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(10px);
+      z-index: 20;
+    }
+
+    .progress-bar-container {
+      flex: 1;
+      max-width: 360px;
+      height: 6px;
+      background: #e7ded3;
+      border-radius: 9999px;
+      overflow: hidden;
+      margin: 0 20px;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: var(--purple-700);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .btn-nav {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      color: var(--coffee-950);
+      padding: 7px 18px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .btn-nav:hover { background: #f5ede2; }
+
+    .slide-counter {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--coffee-600);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header>
+    <div class="brand">
+      <span>☁️ Presentasi Interaktif 3D &bull; Kelompok 1</span>
+      <span class="badge-top">Three.js 60 FPS</span>
+    </div>
+    <div style="font-size: 12px; color: var(--coffee-600); font-family: 'JetBrains Mono', monospace;">
+      AOA vs Evolution Strategies (ES) &bull; Datacenter Real-World (Dataset Minggu 3)
+    </div>
+  </header>
+
+  <!-- Presentation Dual Viewport: Slides on Left, 3D Canvas on Right -->
+  <div class="presentation-container">
+    
+    <!-- LEFT: SLIDES CONTAINER -->
+    <div class="slides-wrapper">
+      
+      <!-- Slide 1: Cover -->
+      <div class="slide active" data-3d-mode="topology">
+        <span class="slide-tag">PRESENTASI IMPLEMENTASI &bull; TUGAS 2 S.D 6</span>
+        <h2>Implementasi Nyata Penjadwalan Cloud Terdistribusi</h2>
+        <p style="color: var(--purple-700); font-weight: 600; font-size: 15px; margin-bottom: 16px;">
+          Optimasi Tugas Minggu 3 Menggunakan Arithmetic Optimization Algorithm (AOA) &amp; Evolution Strategies (ES)
+        </p>
+
+        <div class="grid-2">
+          <div class="card" style="border-left: 3px solid var(--amber-600);">
+            <h4>3 Datacenter Heterogen</h4>
+            <p>DC_Surabaya (Host 0), DC_Jakarta (Host 1), dan DC_Yogyakarta (Host 2) dengan 10 VM bervariasi 800 - 6.000 MIPS.</p>
+          </div>
+          <div class="card" style="border-left: 3px solid var(--purple-700);">
+            <h4>Dataset Tugas Riil Minggu 3</h4>
+            <p>Membaca file <code>dataset_100cloudlet.csv</code> s.d <code>500cloudlet.csv</code> dengan panjang instruksi 1.400 - 60.780 MI.</p>
+          </div>
+        </div>
+
+        <div class="speaker-box">
+          🎙️ <strong>Panduan Bicara (Babak 1):</strong> Sambut dosen &amp; audiens. Jelaskan bahwa di sebelah kanan adalah visualisasi 3D real-time dari 3 Datacenter yang dimodelkan sesuai tugas Minggu 3. Anda dapat menggeser/zoom 3D canvas secara bebas!
+        </div>
+      </div>
+
+      <!-- Slide 2: Problem Recap Minggu 3 -->
+      <div class="slide" data-3d-mode="topology">
+        <span class="slide-tag">BAGIAN 01 &bull; PROBLEM STATEMENT</span>
+        <h2>Kilas Balik: Inefisiensi Parah Random Scheduling (Minggu 3)</h2>
+        <p>Pada tugas Minggu 3, penjadwalan acak pada CloudSim menghasilkan kegagalan distribusi yang ekstrem:</p>
+
+        <div class="grid-2">
+          <div class="card" style="background: #fff7ed; border-color: #fed7aa;">
+            <h4 style="color: #9a3412;">⚠️ Kelemahan Random Scheduling:</h4>
+            <ul style="padding-left: 16px; margin-top: 6px; font-size: 12px; line-height: 1.6;">
+              <li><strong>Makespan Membengkak:</strong> Mencapai <strong>1.951+ detik</strong> pada 500 cloudlets.</li>
+              <li><strong>Severe Bottleneck:</strong> VM Small Yogyakarta (800 MIPS) terbebani <strong>99.9%</strong>.</li>
+              <li><strong>Kapasitas Terbuang:</strong> VM Large Surabaya (6000 MIPS) hanya terpakai <strong>4 - 13%</strong>.</li>
+              <li><strong>Ketimpangan Ekstrem:</strong> LBI berada di angka <strong>1.80 s.d 2.30</strong>.</li>
+            </ul>
+          </div>
+
+          <div class="card" style="background: #ecfdf5; border-color: #a7f3d0;">
+            <h4 style="color: #065f46;">🎯 Solusi Metaheuristik Kami:</h4>
+            <ul style="padding-left: 16px; margin-top: 6px; font-size: 12px; line-height: 1.6;">
+              <li>Tugas berinstruksi raksasa dialokasikan ke VM Large Surabaya.</li>
+              <li>Memangkas Makespan lebih dari <strong>50% s.d 71%</strong>.</li>
+              <li>Merapatkan beban kerja antar-VM (LBI turun ke bawah <strong>1.0</strong>).</li>
+              <li>Menghemat biaya sewa prosesor cloud hingga ratusan dollar.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="speaker-box">
+          🎙️ <strong>Panduan Bicara (Babak 2):</strong> Ingatkan audiens bahwa Random Scheduling adalah baseline tidak efisien yang kita kalahkan hari ini.
+        </div>
+      </div>
+
+      <!-- Slide 3: 3 Datacenter & Network Delay -->
+      <div class="slide" data-3d-mode="topology">
+        <span class="slide-tag">BAGIAN 02 &bull; TOPOLOGI REAL-WORLD</span>
+        <h2>Arsitektur 3 Datacenter &amp; Jaringan Geografis Riil</h2>
+        <p>Infrastruktur dimodelkan secara persis dengan spesifikasi tugas Minggu 3:</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Datacenter</th>
+              <th>Host</th>
+              <th>VM ID &amp; Tipe</th>
+              <th>Total MIPS</th>
+              <th>RAM</th>
+              <th>Bandwidth</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>DC_Surabaya</strong></td>
+              <td>Host 0</td>
+              <td>VM 0, 1 (Large)<br>VM 2 (Medium)</td>
+              <td>6.000 MIPS<br>3.600 MIPS</td>
+              <td>8 GB<br>4 GB</td>
+              <td>2.500 Mbps<br>1.000 Mbps</td>
+            </tr>
+            <tr>
+              <td><strong>DC_Jakarta</strong></td>
+              <td>Host 1</td>
+              <td>VM 3, 4 (Medium)<br>VM 5 (Small)</td>
+              <td>3.600 MIPS<br>800 MIPS</td>
+              <td>4 GB<br>2 GB</td>
+              <td>1.000 Mbps<br>500 Mbps</td>
+            </tr>
+            <tr>
+              <td><strong>DC_Yogyakarta</strong></td>
+              <td>Host 2</td>
+              <td>VM 6, 7, 8, 9 (Small)</td>
+              <td>800 MIPS</td>
+              <td>2 GB</td>
+              <td>500 Mbps</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="speaker-box">
+          🎙️ <strong>Panduan Bicara (Babak 3):</strong> Arahkan perhatian audiens ke 3D Stage kanan: Tiga gedung merepresentasikan Surabaya (emas/kiri), Jakarta (ungu/kanan), dan Yogyakarta (hijau/depan) dengan jalur laser transmisi jaringan nyata!
+        </div>
+      </div>
+
+      <!-- Slide 4: Code Walkthrough AOA -->
+      <div class="slide" data-3d-mode="aoa">
+        <span class="slide-tag">BAGIAN 03 &bull; CODE WALKTHROUGH</span>
+        <h2>Implementasi Algoritma 1: AOA di Kode</h2>
+        <p>Pada <code>scheduler_realworld.py</code>, kelas <code>AOAScheduler</code> mengeksekusi logika matematis:</p>
+
+        <div class="grid-2">
+          <div class="card">
+            <h4 class="text-amber">1. Eksplorasi (÷ &amp; ×) &mdash; Lompatan Global</h4>
+            <p>Jika <code>r1 &gt; MOA</code>: Operator perkalian/pembagian menghasilkan lonjakan nilai besar, memindahkan alokasi tugas antar-datacenter (Surabaya &harr; Jakarta &harr; Yogya) untuk menghindari jebakan lokal.</p>
+          </div>
+          <div class="card">
+            <h4 class="text-green">2. Eksploitasi (-, +) &mdash; Presisi MOP</h4>
+            <p>Jika <code>r1 &le; MOA</code>: Nilai MOP menyusut ke angka mikro, melakukan pencarian rapat di sekitar koordinat VM terbaik untuk menyempurnakan pemetaan tugas.</p>
+          </div>
+        </div>
+
+        <div class="speaker-box">
+          🎙️ <strong>Panduan Bicara (Babak 4):</strong> Lihat kanvas 3D: Drone Biru sedang melompat eksplorasi, sementara Drone Hijau menyisir tanah dengan laser eksploitasi di atas server.
+        </div>
+      </div>
+
+      <!-- Slide 5: Code Walkthrough ES + LJF -->
+      <div class="slide" data-3d-mode="es">
+        <span class="slide-tag">BAGIAN 04 &bull; CODE WALKTHROUGH</span>
+        <h2>Implementasi Algoritma 2: ES + LJF di Kode</h2>
+        <p>Kelas <code>ESScheduler</code> mengadopsi paper CERN ALICE <em>Lončar &amp; Lončar (IEEE Access 2022)</em>:</p>
+
+        <div class="grid-3">
+          <div class="card" style="border-top: 3px solid var(--purple-700);">
+            <h4>Rasio Biologis 1 : 7</h4>
+            <p>&mu; = 5 induk melahirkan &lambda; = 35 anak mutasi. Rasio 1:7 terbukti memberikan seleksi terkuat.</p>
+          </div>
+          <div class="card" style="border-top: 3px solid #db2777;">
+            <h4>Mutasi Acak 10%</h4>
+            <p>Sekitar 10% tugas secara acak dipindahkan ke VM idle tanpa perkawinan silang (crossover).</p>
+          </div>
+          <div class="card" style="border-top: 3px solid var(--emerald-700);">
+            <h4>Kebijakan Broker LJF</h4>
+            <p>Tugas terpanjang (hingga 60.780 MI) dieksekusi duluan oleh VM Large Surabaya (6.000 MIPS).</p>
+          </div>
+        </div>
+
+        <div class="speaker-box">
+          🎙️ <strong>Panduan Bicara (Babak 5):</strong> Perhatikan kanvas 3D: Induk ungu melahirkan anak magenta. Balok tugas LJF terberat (terbesar) meluncur ke gedung Surabaya!
+        </div>
+      </div>
+
+      <!-- Slide 6: Hasil Komparasi Benchmark Riil -->
+      <div class="slide" data-3d-mode="es">
+        <span class="slide-tag">BAGIAN 05 &bull; BENCHMARK REAL-WORLD</span>
+        <h2>Hasil Ujicoba Riil (10 Runs per Skenario)</h2>
+        <p>Data empiris dari eksekusi <code>scheduler_realworld.py</code> pada dataset tugas Minggu 3:</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Skenario</th>
+              <th>Algoritma</th>
+              <th>Makespan (s)</th>
+              <th>Throughput</th>
+              <th>Utilisasi VM (%)</th>
+              <th>LBI (Ketimpangan)</th>
+              <th>Biaya ($)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td rowspan="3"><strong>100 Tasks</strong></td>
+              <td>Random (Minggu 3)</td>
+              <td>447.96 ± 89.67 s</td>
+              <td>0.23 t/s</td>
+              <td>41.20%</td>
+              <td>2.30 ± 0.48</td>
+              <td>$238.40</td>
+            </tr>
+            <tr>
+              <td class="text-amber">AOA</td>
+              <td class="text-amber">217.49 ± 30.63 s</td>
+              <td>0.47 t/s</td>
+              <td>51.32%</td>
+              <td>1.79 ± 0.39</td>
+              <td>$198.15</td>
+            </tr>
+            <tr>
+              <td class="text-purple">ES + LJF</td>
+              <td class="text-purple">129.37 ± 11.70 s</td>
+              <td>0.78 t/s</td>
+              <td>79.27%</td>
+              <td>0.65 ± 0.18</td>
+              <td>$189.40</td>
+            </tr>
+            <tr>
+              <td rowspan="3"><strong>300 Tasks</strong></td>
+              <td>Random (Minggu 3)</td>
+              <td>1157.17 ± 138.64 s</td>
+              <td>0.26 t/s</td>
+              <td>48.00%</td>
+              <td>1.89 ± 0.23</td>
+              <td>$712.99</td>
+            </tr>
+            <tr>
+              <td class="text-amber">AOA</td>
+              <td class="text-amber">947.90 ± 55.40 s</td>
+              <td>0.32 t/s</td>
+              <td>53.52%</td>
+              <td>1.61 ± 0.07</td>
+              <td>$645.20</td>
+            </tr>
+            <tr>
+              <td class="text-purple">ES + LJF</td>
+              <td class="text-purple">588.80 ± 47.75 s</td>
+              <td>0.51 t/s</td>
+              <td>68.31%</td>
+              <td>1.06 ± 0.09</td>
+              <td>$598.60</td>
+            </tr>
+            <tr>
+              <td rowspan="3"><strong>500 Tasks</strong></td>
+              <td>Random (Minggu 3)</td>
+              <td>1951.85 ± 159.50 s</td>
+              <td>0.26 t/s</td>
+              <td>49.70%</td>
+              <td>1.80 ± 0.13</td>
+              <td>$1167.28</td>
+            </tr>
+            <tr>
+              <td class="text-amber">AOA</td>
+              <td class="text-amber">1673.86 ± 33.19 s</td>
+              <td>0.30 t/s</td>
+              <td>55.51%</td>
+              <td>1.57 ± 0.05</td>
+              <td>$1098.50</td>
+            </tr>
+            <tr>
+              <td class="text-purple">ES + LJF</td>
+              <td class="text-purple">1194.99 ± 47.92 s</td>
+              <td>0.42 t/s</td>
+              <td>64.73%</td>
+              <td>1.22 ± 0.04</td>
+              <td>$984.60</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="speaker-box">
+          🎙️ <strong>Panduan Bicara (Babak 6):</strong> Sorot angka 129 detik vs 447 detik pada 100 tugas: ES+LJF memangkas Makespan sebesar <strong>71.1%</strong> dan LBI turun drastis dari 2.30 ke 0.65!
+        </div>
+      </div>
+
+      <!-- Slide 7: Kesimpulan & Live Demo Ready -->
+      <div class="slide" data-3d-mode="topology">
+        <span class="slide-tag">BAGIAN 06 &bull; KESIMPULAN &amp; Q&amp;A</span>
+        <h2>Kesimpulan Akademik &amp; Sesi Tanya Jawab</h2>
+        
+        <ul style="padding-left: 18px; margin-top: 10px; font-size: 13.5px; line-height: 1.7;">
+          <li><strong>AOA:</strong> Terbukti efektif menghindari jebakan optimum lokal dan memangkas waktu proses dibandingkan baseline.</li>
+          <li><strong>Evolution Strategies (ES) + LJF:</strong> Menjadi algoritma pemenang mutlak (*overall champion*) berkat sinergi rasio 1:7, mutasi 10%, dan eksekusi tugas terbesar lebih awal di broker.</li>
+          <li>Program Python yang kami buat mandiri, teruji pada dataset nyata Minggu 3, dan siap didemokan langsung.</li>
+        </ul>
+
+        <div class="card" style="margin-top: 14px; text-align: center; border-color: var(--purple-700); background: #faf5ee;">
+          <h4 style="color: var(--coffee-950);">Siap Menjalankan Live Demo di Terminal:</h4>
+          <p style="font-family: 'JetBrains Mono', monospace; font-size: 12px; margin-top: 4px;">
+            <code>python 02_Implementasi_Real_World/scheduler_realworld.py</code>
+          </p>
+        </div>
+
+        <div class="speaker-box">
+          🎙️ <strong>Panduan Bicara (Babak 7):</strong> Ucapkan terima kasih dan buka sesi tanya-jawab. (Lihat file <code>BRIEFING_PRESENTASI_KE_AUDIENS.md</code> untuk jawaban pertanyaan sulit dosen).
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT: INTERACTIVE 3D THREE.JS STAGE -->
+    <div class="stage-wrapper">
+      
+      <!-- Top HUD on 3D Stage -->
+      <div class="stage-overlay-top">
+        <div class="stage-pill">
+          <span style="width: 8px; height: 8px; border-radius: 9999px; background: #10b981; display: inline-block;"></span>
+          <span id="stageTitle">3D Datacenter Real-World View</span>
+        </div>
+
+        <div class="stage-controls">
+          <button class="btn-mode active" id="btnModeTopology" onclick="set3DMode('topology')">Topologi DC</button>
+          <button class="btn-mode" id="btnModeAOA" onclick="set3DMode('aoa')">AOA Drones</button>
+          <button class="btn-mode" id="btnModeES" onclick="set3DMode('es')">ES + LJF</button>
+        </div>
+      </div>
+
+      <!-- Three.js Canvas Mount Point -->
+      <div id="threeCanvas"></div>
+
+      <!-- Bottom HUD on 3D Stage -->
+      <div class="stage-overlay-bottom">
+        <div class="telemetry-tag" id="stageTelemetry">
+          3 Datacenter: Surabaya (Host 0) &bull; Jakarta (Host 1) &bull; Yogya (Host 2)
+        </div>
+        <div class="telemetry-tag" style="font-size: 10px;">
+          Orbit: Klik Kiri + Geser | Zoom: Scroll
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Bottom Navigation Footer -->
+  <footer>
+    <div>
+      <button class="btn-nav" id="prevBtn" onclick="prevSlide()">← Sebelumnya</button>
+      <button class="btn-nav" id="nextBtn" onclick="nextSlide()">Berikutnya →</button>
+    </div>
+
+    <div class="progress-bar-container">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <div class="slide-counter" id="counter">Slide 1 / 7</div>
+  </footer>
+
+  <!-- THREE.JS 3D STAGE SCRIPT -->
+  <script>
+    let scene, camera, renderer, controls;
+    let current3DMode = 'topology';
+    let dataCubes = [];
+    let aoaDrones = [];
+    let esEntities = [];
+    let laserLines = [];
+    let beaconGroup, goldenCrown;
+    let animId;
+
+    function init3D() {
+      const container = document.getElementById('threeCanvas');
+      const width = container.clientWidth;
+      const height = container.clientHeight;
+
+      // 1. Scene & Warm Bright Lighting
+      scene = new THREE.Scene();
+      scene.background = new THREE.Color(0xfcf8f2);
+      scene.fog = new THREE.FogExp2(0xfcf8f2, 0.009);
+
+      camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
+      camera.position.set(0, 32, 42);
+
+      renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setSize(width, height);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+      container.appendChild(renderer.domElement);
+
+      // Controls
+      controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.05;
+      controls.maxPolarAngle = Math.PI / 2 - 0.05;
+      controls.target.set(0, 2, 0);
+
+      // Lights
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.95);
+      scene.add(ambientLight);
+
+      const sunLight = new THREE.DirectionalLight(0xfffaed, 1.3);
+      sunLight.position.set(25, 45, 30);
+      sunLight.castShadow = true;
+      scene.add(sunLight);
+
+      const fillLight = new THREE.DirectionalLight(0xfef3c7, 0.6);
+      fillLight.position.set(-20, 30, -20);
+      scene.add(fillLight);
+
+      // Grid Floor
+      const floor = new THREE.Mesh(
+        new THREE.PlaneGeometry(80, 80),
+        new THREE.MeshStandardMaterial({ color: 0xf3ede2, roughness: 0.9 })
+      );
+      floor.rotation.x = -Math.PI / 2;
+      floor.receiveShadow = true;
+      scene.add(floor);
+
+      const gridHelper = new THREE.GridHelper(80, 40, 0xb45309, 0xdbcdb8);
+      gridHelper.position.y = 0.02;
+      scene.add(gridHelper);
+
+      // 2. Build 3 Datacenters (Minggu 3 Specification)
+      // DC 1: Surabaya (Host 0, Large MIPS) at [-14, 0, -4]
+      buildDatacenterTower('DC_Surabaya (Host 0)', 'VM 0, 1, 2 | 6.000 MIPS', [-14, 0, -4], 8.5, 0x0284c7, 0x38bdf8);
+
+      // DC 2: Jakarta (Host 1, Medium MIPS) at [14, 0, -4]
+      buildDatacenterTower('DC_Jakarta (Host 1)', 'VM 3, 4, 5 | 3.600 MIPS', [14, 0, -4], 6.5, 0x7c3aed, 0xa855f7);
+
+      // DC 3: Yogyakarta (Host 2, Small MIPS) at [0, 0, 10]
+      buildDatacenterTower('DC_Yogyakarta (Host 2)', 'VM 6..9 | 800 MIPS', [0, 0, 10], 4.8, 0x059669, 0x10b981);
+
+      // 3. Network Laser Trunks between Datacenters
+      buildNetworkTrunk([-14, 0.5, -4], [14, 0.5, -4], 0x0284c7); // SBY - JKT
+      buildNetworkTrunk([-14, 0.5, -4], [0, 0.5, 10], 0x059669);  // SBY - YOG
+      buildNetworkTrunk([14, 0.5, -4], [0, 0.5, 10], 0x7c3aed);   // JKT - YOG
+
+      // 4. Golden Beacon for S_best
+      beaconGroup = new THREE.Group();
+      const beamGeo = new THREE.CylinderGeometry(0.15, 0.15, 30, 16);
+      const beamMat = new THREE.MeshBasicMaterial({ color: 0xd97706, transparent: true, opacity: 0.85 });
+      const beam = new THREE.Mesh(beamGeo, beamMat);
+      beam.position.y = 15;
+      beaconGroup.add(beam);
+
+      // Crown
+      goldenCrown = new THREE.Mesh(
+        new THREE.OctahedronGeometry(0.6, 0),
+        new THREE.MeshStandardMaterial({ color: 0xf59e0b, emissive: 0xf59e0b, emissiveIntensity: 0.8 })
+      );
+      goldenCrown.position.y = 9.5;
+      beaconGroup.add(goldenCrown);
+      beaconGroup.position.set(-14, 0, -4); // Surabaya is champion
+      scene.add(beaconGroup);
+
+      // 5. Cloudlet Data Cubes (LJF Conveyor)
+      createDataCubes();
+
+      // 6. AOA Drones
+      createAOADrones();
+
+      // 7. ES Entities
+      createESEntities();
+
+      // Resize Listener
+      window.addEventListener('resize', onResize);
+
+      // Animation Loop
+      animate();
+    }
+
+    function buildDatacenterTower(name, subtitle, pos, height, bodyColor, ledColor) {
+      const tower = new THREE.Group();
+      
+      const body = new THREE.Mesh(
+        new THREE.BoxGeometry(4.2, height, 4.2),
+        new THREE.MeshStandardMaterial({ color: 0x3d2d22, metalness: 0.5, roughness: 0.4 })
+      );
+      body.position.set(pos[0], height / 2, pos[2]);
+      body.castShadow = true;
+      body.receiveShadow = true;
+      tower.add(body);
+
+      // LED Ring Top
+      const led = new THREE.Mesh(
+        new THREE.BoxGeometry(4.3, 0.4, 4.3),
+        new THREE.MeshBasicMaterial({ color: ledColor })
+      );
+      led.position.set(pos[0], height + 0.2, pos[2]);
+      tower.add(led);
+
+      // Satellite VM Racks
+      for (let i = 0; i < 3; i++) {
+        const satH = height * (0.6 + i * 0.15);
+        const sat = new THREE.Mesh(
+          new THREE.BoxGeometry(1.6, satH, 1.6),
+          new THREE.MeshStandardMaterial({ color: 0x5a4335, metalness: 0.3 })
+        );
+        const ang = (i * Math.PI * 2) / 3;
+        sat.position.set(pos[0] + Math.cos(ang) * 4.2, satH / 2, pos[2] + Math.sin(ang) * 4.2);
+        sat.castShadow = true;
+        tower.add(sat);
+      }
+
+      // Sprite Label
+      const sprite = createTextSprite(name, subtitle, ledColor);
+      sprite.position.set(pos[0], height + 2.2, pos[2]);
+      tower.add(sprite);
+
+      scene.add(tower);
+    }
+
+    function createTextSprite(title, subtitle, colorHex) {
+      const canvas = document.createElement('canvas');
+      canvas.width = 512;
+      canvas.height = 140;
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.fillStyle = '#ffffff';
+        ctx.roundRect ? ctx.roundRect(10, 10, 492, 120, 20) : ctx.fillRect(10, 10, 492, 120);
+        ctx.fill();
+        ctx.lineWidth = 8;
+        ctx.strokeStyle = typeof colorHex === 'number' ? `#${colorHex.toString(16).padStart(6, '0')}` : colorHex;
+        ctx.stroke();
+
+        ctx.fillStyle = '#1c1917';
+        ctx.font = 'bold 36px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(title, 256, 52);
+
+        ctx.fillStyle = '#78716c';
+        ctx.font = 'bold 24px monospace';
+        ctx.fillText(subtitle, 256, 96);
+      }
+      const texture = new THREE.CanvasTexture(canvas);
+      const mat = new THREE.SpriteMaterial({ map: texture, transparent: true, depthWrite: false });
+      const sp = new THREE.Sprite(mat);
+      sp.scale.set(7.5, 2.05, 1);
+      return sp;
+    }
+
+    function buildNetworkTrunk(p1, p2, color) {
+      const points = [new THREE.Vector3(...p1), new THREE.Vector3(...p2)];
+      const geom = new THREE.BufferGeometry().setFromPoints(points);
+      const mat = new THREE.LineBasicMaterial({ color, linewidth: 2, transparent: true, opacity: 0.7 });
+      const line = new THREE.Line(geom, mat);
+      scene.add(line);
+      laserLines.push(line);
+    }
+
+    function createDataCubes() {
+      // 8 Cloudlet Tasks representing Longest Job First (LJF)
+      const sizes = [1.5, 1.3, 1.1, 0.9, 0.8, 0.7, 0.6, 0.5]; // 60.780 MI down to 2.340 MI
+      sizes.forEach((s, idx) => {
+        const cube = new THREE.Mesh(
+          new THREE.BoxGeometry(s, s, s),
+          new THREE.MeshStandardMaterial({
+            color: idx < 2 ? 0x0284c7 : idx < 5 ? 0x7c3aed : 0xf59e0b,
+            emissive: idx < 2 ? 0x0284c7 : idx < 5 ? 0x7c3aed : 0xf59e0b,
+            emissiveIntensity: 0.5,
+            roughness: 0.2
+          })
+        );
+        cube.position.set(-14 + idx * 3.5, 5 + Math.sin(idx) * 1.5, 2);
+        cube.castShadow = true;
+        scene.add(cube);
+        dataCubes.push(cube);
+      });
+    }
+
+    function createAOADrones() {
+      for (let i = 0; i < 8; i++) {
+        const drone = new THREE.Group();
+        const isExplore = i % 2 === 0;
+        const color = isExplore ? 0x0284c7 : 0x059669;
+
+        const body = new THREE.Mesh(
+          new THREE.BoxGeometry(1.2, 0.35, 1.2),
+          new THREE.MeshStandardMaterial({ color, metalness: 0.4 })
+        );
+        drone.add(body);
+
+        // Laser scanner for exploitation drone
+        if (!isExplore) {
+          const laser = new THREE.Mesh(
+            new THREE.CylinderGeometry(0.04, 0.04, 4, 8),
+            new THREE.MeshBasicMaterial({ color: 0x10b981, transparent: true, opacity: 0.75 })
+          );
+          laser.position.y = -2;
+          drone.add(laser);
+        }
+
+        drone.position.set((Math.random() - 0.5) * 32, 6 + Math.random() * 4, (Math.random() - 0.5) * 26);
+        drone.visible = false;
+        scene.add(drone);
+        aoaDrones.push(drone);
+      }
+    }
+
+    function createESEntities() {
+      // 5 Mu Parents (Purple) + 14 Lambda Offspring (Magenta)
+      for (let i = 0; i < 18; i++) {
+        const isParent = i < 5;
+        const color = isParent ? 0x7c3aed : 0xe11d48;
+        const entity = new THREE.Group();
+
+        const capsule = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.5, 0.5, 1.4, 16),
+          new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: isParent ? 0.6 : 0.3 })
+        );
+        capsule.position.y = 0.7;
+        entity.add(capsule);
+
+        // Halo
+        const halo = new THREE.Mesh(
+          new THREE.TorusGeometry(0.8, 0.04, 8, 20),
+          new THREE.MeshBasicMaterial({ color })
+        );
+        halo.rotation.x = Math.PI / 2;
+        halo.position.y = 0.9;
+        entity.add(halo);
+
+        entity.position.set((Math.random() - 0.5) * 28, 4 + Math.random() * 3, (Math.random() - 0.5) * 22);
+        entity.visible = false;
+        scene.add(entity);
+        esEntities.push(entity);
+      }
+    }
+
+    function set3DMode(mode) {
+      current3DMode = mode;
+
+      document.getElementById('btnModeTopology').classList.toggle('active', mode === 'topology');
+      document.getElementById('btnModeAOA').classList.toggle('active', mode === 'aoa');
+      document.getElementById('btnModeES').classList.toggle('active', mode === 'es');
+
+      const titleEl = document.getElementById('stageTitle');
+      const telemEl = document.getElementById('stageTelemetry');
+
+      if (mode === 'topology') {
+        titleEl.innerText = 'Topologi 3 Datacenter (Minggu 3)';
+        telemEl.innerText = 'Surabaya (6.000 MIPS) &bull; Jakarta (3.600 MIPS) &bull; Yogyakarta (800 MIPS)';
+        dataCubes.forEach(c => c.visible = true);
+        aoaDrones.forEach(d => d.visible = false);
+        esEntities.forEach(e => e.visible = false);
+        beaconGroup.visible = true;
+      } else if (mode === 'aoa') {
+        titleEl.innerText = 'Mode Simulasi AOA: Eksplorasi (÷, ×) vs Eksploitasi (-, +)';
+        telemEl.innerText = 'Drone Biru (Lompat Jauh) &bull; Drone Hijau (Laser Menyisir) &bull; Tiang Suar Emas';
+        dataCubes.forEach(c => c.visible = false);
+        aoaDrones.forEach(d => d.visible = true);
+        esEntities.forEach(e => e.visible = false);
+        beaconGroup.visible = true;
+      } else if (mode === 'es') {
+        titleEl.innerText = 'Mode Simulasi (μ, λ)-ES + Kebijakan Antrean LJF';
+        telemEl.innerText = 'Induk Ungu (μ) &bull; Anak Mutasi 1:7 (λ) &bull; Balok Terberat Masuk Surabaya';
+        dataCubes.forEach(c => c.visible = true);
+        aoaDrones.forEach(d => d.visible = false);
+        esEntities.forEach(e => e.visible = true);
+        beaconGroup.visible = true;
+      }
+    }
+
+    function animate() {
+      animId = requestAnimationFrame(animate);
+
+      // Rotate golden crown
+      if (goldenCrown) {
+        goldenCrown.rotation.y += 0.02;
+        goldenCrown.rotation.x += 0.01;
+      }
+
+      // Animate LJF Data Cubes
+      const t = Date.now() * 0.001;
+      dataCubes.forEach((cb, idx) => {
+        cb.rotation.y += 0.015 + idx * 0.002;
+        if (current3DMode === 'es') {
+          // LJF Movement: Glide toward Surabaya (-14, 0, -4)
+          const targetX = -14 + idx * 3.2;
+          const targetZ = -4 + Math.sin(t + idx) * 1.5;
+          cb.position.x += (targetX - cb.position.x) * 0.04;
+          cb.position.z += (targetZ - cb.position.z) * 0.04;
+          cb.position.y = 5.5 + Math.sin(t * 2 + idx) * 0.3;
+        } else {
+          cb.position.y = 5 + Math.sin(t * 1.5 + idx) * 0.5;
+        }
+      });
+
+      // Animate AOA Drones
+      if (current3DMode === 'aoa') {
+        aoaDrones.forEach((dr, idx) => {
+          dr.position.x += Math.sin(t * 0.8 + idx) * 0.06;
+          dr.position.z += Math.cos(t * 0.8 + idx) * 0.06;
+          dr.position.y = 5.5 + Math.sin(t * 1.5 + idx) * 0.4;
+        });
+      }
+
+      // Animate ES Entities
+      if (current3DMode === 'es') {
+        esEntities.forEach((ent, idx) => {
+          ent.position.x += Math.sin(t * 0.9 + idx) * 0.05;
+          ent.position.z += Math.cos(t * 0.9 + idx) * 0.05;
+          ent.children[1].rotation.z += 0.04; // rotate halo
+        });
+      }
+
+      controls.update();
+      renderer.render(scene, camera);
+    }
+
+    function onResize() {
+      const container = document.getElementById('threeCanvas');
+      if (!container) return;
+      const width = container.clientWidth;
+      const height = container.clientHeight;
+      camera.aspect = width / height;
+      camera.updateProjectionMatrix();
+      renderer.setSize(width, height);
+    }
+
+    // SLIDE DECK LOGIC
+    const slides = document.querySelectorAll('.slide');
+    let currentSlide = 0;
+
+    function updateSlide() {
+      slides.forEach((s, idx) => {
+        s.classList.toggle('active', idx === currentSlide);
+      });
+      document.getElementById('counter').innerText = `Slide ${currentSlide + 1} / ${slides.length}`;
+      document.getElementById('progressBar').style.width = `${((currentSlide + 1) / slides.length) * 100}%`;
+
+      // Auto-switch 3D scene mode according to active slide
+      const activeSlideEl = slides[currentSlide];
+      const targetMode = activeSlideEl.getAttribute('data-3d-mode') || 'topology';
+      set3DMode(targetMode);
+    }
+
+    function nextSlide() {
+      if (currentSlide < slides.length - 1) {
+        currentSlide++;
+        updateSlide();
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 0) {
+        currentSlide--;
+        updateSlide();
+      }
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+        nextSlide();
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        prevSlide();
+      }
+    });
+
+    // Start everything on DOM Load
+    window.addEventListener('DOMContentLoaded', () => {
+      init3D();
+      updateSlide();
+    });
+  </script>
+</body>
+</html>
