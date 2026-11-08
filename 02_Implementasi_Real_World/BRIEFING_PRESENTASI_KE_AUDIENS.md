@@ -159,22 +159,27 @@ Menunjukkan bahwa kode bersih, modular, dapat direproduksi (*reproducible*), dan
 
 ---
 
-### 🎙️ Babak 7: Live Demo Eksekusi Program (1 Menit)
+### 🎙️ Babak 7: Live Demo Eksekusi Program (Terminal &amp; Animasi Web 3D) (1 Menit)
 
-#### 🎯 Tindakan Presenter:
-Buka command prompt / terminal, arahkan ke folder `02_Implementasi_Real_World`, lalu jalankan:
-```bash
-python program_aoa_vs_random.py
-# atau cukup klik ganda run.bat dan pilih menu [1]
-```
+#### 🎯 Tindakan Presenter (Pilih Salah Satu atau Keduanya):
+1. **Opsi A: Demo Langsung di Layar Slide Web (`presentasi_implementasi.html`)**
+   * Di Slide 6 atau langsung pada konsol bawah kanvas 3D, klik tombol **"⚠️ Jalankan Random"** &rarr; Tunjukkan bagaimana tugas menumpuk dan menara Yogyakarta berkedip **MERAH ALARM (`OVERLOAD 99%`)**.
+   * Kemudian klik tombol **"✨ Jalankan AOA"** &rarr; Tunjukkan bagaimana drone menyala, tugas terberat terbang ke Surabaya, dan ketiga menara menyala **HIJAU SEIMBANG (`OPTIMAL 54%`)**, Makespan terpangkas 53.4%.
+   * Klik tombol **"⚡ Komparasi (100-500)"** untuk membuka popup tabel komparasi interaktif.
+
+2. **Opsi B: Demo di Terminal (Python &amp; CloudSim Java)**
+   * Terminal Python Real-World: `python program_aoa_vs_random.py`
+   * Terminal CloudSim Java 21: `.\run_cloudsim.ps1`
+   * Atau klik ganda `run.bat` di root folder.
 
 #### 🗣️ Naskah yang Harus Anda Ucapkan:
-> *"Sekarang mari kita buktikan secara langsung. Saya menjalankan script `program_aoa_vs_random.py` di terminal ini.*
+> *"Sekarang mari kita buktikan secara langsung. Kita dapat melihat simulasi interaktif langsung di web presentasi ini maupun lewat eksekusi terminal.*
 > 
-> *(Sambil menunjuk terminal yang sedang memproses)*:
-> * Program langsung membaca berkas dataset asli: `dataset_100cloudlet.csv` hingga `dataset_500cloudlet.csv`.
-> * Untuk setiap dataset, program mengeksekusi **Random Scheduling** (10 kali pengujian) lalu dilanjutkan mengeksekusi **AOA yang Baru** (10 kali pengujian).
-> * Hanya dalam waktu sekitar 20 detik, seluruh 100 kali simulasi selesai dan program langsung mencetak tabel komparasi akhir serta menyimpannya ke `hasil_program_aoa_vs_random.csv`."*
+> *(Sambil mengklik tombol 'Jalankan Random' pada kanvas 3D)*:
+> * Perhatikan kanvas 3D di sebelah kanan: Saat Random dijalankan, tugas-tugas terdistribusi buta. Akibatnya menara DC Yogyakarta yang hanya berdaya 800 MIPS dihujani tugas berat, tumpukan kubus meninggi, dan sensor menyala merah peringatan **OVERLOAD 99%**. Sementara menara raksasa Surabaya menganggur di 14%.
+> 
+> *(Sambil mengklik tombol 'Jalankan AOA' pada kanvas 3D)*:
+> * Sekarang perhatikan saat algoritma AOA dijalankan: Drone pemindai aktif, tugas-tugas berat secara presisi dialirkan ke Surabaya (6.000 MIPS), tugas sedang ke Jakarta, dan tugas ringan ke Yogyakarta. Seluruh datacenter menyala hijau optimal, beban seimbang, dan Makespan langsung terpangkas drastis hingga **53.4%**!"*
 
 ---
 
