@@ -119,17 +119,23 @@ AOA (Abualigah et al., 2021) mengoptimalkan alokasi cloud melalui 2 fase matemat
 ---
 
 <!-- Slide 7 -->
-## 6. Hasil Ujicoba Empiris: Random vs. AOA yang Baru
+## 6. Hasil Ujicoba Empiris: Simulator CloudSim &amp; Real-World
 
-*Data nyata dari eksekusi `program_aoa_vs_random.py` (10 independent runs per skenario):*
+### A. Hasil pada Simulator CloudSim 7.0.1 (Tugas 2, 3, 4):
+| Tasks | Makespan Random | Makespan AOA | Perbaikan (%) | Throughput AOA | Utilisasi AOA |
+| :---: | :---: | :---: | :---: | :---: | :---: |
+| **100** | 464.47 ± 82.5 s | **203.88 ± 28.0 s** | **-56.1%** | **0.50 t/s** (+127%) | **49.51%** |
+| **200** | 915.34 ± 103.4 s | **626.68 ± 69.8 s** | **-31.5%** | **0.32 t/s** (+45%) | **50.63%** |
+| **300** | 1271.93 ± 121.1 s | **908.69 ± 43.7 s** | **-28.6%** | **0.33 t/s** (+38%) | **54.23%** |
+| **400** | 1436.33 ± 135.9 s | **1237.98 ± 47.0 s** | **-13.8%** | **0.32 t/s** (+14%) | **54.32%** |
+| **500** | 2000.79 ± 164.0 s | **1645.40 ± 43.3 s** | **-17.8% (Hemat 355s)** | **0.30 t/s** (+20%) | **56.10%** |
 
-| Skenario | Algoritma | Makespan (s) | Perbaikan (%) | Throughput | LBI (Ketimpangan) | Biaya ($) |
-| :---: | :--- | :---: | :---: | :---: | :---: | :---: |
-| **100 Tasks** | Random (Minggu 3)<br>**AOA yang Baru** | 444.29 s<br>**206.99 s** | -<br>**-53.4%** | 0.23 t/s<br>**0.49 t/s** | 2.20<br>**1.96** | $92.97<br>**$58.48** |
-| **200 Tasks** | Random (Minggu 3)<br>**AOA yang Baru** | 939.25 s<br>**634.92 s** | -<br>**-32.4%** | 0.22 t/s<br>**0.32 t/s** | 2.09<br>**1.64** | $198.09<br>**$167.48** |
-| **300 Tasks** | Random (Minggu 3)<br>**AOA yang Baru** | 1177.30 s<br>**931.37 s** | -<br>**-20.9%** | 0.26 t/s<br>**0.32 t/s** | 1.91<br>**1.59** | $274.11<br>**$250.45** |
-| **400 Tasks** | Random (Minggu 3)<br>**AOA yang Baru** | 1468.63 s<br>**1202.80 s** | -<br>**-18.1%** | 0.27 t/s<br>**0.33 t/s** | 1.83<br>**1.58** | $353.54<br>**$326.90** |
-| **500 Tasks** | Random (Minggu 3)<br>**AOA yang Baru** | 1917.29 s<br>**1682.69 s** | -<br>**-12.2%** | 0.26 t/s<br>**0.30 t/s** | 1.74<br>**1.59** | $467.26<br>**$445.20** |
+### B. Hasil pada Real-World Dispatcher (Tugas 5, 6):
+| Tasks | Makespan Random | Makespan AOA | Perbaikan (%) | Throughput AOA | Penghematan Biaya ($) |
+| :---: | :---: | :---: | :---: | :---: | :---: |
+| **100** | 444.29 s | **206.99 s** | **-53.4%** | **0.49 t/s** | **Hemat $34.49 (37.1%)** |
+| **300** | 1177.30 s | **931.37 s** | **-20.9%** | **0.32 t/s** | **Hemat $23.66 (8.6%)** |
+| **500** | 1917.29 s | **1682.69 s** | **-12.2%** | **0.30 t/s** | **Hemat $22.06 (4.7%)** |
 
 ---
 

@@ -14,3 +14,4 @@ $env:PATH = "$JAVA_PATH\bin;$MAVEN_PATH;$env:PATH"
 
 Set-Location "$PSScriptRoot\02_Implementasi_Real_World"
 & "$MAVEN_PATH\mvn.cmd" compile exec:java
+

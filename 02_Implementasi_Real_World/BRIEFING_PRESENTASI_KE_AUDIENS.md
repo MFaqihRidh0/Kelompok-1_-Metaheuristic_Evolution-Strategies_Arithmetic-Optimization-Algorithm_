@@ -178,36 +178,44 @@ python program_aoa_vs_random.py
 
 ---
 
-### 🎙️ Babak 8: Bedah Hasil Empiris (Random vs AOA Baru) (2 Menit)
+### 🎙️ Babak 8: Bedah Hasil Empiris (Simulator CloudSim &amp; Real-World) (2 Menit)
 
 #### 🎯 Sasaran Audiens:
-Menampilkan data angka perbandingan yang membuktikan secara tak terbantahkan bahwa AOA jauh lebih unggul daripada Random Scheduling.
+Menampilkan data angka perbandingan yang membuktikan secara tak terbantahkan bahwa AOA unggul konsisten di kedua lingkungan uji (Simulator CloudSim dan Real-World).
 
-#### 📊 Tabel Komparasi Utama (Tampilkan di Layar):
+#### 📊 1. Hasil pada Simulator CloudSim 7.0.1 (Tugas 2, 3, 4):
+| Tasks | Makespan Random | Makespan AOA | Perbaikan (%) | Throughput AOA | Utilisasi AOA |
+| :---: | :---: | :---: | :---: | :---: | :---: |
+| **100** | 464.47 ± 82.5 s | **203.88 ± 28.0 s** | **-56.1%** | **0.50 t/s** (+127%) | **49.51%** |
+| **200** | 915.34 ± 103.4 s | **626.68 ± 69.8 s** | **-31.5%** | **0.32 t/s** (+45%) | **50.63%** |
+| **300** | 1271.93 ± 121.1 s | **908.69 ± 43.7 s** | **-28.6%** | **0.33 t/s** (+38%) | **54.23%** |
+| **400** | 1436.33 ± 135.9 s | **1237.98 ± 47.0 s** | **-13.8%** | **0.32 t/s** (+14%) | **54.32%** |
+| **500** | 2000.79 ± 164.0 s | **1645.40 ± 43.3 s** | **-17.8% (Hemat 355s)** | **0.30 t/s** (+20%) | **56.10%** |
 
-| Skenario | Algoritma | Makespan (detik) | Perbaikan (%) | Throughput (tasks/s) | LBI (Ketimpangan) | Total Biaya Sewa Cloud ($) |
-| :---: | :--- | :---: | :---: | :---: | :---: | :---: |
-| **100 Tasks** | **Random (Minggu 3)**<br>**AOA yang Baru** | 444.29 s<br>**206.99 s** | -<br>**-53.4%** | 0.23<br>**0.49** (+113%) | 2.20<br>**1.96** | $92.97<br>**$58.48** (Hemat $34.49) |
-| **200 Tasks** | **Random (Minggu 3)**<br>**AOA yang Baru** | 939.25 s<br>**634.92 s** | -<br>**-32.4%** | 0.22<br>**0.32** (+45%) | 2.09<br>**1.64** | $198.09<br>**$167.48** (Hemat $30.61) |
-| **300 Tasks** | **Random (Minggu 3)**<br>**AOA yang Baru** | 1177.30 s<br>**931.37 s** | -<br>**-20.9%** | 0.26<br>**0.32** (+23%) | 1.91<br>**1.59** | $274.11<br>**$250.45** (Hemat $23.66) |
-| **400 Tasks** | **Random (Minggu 3)**<br>**AOA yang Baru** | 1468.63 s<br>**1202.80 s** | -<br>**-18.1%** | 0.27<br>**0.33** (+22%) | 1.83<br>**1.58** | $353.54<br>**$326.90** (Hemat $26.64) |
-| **500 Tasks** | **Random (Minggu 3)**<br>**AOA yang Baru** | 1917.29 s<br>**1682.69 s** | -<br>**-12.2%** | 0.26<br>**0.30** (+15%) | 1.74<br>**1.59** | $467.26<br>**$445.20** (Hemat $22.06) |
+#### 📊 2. Hasil pada Real-World Dispatcher dengan Latensi Geografis (Tugas 5, 6):
+| Tasks | Makespan Random | Makespan AOA | Perbaikan (%) | LBI (Imbalance) | Penghematan Biaya ($) |
+| :---: | :---: | :---: | :---: | :---: | :---: |
+| **100** | 444.29 s | **206.99 s** | **-53.4%** | 2.20 &rarr; **1.96** | **Hemat $34.49 (37.1%)** |
+| **200** | 939.25 s | **634.92 s** | **-32.4%** | 2.09 &rarr; **1.64** | **Hemat $30.61 (15.5%)** |
+| **300** | 1177.30 s | **931.37 s** | **-20.9%** | 1.91 &rarr; **1.59** | **Hemat $23.66 (8.6%)** |
+| **400** | 1468.63 s | **1202.80 s** | **-18.1%** | 1.83 &rarr; **1.58** | **Hemat $26.64 (7.5%)** |
+| **500** | 1917.29 s | **1682.69 s** | **-12.2%** | 1.74 &rarr; **1.59** | **Hemat $22.06 (4.7%)** |
 
 #### 🗣️ Naskah yang Harus Anda Tegaskan (Sorot 4 Poin Utama):
-> *"Bapak/Ibu dosen dan rekan-rekan, mari kita cermati lonjakan performa yang sangat nyata pada tabel hasil eksekusi ini:*
+> *"Bapak/Ibu dosen dan rekan-rekan, mari kita cermati lonjakan performa yang sangat nyata pada kedua tabel hasil eksekusi ini:
 > 
-> 1. **Pemangkasan Makespan yang Sangat Drastis:**
->    * Pada 100 tugas, Random Scheduling membutuhkan waktu 444.29 detik. AOA memangkasnya menjadi hanya **206.99 detik — ini adalah percepatan sebesar 53.4% (lebih dari dua kali lipat lebih cepat!)**.
->    * Pada 500 tugas, AOA berhasil memotong waktu tunggu sebesar **234.6 detik** (dari 1.917.29 detik turun ke 1.682.69 detik).
+> 1. **Divalidasi pada Dua Lingkungan Pengujian:**
+>    * Pada **Simulator CloudSim 7.0.1 (Tugas 2-4)**: AOA memangkas Makespan sebesar **56.1%** pada 100 cloudlet (dari 464.47s ke 203.88s) dan memangkas waktu proses sebesar **355.4 detik** pada 500 cloudlet.
+>    * Pada **Lingkungan Real-World (Tugas 5-6)**: Dengan memperhitungkan latensi fisik geografis nyata antarkota (Surabaya, Jakarta, Yogyakarta), AOA memangkas Makespan sebesar **53.4%** pada 100 cloudlet dan memotong waktu 234.6 detik pada 500 cloudlet.
 > 
-> 2. **Throughput Melonjak Lebih Dari Dua Kali Lipat:**
->    * Laju penyelesaian tugas melonjak dari 0.23 tasks/detik menjadi **0.49 tasks/detik** pada skenario 100 tugas (+113%) — kapasitas pemrosesan datacenter meningkat drastis tanpa perlu menambah perangkat keras baru.
+> 2. **Throughput Melonjak Lebih Dari Dua Kali Lipat (+113% s.d +127%):**
+>    * Kecepatan penyelesaian tugas naik dari 0.22-0.23 tasks/detik menjadi **0.49-0.50 tasks/detik** — kapasitas pemrosesan datacenter meningkat drastis tanpa perlu menambah perangkat keras baru.
 > 
 > 3. **Beban Kerja Jauh Lebih Merata (LBI Turun Konsisten):**
->    * Indeks ketimpangan beban (LBI) yang tadinya berada di angka 2.20 pada Random Scheduling, berhasil ditekan oleh AOA menjadi **1.96** (100 tugas) dan menyentuh **1.58** (400 tugas). Distribusi beban antar-VM menjadi jauh lebih proporsional.
+>    * Indeks ketimpangan beban (LBI) ditekan konsisten oleh AOA ke angka 1.58 - 1.59. Distribusi beban antar-VM menjadi jauh lebih proporsional sesuai daya prosesornya.
 > 
 > 4. **Efisiensi Finansial (Penghematan Biaya Sewa Nyata):**
->    * Karena waktu proses total terpangkas secara masif, biaya komputasi awan yang harus dibayarkan perusahaan turun signifikan di seluruh skenario: hemat $34.49 pada 100 tasks, hemat $30.61 pada 200 tasks, dan konsisten hemat di setiap ukuran batch."*
+>    * Karena waktu proses total terpangkas secara masif, biaya sewa cloud turun signifikan: hemat $34.49 pada 100 tasks, hemat $30.61 pada 200 tasks, dan konsisten hemat di setiap ukuran batch."*
 
 ---
 
