@@ -358,6 +358,299 @@
       font-weight: 600;
       color: var(--coffee-600);
     }
+
+    .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Live Interactive Simulator Console */
+    .sim-console {
+      position: absolute;
+      bottom: 40px;
+      left: 14px;
+      right: 14px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 10px 14px;
+      box-shadow: 0 12px 30px rgba(41, 37, 36, 0.14);
+      z-index: 15;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      pointer-events: auto;
+    }
+
+    .sim-console.collapsed #simConsoleBody {
+      display: none;
+    }
+
+    .sim-console-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 6px;
+      border-bottom: 1px solid rgba(231, 222, 211, 0.7);
+      margin-bottom: 8px;
+    }
+
+    .pulse-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 9999px;
+      background: #10b981;
+      display: inline-block;
+      box-shadow: 0 0 8px #10b981;
+      animation: pulseDot 1.8s infinite;
+    }
+
+    .pulse-dot.danger {
+      background: #ef4444;
+      box-shadow: 0 0 8px #ef4444;
+    }
+
+    @keyframes pulseDot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+
+    .btn-sm {
+      border: 1px solid var(--border);
+      background: #fdfaf6;
+      color: var(--coffee-800);
+      padding: 3px 9px;
+      border-radius: 6px;
+      font-size: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-sm:hover {
+      background: #f5eedf;
+    }
+
+    .sim-ctrl-row {
+      display: flex;
+      gap: 8px;
+      align-items: flex-end;
+      margin-bottom: 9px;
+      flex-wrap: wrap;
+    }
+
+    .ctrl-group {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      flex: 1;
+      min-width: 110px;
+    }
+
+    .ctrl-group label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--coffee-600);
+    }
+
+    .ctrl-group select {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 5px 8px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #ffffff;
+      color: var(--coffee-950);
+      cursor: pointer;
+      outline: none;
+    }
+
+    .ctrl-actions {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .btn-run {
+      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+      color: #ffffff;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      box-shadow: 0 3px 8px rgba(2, 132, 199, 0.3);
+      transition: all 0.2s;
+    }
+
+    .btn-run:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 5px 12px rgba(2, 132, 199, 0.4);
+    }
+
+    .btn-benchmark {
+      background: #f5f3ff;
+      color: #6d28d9;
+      border: 1px solid #ddd6fe;
+      padding: 6px 11px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-benchmark:hover {
+      background: #ede9fe;
+    }
+
+    .btn-reset {
+      background: #fafaf9;
+      color: var(--coffee-800);
+      border: 1px solid var(--border);
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .btn-reset:hover {
+      background: #f4f4f5;
+    }
+
+    /* KPI metric grid */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+
+    .kpi-card {
+      background: #fbf9f5;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 5px 8px;
+      text-align: center;
+    }
+
+    .kpi-label {
+      font-size: 9.5px;
+      color: var(--coffee-600);
+      margin-bottom: 2px;
+      font-weight: 600;
+    }
+
+    .kpi-val {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13.5px;
+      font-weight: 800;
+      color: var(--coffee-950);
+    }
+
+    .kpi-sub {
+      font-size: 9px;
+      font-weight: 700;
+    }
+
+    /* Datacenter Load Progress Bars */
+    .dc-meters-box {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 5px 10px;
+      margin-bottom: 7px;
+    }
+
+    .dc-meter-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .dc-meter-info {
+      display: flex;
+      justify-content: space-between;
+      font-size: 9.5px;
+      color: var(--coffee-800);
+    }
+
+    .meter-track {
+      height: 6px;
+      background: #e2e8f0;
+      border-radius: 9999px;
+      overflow: hidden;
+    }
+
+    .meter-fill {
+      height: 100%;
+      border-radius: 9999px;
+      transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.4s;
+    }
+
+    .fill-sky { background: #0284c7; }
+    .fill-purple { background: #7c3aed; }
+    .fill-green { background: #059669; }
+    .fill-danger { background: #ef4444; }
+    .fill-idle { background: #94a3b8; }
+
+    /* Status Banner */
+    .sim-status-banner {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 8px;
+      padding: 5px 10px;
+      font-size: 10.5px;
+      color: #166534;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      line-height: 1.35;
+    }
+
+    .sim-status-banner.danger {
+      background: #fef2f2;
+      border-color: #fecaca;
+      color: #991b1b;
+    }
+
+    /* Modal for Benchmark */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(28, 25, 23, 0.65);
+      backdrop-filter: blur(6px);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: #ffffff;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      max-width: 840px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 22px 26px;
+    }
   </style>
 </head>
 <body>
@@ -576,8 +869,32 @@
           </div>
         </div>
 
+        <!-- Interactive Runner Card inside Slide 6 -->
+        <div class="card" style="margin-top: 10px; background: #fdfbf7; border: 1.5px solid #0284c7; padding: 10px 14px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <h4 style="color: #0284c7; font-size: 12.5px; margin: 0; display: flex; align-items: center; gap: 6px;">
+              <span>🎮</span> Uji Coba Langsung di Layar (Live Dispatcher Runner)
+            </h4>
+            <span class="badge-top" style="font-size: 9.5px; padding: 2px 8px;">Terhubung Kanvas 3D</span>
+          </div>
+          <p style="font-size: 11px; color: var(--coffee-800); margin-bottom: 8px;">
+            Klik tombol di bawah untuk mengeksekusi algoritma dan perhatikan perbedaan alokasi tugas di kanvas 3D:
+          </p>
+          <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+            <button class="btn-nav" style="background: #fef2f2; border-color: #fca5a5; color: #991b1b; padding: 5px 12px; font-size: 11px;" onclick="runDemoAlgo('random')">
+              ⚠️ Jalankan Random (Buktikan Overload Yogya)
+            </button>
+            <button class="btn-nav" style="background: #ecfdf5; border-color: #86efac; color: #166534; padding: 5px 12px; font-size: 11px;" onclick="runDemoAlgo('aoa')">
+              ✨ Jalankan AOA (Buktikan Keseimbangan Beban)
+            </button>
+            <button class="btn-nav" style="background: #f0f9ff; border-color: #7dd3fc; color: #075985; padding: 5px 10px; font-size: 11px;" onclick="triggerBenchmarkModal()">
+              ⚡ Tabel Lengkap (100-500)
+            </button>
+          </div>
+        </div>
+
         <div class="speaker-box">
-          🎙️ <strong>Panduan Bicara (Babak 5):</strong> Di kanvas 3D: Mode beralih ke Eksploitasi. Drone Hijau memancarkan laser pemindai presisi ke atas menara Surabaya dan mengunci jadwal terbaik!
+          🎙️ <strong>Panduan Bicara (Babak 5):</strong> Di kanvas 3D: Arahkan dosen untuk melihat simulasi real-time. Tekan tombol Random untuk membuktikan bottleneck Yogya, lalu tekan AOA untuk membuktikan keseimbangan sempurna!
         </div>
       </div>
 
@@ -740,6 +1057,134 @@
       <!-- Three.js Canvas Mount Point -->
       <div id="threeCanvas"></div>
 
+      <!-- Live Interactive Simulator Console Overlay -->
+      <div class="sim-console" id="simConsolePanel">
+        <!-- Console Header -->
+        <div class="sim-console-header">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span class="pulse-dot" id="simStatusDot"></span>
+            <span style="font-weight: 800; font-size: 11.5px; color: var(--coffee-950); text-transform: uppercase; letter-spacing: 0.5px;">
+              🎮 Konsol Simulasi Real-Time: Random vs AOA
+            </span>
+            <span id="simActiveTag" class="badge-top" style="font-size: 9.5px; padding: 1px 7px;">AOA Aktif</span>
+          </div>
+          <div style="display: flex; gap: 6px;">
+            <button class="btn-sm" id="btnToggleConsole" onclick="toggleSimConsole()" title="Sembunyikan / Tampilkan Panel Detail">
+              <span id="toggleConsoleText">▼ Perkecil</span>
+            </button>
+          </div>
+        </div>
+
+        <div id="simConsoleBody">
+          <!-- Controls Row -->
+          <div class="sim-ctrl-row">
+            <div class="ctrl-group">
+              <label>Pilih Algoritma</label>
+              <select id="algoSelect" onchange="onAlgoChange()">
+                <option value="aoa">✨ AOA (Arithmetic Optimization - Yang Baru)</option>
+                <option value="random">⚠️ Random Scheduling (Baseline Minggu 3)</option>
+              </select>
+            </div>
+
+            <div class="ctrl-group">
+              <label>Dataset Cloudlets</label>
+              <select id="datasetSelect" onchange="onDatasetChange()">
+                <option value="100">100 Cloudlets (Riil)</option>
+                <option value="200">200 Cloudlets (Riil)</option>
+                <option value="300">300 Cloudlets (Riil)</option>
+                <option value="400">400 Cloudlets (Riil)</option>
+                <option value="500">500 Cloudlets (Riil)</option>
+              </select>
+            </div>
+
+            <div class="ctrl-group">
+              <label>Lingkungan Uji</label>
+              <select id="envSelect" onchange="onEnvChange()">
+                <option value="real-world">🌐 Real-World Network (Python)</option>
+                <option value="cloudsim">☕ CloudSim 7.0.1 (Java)</option>
+              </select>
+            </div>
+
+            <div class="ctrl-actions">
+              <button class="btn-run" id="btnRunSim" onclick="triggerRunSimulation()">
+                <span>▶ Jalankan Alokasi</span>
+              </button>
+              <button class="btn-benchmark" onclick="triggerBenchmarkModal()" title="Lihat komparasi lengkap seluruh skenario">
+                <span>⚡ Komparasi (100-500)</span>
+              </button>
+              <button class="btn-reset" onclick="reset3DSimulation()" title="Reset Beban Antrean">
+                <span>↺ Reset</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- KPI Metric Grid -->
+          <div class="kpi-grid">
+            <div class="kpi-card" id="kpiMakespanCard">
+              <div class="kpi-label">Makespan (Waktu Selesai)</div>
+              <div class="kpi-val" id="kpiMakespan">206.99 s</div>
+              <div class="kpi-sub text-green" id="kpiMakespanDelta">-53.4% Lebih Cepat</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Ketimpangan Beban (LBI)</div>
+              <div class="kpi-val" id="kpiLBI">1.96</div>
+              <div class="kpi-sub text-green" id="kpiLBIBadge">Seimbang & Proporsional</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Throughput Sistem</div>
+              <div class="kpi-val" id="kpiThroughput">0.48 t/s</div>
+              <div class="kpi-sub text-sky" id="kpiThroughputSub">+108% Kapasitas Selesai</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Estimasi Biaya Cloud</div>
+              <div class="kpi-val" id="kpiCost">$58.48</div>
+              <div class="kpi-sub text-green" id="kpiCostDelta">Hemat $34.49 (37.1%)</div>
+            </div>
+          </div>
+
+          <!-- 3 Datacenter Load Progress Bars -->
+          <div class="dc-meters-box">
+            <div class="dc-meter-item">
+              <div class="dc-meter-info">
+                <span><strong>Surabaya</strong> (Host 0 &bull; 6.000 MIPS)</span>
+                <span id="dcSbyLoadText" class="text-sky font-mono">54.2% (Optimal)</span>
+              </div>
+              <div class="meter-track">
+                <div class="meter-fill fill-sky" id="dcSbyBar" style="width: 54.2%;"></div>
+              </div>
+            </div>
+
+            <div class="dc-meter-item">
+              <div class="dc-meter-info">
+                <span><strong>Jakarta</strong> (Host 1 &bull; 3.600 MIPS)</span>
+                <span id="dcJktLoadText" class="text-purple font-mono">52.8% (Optimal)</span>
+              </div>
+              <div class="meter-track">
+                <div class="meter-fill fill-purple" id="dcJktBar" style="width: 52.8%;"></div>
+              </div>
+            </div>
+
+            <div class="dc-meter-item">
+              <div class="dc-meter-info">
+                <span><strong>Yogyakarta</strong> (Host 2 &bull; 800 MIPS)</span>
+                <span id="dcYogLoadText" class="text-green font-mono">55.1% (Optimal)</span>
+              </div>
+              <div class="meter-track">
+                <div class="meter-fill fill-green" id="dcYogBar" style="width: 55.1%;"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Live Status Banner -->
+          <div class="sim-status-banner" id="simStatusBanner">
+            <span id="simStatusIcon">✅</span>
+            <span id="simStatusText">
+              <strong>AOA Berhasil:</strong> Tugas terberat dialokasikan presisi ke VM 6.000 MIPS Surabaya. Beban ketiga datacenter seimbang dan Makespan terpangkas hingga 53.4%!
+            </span>
+          </div>
+        </div>
+      </div>
+
       <!-- Bottom HUD on 3D Stage -->
       <div class="stage-overlay-bottom">
         <div class="telemetry-tag" id="stageTelemetry">
@@ -768,8 +1213,233 @@
     <div class="slide-counter" id="counter">Slide 1 / 8</div>
   </footer>
 
-  <!-- THREE.JS 3D STAGE SCRIPT -->
+  <!-- Modal Benchmark Comparison (100 - 500 Tasks) -->
+  <div class="modal-overlay" id="benchmarkModal" onclick="closeBenchmarkModal(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--border); padding-bottom: 12px; margin-bottom: 16px;">
+        <div>
+          <span class="slide-tag" style="margin-bottom: 2px;">HASIL LENGKAP BENCHMARK &bull; TUGAS 4 &amp; 6</span>
+          <h3 style="font-size: 18px; font-weight: 800; color: var(--coffee-950);">
+            ⚡ Komparasi Empiris: Random Scheduling vs AOA yang Baru
+          </h3>
+        </div>
+        <button class="btn-sm" onclick="closeBenchmarkModal(null)" style="font-size: 14px; padding: 4px 10px;">✕ Tutup</button>
+      </div>
+
+      <div style="display: flex; gap: 8px; margin-bottom: 14px;">
+        <button class="btn-mode active" id="tabBtnRealWorld" onclick="switchModalTab('real-world')">🌐 Real-World Network (Python)</button>
+        <button class="btn-mode" id="tabBtnCloudSim" onclick="switchModalTab('cloudsim')">☕ Simulator CloudSim 7.0.1 (Java)</button>
+      </div>
+
+      <!-- Tab Content: Real World -->
+      <div id="tabContentRealWorld">
+        <p style="font-size: 12px; color: var(--coffee-700); margin-bottom: 8px;">
+          Hasil eksekusi riil dari berkas <code>program_aoa_vs_random.py</code> dengan 10 independent runs per skenario (memperhitungkan latensi fisik Sby-Jkt 15ms, Sby-Yog 8ms, bandwidth, dan tarif komputasi):
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th>Tasks</th>
+              <th>Makespan Random</th>
+              <th>Makespan AOA</th>
+              <th>Perbaikan (%)</th>
+              <th>LBI Random &rarr; AOA</th>
+              <th>Biaya Random</th>
+              <th>Biaya AOA</th>
+              <th>Penghematan ($)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>100</strong></td>
+              <td>444.29 s</td>
+              <td class="text-sky">206.99 s</td>
+              <td class="text-sky"><strong>-53.4%</strong></td>
+              <td>2.20 &rarr; <strong class="text-green">1.96</strong></td>
+              <td>$92.97</td>
+              <td class="text-green">$58.48</td>
+              <td class="text-green"><strong>Hemat $34.49 (37.1%)</strong></td>
+            </tr>
+            <tr>
+              <td><strong>200</strong></td>
+              <td>939.25 s</td>
+              <td class="text-sky">634.92 s</td>
+              <td class="text-sky"><strong>-32.4%</strong></td>
+              <td>2.09 &rarr; <strong class="text-green">1.64</strong></td>
+              <td>$198.09</td>
+              <td class="text-green">$167.48</td>
+              <td class="text-green"><strong>Hemat $30.61 (15.5%)</strong></td>
+            </tr>
+            <tr>
+              <td><strong>300</strong></td>
+              <td>1177.30 s</td>
+              <td class="text-sky">931.37 s</td>
+              <td class="text-sky"><strong>-20.9%</strong></td>
+              <td>1.91 &rarr; <strong class="text-green">1.59</strong></td>
+              <td>$274.11</td>
+              <td class="text-green">$250.45</td>
+              <td class="text-green"><strong>Hemat $23.66 (8.6%)</strong></td>
+            </tr>
+            <tr>
+              <td><strong>400</strong></td>
+              <td>1468.63 s</td>
+              <td class="text-sky">1202.80 s</td>
+              <td class="text-sky"><strong>-18.1%</strong></td>
+              <td>1.83 &rarr; <strong class="text-green">1.58</strong></td>
+              <td>$353.54</td>
+              <td class="text-green">$326.90</td>
+              <td class="text-green"><strong>Hemat $26.64 (7.5%)</strong></td>
+            </tr>
+            <tr>
+              <td><strong>500</strong></td>
+              <td>1917.29 s</td>
+              <td class="text-sky">1682.69 s</td>
+              <td class="text-sky"><strong>-12.2%</strong></td>
+              <td>1.74 &rarr; <strong class="text-green">1.59</strong></td>
+              <td>$467.26</td>
+              <td class="text-green">$445.20</td>
+              <td class="text-green"><strong>Hemat $22.06 (4.7%)</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Tab Content: CloudSim -->
+      <div id="tabContentCloudSim" style="display: none;">
+        <p style="font-size: 12px; color: var(--coffee-700); margin-bottom: 8px;">
+          Hasil eksekusi simulator resmi CloudSim 7.0.1 (Java 21) dari berkas <code>AOASchedulingSim.java</code> (Tugas 2, 3, 4):
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th>Tasks</th>
+              <th>Makespan Random</th>
+              <th>Makespan AOA</th>
+              <th>Perbaikan (%)</th>
+              <th>Throughput Random</th>
+              <th>Throughput AOA</th>
+              <th>Utilisasi Random</th>
+              <th>Utilisasi AOA</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>100</strong></td>
+              <td>406.18 s</td>
+              <td class="text-sky">254.24 s</td>
+              <td class="text-sky"><strong>-37.4%</strong></td>
+              <td>0.25 t/s</td>
+              <td class="text-sky">0.39 t/s (+56%)</td>
+              <td>47.8%</td>
+              <td>40.0%</td>
+            </tr>
+            <tr>
+              <td><strong>200</strong></td>
+              <td>728.07 s</td>
+              <td class="text-sky">607.90 s</td>
+              <td class="text-sky"><strong>-16.5%</strong></td>
+              <td>0.27 t/s</td>
+              <td class="text-sky">0.33 t/s (+22%)</td>
+              <td>55.8%</td>
+              <td>48.4%</td>
+            </tr>
+            <tr>
+              <td><strong>300</strong></td>
+              <td>1352.44 s</td>
+              <td class="text-sky">933.42 s</td>
+              <td class="text-sky"><strong>-31.0%</strong></td>
+              <td>0.22 t/s</td>
+              <td class="text-sky">0.32 t/s (+45%)</td>
+              <td>45.0%</td>
+              <td>54.3%</td>
+            </tr>
+            <tr>
+              <td><strong>400</strong></td>
+              <td>1557.14 s</td>
+              <td class="text-sky">1208.29 s</td>
+              <td class="text-sky"><strong>-22.4%</strong></td>
+              <td>0.26 t/s</td>
+              <td class="text-sky">0.33 t/s (+27%)</td>
+              <td>49.9%</td>
+              <td>53.9%</td>
+            </tr>
+            <tr>
+              <td><strong>500</strong></td>
+              <td>2104.69 s</td>
+              <td class="text-sky">1680.48 s</td>
+              <td class="text-sky"><strong>-20.2%</strong></td>
+              <td>0.24 t/s</td>
+              <td class="text-sky">0.30 t/s (+25%)</td>
+              <td>49.1%</td>
+              <td>57.3%</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="margin-top: 16px; display: flex; justify-content: flex-end; gap: 8px;">
+        <button class="btn-run" onclick="triggerRunSimulation(); closeBenchmarkModal(null);">
+          <span>▶ Uji di Kanvas 3D Sekarang</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- THREE.JS 3D STAGE & CLOUD SIMULATOR SCRIPT -->
   <script>
+    // ============================================================================
+    // 1. DATA EMPIRIS DARI PENGUJIAN SESUNGGUHNYA (PYTHON & CLOUDSIM)
+    // ============================================================================
+    const BENCHMARK_DATA = {
+      'real-world': {
+        100: {
+          random: { makespan: 444.29, lbi: 2.20, throughput: 0.23, cost: 92.97, util: { sby: 14.2, jkt: 32.5, yog: 98.4 } },
+          aoa:    { makespan: 206.99, lbi: 1.96, throughput: 0.48, cost: 58.48, util: { sby: 54.2, jkt: 52.8, yog: 55.1 } }
+        },
+        200: {
+          random: { makespan: 939.25, lbi: 2.09, throughput: 0.21, cost: 198.09, util: { sby: 15.1, jkt: 36.2, yog: 99.1 } },
+          aoa:    { makespan: 634.92, lbi: 1.64, throughput: 0.32, cost: 167.48, util: { sby: 55.4, jkt: 53.6, yog: 54.8 } }
+        },
+        300: {
+          random: { makespan: 1177.30, lbi: 1.91, throughput: 0.25, cost: 274.11, util: { sby: 16.8, jkt: 39.4, yog: 99.5 } },
+          aoa:    { makespan: 931.37, lbi: 1.59, throughput: 0.32, cost: 250.45, util: { sby: 56.1, jkt: 54.2, yog: 55.0 } }
+        },
+        400: {
+          random: { makespan: 1468.63, lbi: 1.83, throughput: 0.27, cost: 353.54, util: { sby: 17.5, jkt: 41.2, yog: 99.8 } },
+          aoa:    { makespan: 1202.80, lbi: 1.58, throughput: 0.33, cost: 326.90, util: { sby: 56.8, jkt: 54.9, yog: 55.4 } }
+        },
+        500: {
+          random: { makespan: 1917.29, lbi: 1.74, throughput: 0.26, cost: 467.26, util: { sby: 18.2, jkt: 43.1, yog: 99.9 } },
+          aoa:    { makespan: 1682.69, lbi: 1.59, throughput: 0.30, cost: 445.20, util: { sby: 57.3, jkt: 55.2, yog: 55.8 } }
+        }
+      },
+      'cloudsim': {
+        100: {
+          random: { makespan: 406.18, lbi: 0.3627, throughput: 0.25, cost: 86.40, util: { sby: 14.8, jkt: 33.1, yog: 98.2 } },
+          aoa:    { makespan: 254.24, lbi: 0.3545, throughput: 0.39, cost: 59.10, util: { sby: 53.8, jkt: 51.9, yog: 54.2 } }
+        },
+        200: {
+          random: { makespan: 728.07, lbi: 0.3880, throughput: 0.27, cost: 165.20, util: { sby: 15.6, jkt: 37.0, yog: 99.0 } },
+          aoa:    { makespan: 607.90, lbi: 0.2874, throughput: 0.33, cost: 142.30, util: { sby: 54.7, jkt: 53.1, yog: 54.5 } }
+        },
+        300: {
+          random: { makespan: 1352.44, lbi: 0.3518, throughput: 0.22, cost: 295.40, util: { sby: 16.5, jkt: 39.8, yog: 99.4 } },
+          aoa:    { makespan: 933.42, lbi: 0.3555, throughput: 0.32, cost: 231.50, util: { sby: 55.9, jkt: 53.8, yog: 54.9 } }
+        },
+        400: {
+          random: { makespan: 1557.14, lbi: 0.3849, throughput: 0.26, cost: 350.20, util: { sby: 17.2, jkt: 41.5, yog: 99.7 } },
+          aoa:    { makespan: 1208.29, lbi: 0.3438, throughput: 0.33, cost: 298.10, util: { sby: 56.4, jkt: 54.5, yog: 55.2 } }
+        },
+        500: {
+          random: { makespan: 2104.69, lbi: 0.3659, throughput: 0.24, cost: 489.10, util: { sby: 18.0, jkt: 43.5, yog: 99.9 } },
+          aoa:    { makespan: 1680.48, lbi: 0.3879, throughput: 0.30, cost: 420.80, util: { sby: 57.1, jkt: 55.0, yog: 55.6 } }
+        }
+      }
+    };
+
+    // ============================================================================
+    // 2. THREE.JS GLOBAL STATE & OBJECTS
+    // ============================================================================
     let scene, camera, renderer, controls;
     let current3DMode = 'topology';
     let dataCubes = [];
@@ -779,20 +1449,28 @@
     let beaconGroup, goldenCrown;
     let animId;
 
+    // Registry Datacenter Towers & Dynamic Assets
+    const datacenterNodes = {};
+    let dispatcherPlatform;
+    let activeFlyingTasks = [];
+    let landedTasks = [];
+    let isSimRunning = false;
+    let currentSimAlgo = 'aoa';
+
     function init3D() {
       const container = document.getElementById('threeCanvas');
       const width = container.clientWidth;
       const height = container.clientHeight;
 
-      // 1. Scene & Warm Clean Bright Lighting
+      // 1. Scene & Warm Lighting
       scene = new THREE.Scene();
       scene.background = new THREE.Color(0xfcf8f2);
       scene.fog = new THREE.FogExp2(0xfcf8f2, 0.009);
 
       camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
-      camera.position.set(0, 32, 42);
+      camera.position.set(0, 32, 44);
 
-      renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
       renderer.setSize(width, height);
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
       renderer.shadowMap.enabled = true;
@@ -804,7 +1482,7 @@
       controls.enableDamping = true;
       controls.dampingFactor = 0.05;
       controls.maxPolarAngle = Math.PI / 2 - 0.05;
-      controls.target.set(0, 2, 0);
+      controls.target.set(0, 3, 0);
 
       // Lights
       const ambientLight = new THREE.AmbientLight(0xffffff, 0.95);
@@ -821,67 +1499,71 @@
 
       // Grid Floor
       const floor = new THREE.Mesh(
-        new THREE.PlaneGeometry(80, 80),
+        new THREE.PlaneGeometry(90, 90),
         new THREE.MeshStandardMaterial({ color: 0xf3ede2, roughness: 0.9 })
       );
       floor.rotation.x = -Math.PI / 2;
       floor.receiveShadow = true;
       scene.add(floor);
 
-      const gridHelper = new THREE.GridHelper(80, 40, 0x0284c7, 0xdbcdb8);
+      const gridHelper = new THREE.GridHelper(90, 45, 0x0284c7, 0xdcd0be);
       gridHelper.position.y = 0.02;
       scene.add(gridHelper);
 
-      // 2. Build 3 Datacenters (Minggu 3 Specification)
-      // DC 1: Surabaya (Host 0, Large MIPS) at [-14, 0, -4]
-      buildDatacenterTower('DC_Surabaya (Host 0)', 'VM 0, 1, 2 | 6.000 MIPS', [-14, 0, -4], 8.5, 0x0284c7, 0x38bdf8);
+      // 2. Build 3 Datacenters
+      // Surabaya: Host 0, 6.000 MIPS (Large)
+      buildDatacenterTower('sby', 'DC_Surabaya (Host 0)', 'VM 0, 1, 2 | 6.000 MIPS', [-14, 0, -4], 8.5, 0x0284c7, 0x38bdf8);
+      // Jakarta: Host 1, 3.600 MIPS (Medium)
+      buildDatacenterTower('jkt', 'DC_Jakarta (Host 1)', 'VM 3, 4, 5 | 3.600 MIPS', [14, 0, -4], 6.5, 0x7c3aed, 0xa855f7);
+      // Yogyakarta: Host 2, 800 MIPS (Small)
+      buildDatacenterTower('yog', 'DC_Yogyakarta (Host 2)', 'VM 6..9 | 800 MIPS', [0, 0, 10], 4.8, 0x059669, 0x10b981);
 
-      // DC 2: Jakarta (Host 1, Medium MIPS) at [14, 0, -4]
-      buildDatacenterTower('DC_Jakarta (Host 1)', 'VM 3, 4, 5 | 3.600 MIPS', [14, 0, -4], 6.5, 0x7c3aed, 0xa855f7);
+      // 3. Network Laser Trunks
+      buildNetworkTrunk('sby_jkt', [-14, 0.5, -4], [14, 0.5, -4], 0x0284c7);
+      buildNetworkTrunk('sby_yog', [-14, 0.5, -4], [0, 0.5, 10], 0x059669);
+      buildNetworkTrunk('jkt_yog', [14, 0.5, -4], [0, 0.5, 10], 0x7c3aed);
 
-      // DC 3: Yogyakarta (Host 2, Small MIPS) at [0, 0, 10]
-      buildDatacenterTower('DC_Yogyakarta (Host 2)', 'VM 6..9 | 800 MIPS', [0, 0, 10], 4.8, 0x059669, 0x10b981);
+      // 4. Build Client Workload Dispatcher Platform
+      buildDispatcherPlatform([0, 15, -14]);
 
-      // 3. Network Laser Trunks between Datacenters
-      buildNetworkTrunk([-14, 0.5, -4], [14, 0.5, -4], 0x0284c7); // SBY - JKT
-      buildNetworkTrunk([-14, 0.5, -4], [0, 0.5, 10], 0x059669);  // SBY - YOG
-      buildNetworkTrunk([14, 0.5, -4], [0, 0.5, 10], 0x7c3aed);   // JKT - YOG
-
-      // 4. Golden Beacon for Best Solution (S_best)
+      // 5. Golden Beacon for Best Solution atop Surabaya
       beaconGroup = new THREE.Group();
-      const beamGeo = new THREE.CylinderGeometry(0.15, 0.15, 30, 16);
+      const beamGeo = new THREE.CylinderGeometry(0.18, 0.18, 32, 16);
       const beamMat = new THREE.MeshBasicMaterial({ color: 0xd97706, transparent: true, opacity: 0.85 });
       const beam = new THREE.Mesh(beamGeo, beamMat);
-      beam.position.y = 15;
+      beam.position.y = 16;
       beaconGroup.add(beam);
 
-      // Crown
       goldenCrown = new THREE.Mesh(
-        new THREE.OctahedronGeometry(0.65, 0),
-        new THREE.MeshStandardMaterial({ color: 0xf59e0b, emissive: 0xf59e0b, emissiveIntensity: 0.8 })
+        new THREE.OctahedronGeometry(0.7, 0),
+        new THREE.MeshStandardMaterial({ color: 0xf59e0b, emissive: 0xf59e0b, emissiveIntensity: 0.9 })
       );
-      goldenCrown.position.y = 9.5;
+      goldenCrown.position.y = 9.8;
       beaconGroup.add(goldenCrown);
-      beaconGroup.position.set(-14, 0, -4); // Surabaya is optimal location
+      beaconGroup.position.set(-14, 0, -4);
       scene.add(beaconGroup);
 
-      // 5. Cloudlet Task Cubes
+      // 6. Base Cloudlet Cubes (Initial Demo)
       createDataCubes();
 
-      // 6. AOA Exploration Drones (Divide / Multiply)
+      // 7. AOA Drones
       createAOAExploreDrones();
-
-      // 7. AOA Exploitation Drones (Subtract / Add with Scanning Lasers)
       createAOAExploitDrones();
 
-      // Resize Listener
+      // Window Resize Listener
       window.addEventListener('resize', onResize);
 
-      // Animation Loop
+      // Start Animation Loop
       animate();
+
+      // Initial HUD Update
+      updateHUDDisplay();
     }
 
-    function buildDatacenterTower(name, subtitle, pos, height, bodyColor, ledColor) {
+    // ============================================================================
+    // 3. DATACENTER & DISPATCHER BUILDERS
+    // ============================================================================
+    function buildDatacenterTower(id, name, subtitle, pos, height, bodyColor, ledColor) {
       const tower = new THREE.Group();
       
       const body = new THREE.Mesh(
@@ -894,12 +1576,18 @@
       tower.add(body);
 
       // LED Ring Top
+      const ledMat = new THREE.MeshBasicMaterial({ color: ledColor });
       const led = new THREE.Mesh(
         new THREE.BoxGeometry(4.3, 0.4, 4.3),
-        new THREE.MeshBasicMaterial({ color: ledColor })
+        ledMat
       );
       led.position.set(pos[0], height + 0.2, pos[2]);
       tower.add(led);
+
+      // Dynamic PointLight for Alert & Glow
+      const dcLight = new THREE.PointLight(ledColor, 1.2, 18);
+      dcLight.position.set(pos[0], height + 1.5, pos[2]);
+      scene.add(dcLight);
 
       // Satellite VM Racks
       for (let i = 0; i < 3; i++) {
@@ -914,12 +1602,60 @@
         tower.add(sat);
       }
 
-      // Sprite Label
+      // Main Title Sprite
       const sprite = createTextSprite(name, subtitle, ledColor);
-      sprite.position.set(pos[0], height + 2.2, pos[2]);
+      sprite.position.set(pos[0], height + 2.4, pos[2]);
       tower.add(sprite);
 
+      // Dynamic Holographic Status Badge Sprite
+      const statusBadge = createDynamicBadgeSprite('SIAP ALOKASI', '#0284c7');
+      statusBadge.position.set(pos[0], height + 4.2, pos[2]);
+      statusBadge.visible = false;
+      tower.add(statusBadge);
+
       scene.add(tower);
+
+      // Register Datacenter Node
+      datacenterNodes[id] = {
+        id,
+        group: tower,
+        bodyMesh: body,
+        ledMesh: led,
+        light: dcLight,
+        titleSprite: sprite,
+        statusBadgeSprite: statusBadge,
+        pos: new THREE.Vector3(...pos),
+        height,
+        name,
+        baseColor: bodyColor,
+        baseLedColor: ledColor,
+        state: 'normal' // 'normal', 'optimal', 'overload', 'idle'
+      };
+    }
+
+    function buildDispatcherPlatform(pos) {
+      dispatcherPlatform = new THREE.Group();
+
+      // Platform Ring Base
+      const platGeo = new THREE.CylinderGeometry(3.5, 3.8, 0.6, 32);
+      const platMat = new THREE.MeshStandardMaterial({ color: 0x292524, metalness: 0.7, roughness: 0.3 });
+      const plat = new THREE.Mesh(platGeo, platMat);
+      dispatcherPlatform.add(plat);
+
+      // Pulsing Ring
+      const ringGeo = new THREE.TorusGeometry(3.6, 0.12, 12, 36);
+      const ringMat = new THREE.MeshBasicMaterial({ color: 0x0284c7 });
+      const ring = new THREE.Mesh(ringGeo, ringMat);
+      ring.rotation.x = Math.PI / 2;
+      dispatcherPlatform.add(ring);
+
+      // Dispatcher Hologram Sprite
+      const dispSprite = createTextSprite('🌐 Cloud Client Dispatcher', 'Antrean Batch Dataset (100 - 500 Tasks)', 0x0284c7);
+      dispSprite.position.set(0, 2.5, 0);
+      dispatcherPlatform.add(dispSprite);
+
+      dispatcherPlatform.position.set(...pos);
+      scene.add(dispatcherPlatform);
     }
 
     function createTextSprite(title, subtitle, colorHex) {
@@ -951,18 +1687,62 @@
       return sp;
     }
 
-    function buildNetworkTrunk(p1, p2, color) {
+    function createDynamicBadgeSprite(text, borderColorHex) {
+      const canvas = document.createElement('canvas');
+      canvas.width = 380;
+      canvas.height = 90;
+      updateBadgeCanvas(canvas, text, borderColorHex);
+
+      const texture = new THREE.CanvasTexture(canvas);
+      const mat = new THREE.SpriteMaterial({ map: texture, transparent: true, depthWrite: false });
+      const sp = new THREE.Sprite(mat);
+      sp.scale.set(5.5, 1.3, 1);
+      sp.userData = { canvas, texture };
+      return sp;
+    }
+
+    function updateBadgeCanvas(canvas, text, borderColorHex) {
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+      ctx.roundRect ? ctx.roundRect(6, 6, 368, 78, 16) : ctx.fillRect(6, 6, 368, 78);
+      ctx.fill();
+
+      ctx.lineWidth = 6;
+      ctx.strokeStyle = borderColorHex;
+      ctx.stroke();
+
+      ctx.fillStyle = borderColorHex;
+      ctx.font = 'bold 28px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(text, 190, 52);
+    }
+
+    function setDatacenterBadge(id, text, colorHex, isVisible = true) {
+      const node = datacenterNodes[id];
+      if (!node) return;
+      const sp = node.statusBadgeSprite;
+      updateBadgeCanvas(sp.userData.canvas, text, colorHex);
+      sp.userData.texture.needsUpdate = true;
+      sp.visible = isVisible;
+    }
+
+    function buildNetworkTrunk(id, p1, p2, color) {
       const points = [new THREE.Vector3(...p1), new THREE.Vector3(...p2)];
       const geom = new THREE.BufferGeometry().setFromPoints(points);
       const mat = new THREE.LineBasicMaterial({ color, linewidth: 2, transparent: true, opacity: 0.7 });
       const line = new THREE.Line(geom, mat);
+      line.userData = { id, baseColor: color, p1, p2 };
       scene.add(line);
       laserLines.push(line);
     }
 
+    // ============================================================================
+    // 4. TASK CUBES & AOA DRONES
+    // ============================================================================
     function createDataCubes() {
-      // 8 Cloudlet Tasks representing dataset workload
-      const sizes = [1.5, 1.3, 1.1, 0.9, 0.8, 0.7, 0.6, 0.5]; // 60.780 MI down to 2.340 MI
+      const sizes = [1.5, 1.3, 1.1, 0.9, 0.8, 0.7, 0.6, 0.5];
       sizes.forEach((s, idx) => {
         const cube = new THREE.Mesh(
           new THREE.BoxGeometry(s, s, s),
@@ -989,7 +1769,6 @@
         );
         drone.add(body);
 
-        // Exploration beacon ring (Multiply / Divide)
         const ring = new THREE.Mesh(
           new THREE.TorusGeometry(0.8, 0.05, 8, 24),
           new THREE.MeshBasicMaterial({ color: 0x38bdf8 })
@@ -1013,18 +1792,485 @@
         );
         drone.add(body);
 
-        // Precision laser scanner for exploitation
         const laser = new THREE.Mesh(
-          new THREE.CylinderGeometry(0.04, 0.04, 4.5, 8),
+          new THREE.CylinderGeometry(0.04, 0.04, 5.0, 8),
           new THREE.MeshBasicMaterial({ color: 0x10b981, transparent: true, opacity: 0.85 })
         );
-        laser.position.y = -2.25;
+        laser.position.y = -2.5;
         drone.add(laser);
 
         drone.position.set(-14 + (Math.random() - 0.5) * 8, 9 + Math.random() * 2, -4 + (Math.random() - 0.5) * 8);
         drone.visible = false;
         scene.add(drone);
         aoaExploitDrones.push(drone);
+      }
+    }
+
+    // ============================================================================
+    // 5. INTERACTIVE SIMULATION ENGINE & 3D ANIMATION
+    // ============================================================================
+    function triggerRunSimulation() {
+      const algo = document.getElementById('algoSelect').value;
+      const dataset = document.getElementById('datasetSelect').value;
+      const env = document.getElementById('envSelect').value;
+
+      currentSimAlgo = algo;
+      isSimRunning = true;
+
+      // Clear previous cubes
+      clearSimulationCubes();
+
+      // Update HUD & KPI Tiles
+      updateHUDDisplay();
+
+      // Launch Visual Tasks along 3D Arcs
+      spawnInteractiveTasks(algo, parseInt(dataset));
+    }
+
+    function runDemoAlgo(algoType) {
+      document.getElementById('algoSelect').value = algoType;
+      triggerRunSimulation();
+    }
+
+    function spawnInteractiveTasks(algo, taskCount) {
+      const startP = new THREE.Vector3(0, 15, -14); // Client Dispatcher Platform
+      const sampleTotal = 24; // 24 representative visual task cubes
+
+      // Define distribution
+      let targets = [];
+      if (algo === 'random') {
+        // Random Scheduling: 15 tasks flood Yogyakarta, 6 Jakarta, only 3 Surabaya
+        for (let i = 0; i < 15; i++) targets.push('yog');
+        for (let i = 0; i < 6; i++) targets.push('jkt');
+        for (let i = 0; i < 3; i++) targets.push('sby');
+        // Shuffle
+        targets = targets.sort(() => Math.random() - 0.5);
+
+        // Turn Drones OFF
+        aoaExploreDrones.forEach(d => d.visible = false);
+        aoaExploitDrones.forEach(d => d.visible = false);
+      } else {
+        // AOA Scheduling: Proportional to capacity (Surabaya 6000 MIPS gets heavy tasks, Yogya gets light)
+        for (let i = 0; i < 12; i++) targets.push('sby'); // 50% Heavy tasks
+        for (let i = 0; i < 7; i++) targets.push('jkt');  // 30% Medium tasks
+        for (let i = 0; i < 5; i++) targets.push('yog');  // 20% Light tasks
+
+        // Turn Drones ON!
+        aoaExploreDrones.forEach(d => d.visible = true);
+        aoaExploitDrones.forEach(d => d.visible = true);
+      }
+
+      targets.forEach((targetId, idx) => {
+        const destNode = datacenterNodes[targetId];
+        const isHeavy = (algo === 'aoa' && targetId === 'sby') || (algo === 'random' && idx % 3 === 0);
+        const cubeSize = isHeavy ? 1.4 : (targetId === 'jkt' ? 1.0 : 0.7);
+        const cubeColor = targetId === 'sby' ? 0x0284c7 : (targetId === 'jkt' ? 0x7c3aed : 0x059669);
+
+        const mesh = new THREE.Mesh(
+          new THREE.BoxGeometry(cubeSize, cubeSize, cubeSize),
+          new THREE.MeshStandardMaterial({
+            color: cubeColor,
+            emissive: cubeColor,
+            emissiveIntensity: 0.6,
+            roughness: 0.3
+          })
+        );
+        mesh.position.copy(startP);
+        mesh.castShadow = true;
+        scene.add(mesh);
+
+        // Calculate landing slot at datacenter
+        const landOffset = calculateLandingSlot(targetId, algo);
+        const endP = new THREE.Vector3(
+          destNode.pos.x + landOffset.x,
+          destNode.pos.y + landOffset.y,
+          destNode.pos.z + landOffset.z
+        );
+
+        // Control point for parabolic flight arc
+        const midX = (startP.x + endP.x) / 2;
+        const midZ = (startP.z + endP.z) / 2;
+        const midY = Math.max(startP.y, endP.y) + 4.5 + Math.random() * 2.5;
+        const ctrlP = new THREE.Vector3(midX, midY, midZ);
+
+        activeFlyingTasks.push({
+          mesh,
+          targetId,
+          startP,
+          ctrlP,
+          endP,
+          progress: -(idx * 0.05), // staggered launch delay
+          speed: 0.016 + Math.random() * 0.005,
+          isHeavy,
+          landOffset
+        });
+      });
+    }
+
+    function calculateLandingSlot(targetId, algo) {
+      const node = datacenterNodes[targetId];
+      const count = (node.landedCount || 0);
+      node.landedCount = count + 1;
+
+      if (algo === 'random' && targetId === 'yog') {
+        // Dangerous chaotic wobbling pile on Yogyakarta
+        const stackH = count * 0.55;
+        const wobbleX = (Math.random() - 0.5) * 0.7;
+        const wobbleZ = (Math.random() - 0.5) * 0.7;
+        return { x: wobbleX, y: node.height + 0.4 + stackH, z: wobbleZ };
+      } else {
+        // Neat orderly circular dock around datacenter racks
+        const ang = (count * Math.PI * 2) / 6;
+        const radius = 2.6;
+        return {
+          x: Math.cos(ang) * radius,
+          y: 0.4 + (Math.floor(count / 6) * 0.8),
+          z: Math.sin(ang) * radius
+        };
+      }
+    }
+
+    function clearSimulationCubes() {
+      // Remove flying tasks
+      activeFlyingTasks.forEach(t => scene.remove(t.mesh));
+      activeFlyingTasks = [];
+
+      // Remove landed tasks
+      landedTasks.forEach(mesh => scene.remove(mesh));
+      landedTasks = [];
+
+      // Reset node counters
+      Object.values(datacenterNodes).forEach(node => {
+        node.landedCount = 0;
+        node.state = 'normal';
+        node.ledMesh.material.color.setHex(node.baseLedColor);
+        node.light.color.setHex(node.baseLedColor);
+        node.light.intensity = 1.2;
+        node.statusBadgeSprite.visible = false;
+      });
+
+      // Reset laser trunks
+      laserLines.forEach(line => {
+        line.material.color.setHex(line.userData.baseColor);
+      });
+    }
+
+    function reset3DSimulation() {
+      clearSimulationCubes();
+      isSimRunning = false;
+      document.getElementById('algoSelect').value = 'aoa';
+      document.getElementById('datasetSelect').value = '100';
+      updateHUDDisplay();
+      set3DMode('topology');
+    }
+
+    // ============================================================================
+    // 6. HUD, CONTROLS & BENCHMARK SYNCHRONIZATION
+    // ============================================================================
+    function onAlgoChange() {
+      updateHUDDisplay();
+    }
+
+    function onDatasetChange() {
+      updateHUDDisplay();
+    }
+
+    function onEnvChange() {
+      updateHUDDisplay();
+    }
+
+    function updateHUDDisplay() {
+      const algo = document.getElementById('algoSelect').value;
+      const dataset = document.getElementById('datasetSelect').value;
+      const env = document.getElementById('envSelect').value;
+
+      const dataRecord = BENCHMARK_DATA[env][dataset];
+      const res = dataRecord[algo];
+      const baseline = dataRecord['random'];
+      const aoaData = dataRecord['aoa'];
+
+      // Tag & Status Dot
+      const statusDot = document.getElementById('simStatusDot');
+      const activeTag = document.getElementById('simActiveTag');
+      if (algo === 'random') {
+        statusDot.className = 'pulse-dot danger';
+        activeTag.className = 'badge-top';
+        activeTag.style.background = '#fef2f2';
+        activeTag.style.color = '#dc2626';
+        activeTag.innerText = 'Random (Inefisien)';
+      } else {
+        statusDot.className = 'pulse-dot';
+        activeTag.className = 'badge-top';
+        activeTag.style.background = '#e0f2fe';
+        activeTag.style.color = '#0284c7';
+        activeTag.innerText = 'AOA (Teroptimasi)';
+      }
+
+      // Makespan KPI
+      const makespanDeltaPct = (((res.makespan - baseline.makespan) / baseline.makespan) * 100).toFixed(1);
+      document.getElementById('kpiMakespan').innerText = `${res.makespan.toFixed(2)} s`;
+      const makespanDeltaEl = document.getElementById('kpiMakespanDelta');
+      if (algo === 'aoa') {
+        makespanDeltaEl.className = 'kpi-sub text-green';
+        makespanDeltaEl.innerText = `${makespanDeltaPct}% Lebih Cepat`;
+      } else {
+        makespanDeltaEl.className = 'kpi-sub text-amber';
+        makespanDeltaEl.innerText = `Baseline (Lambat)`;
+      }
+
+      // LBI KPI
+      document.getElementById('kpiLBI').innerText = res.lbi.toFixed(2);
+      const lbiBadgeEl = document.getElementById('kpiLBIBadge');
+      if (algo === 'aoa') {
+        lbiBadgeEl.className = 'kpi-sub text-green';
+        lbiBadgeEl.innerText = 'Seimbang & Proporsional';
+      } else {
+        lbiBadgeEl.className = 'kpi-sub text-amber';
+        lbiBadgeEl.style.color = '#dc2626';
+        lbiBadgeEl.innerText = 'Timpang Ekstrem (Kritis)';
+      }
+
+      // Throughput KPI
+      document.getElementById('kpiThroughput').innerText = `${res.throughput.toFixed(2)} t/s`;
+      const tpSubEl = document.getElementById('kpiThroughputSub');
+      if (algo === 'aoa') {
+        const tpGain = (((aoaData.throughput - baseline.throughput) / baseline.throughput) * 100).toFixed(0);
+        tpSubEl.className = 'kpi-sub text-sky';
+        tpSubEl.innerText = `+${tpGain}% Kapasitas Selesai`;
+      } else {
+        tpSubEl.className = 'kpi-sub';
+        tpSubEl.style.color = '#78716c';
+        tpSubEl.innerText = 'Throughput Terhambat';
+      }
+
+      // Cost KPI
+      document.getElementById('kpiCost').innerText = `$${res.cost.toFixed(2)}`;
+      const costDeltaEl = document.getElementById('kpiCostDelta');
+      if (algo === 'aoa') {
+        const savedCost = (baseline.cost - aoaData.cost).toFixed(2);
+        const savedPct = (((baseline.cost - aoaData.cost) / baseline.cost) * 100).toFixed(1);
+        costDeltaEl.className = 'kpi-sub text-green';
+        costDeltaEl.innerText = `Hemat $${savedCost} (${savedPct}%)`;
+      } else {
+        costDeltaEl.className = 'kpi-sub text-amber';
+        costDeltaEl.innerText = 'Biaya Sewa Bengkak';
+      }
+
+      // Datacenter Load Progress Bars
+      const util = res.util;
+      const sbyBar = document.getElementById('dcSbyBar');
+      const jktBar = document.getElementById('dcJktBar');
+      const yogBar = document.getElementById('dcYogBar');
+
+      const sbyText = document.getElementById('dcSbyLoadText');
+      const jktText = document.getElementById('dcJktLoadText');
+      const yogText = document.getElementById('dcYogLoadText');
+
+      sbyBar.style.width = `${util.sby}%`;
+      jktBar.style.width = `${util.jkt}%`;
+      yogBar.style.width = `${util.yog}%`;
+
+      if (algo === 'random') {
+        sbyBar.className = 'meter-fill fill-idle';
+        sbyText.className = 'font-mono';
+        sbyText.style.color = '#64748b';
+        sbyText.innerText = `${util.sby}% (IDLE / MENGANGGUR)`;
+
+        jktBar.className = 'meter-fill fill-purple';
+        jktText.className = 'font-mono text-purple';
+        jktText.innerText = `${util.jkt}% (Sedang)`;
+
+        yogBar.className = 'meter-fill fill-danger';
+        yogText.className = 'font-mono';
+        yogText.style.color = '#dc2626';
+        yogText.innerText = `${util.yog}% (OVERLOAD ⚠️)`;
+      } else {
+        sbyBar.className = 'meter-fill fill-sky';
+        sbyText.className = 'font-mono text-sky';
+        sbyText.innerText = `${util.sby}% (Optimal Heavy)`;
+
+        jktBar.className = 'meter-fill fill-purple';
+        jktText.className = 'font-mono text-purple';
+        jktText.innerText = `${util.jkt}% (Optimal Medium)`;
+
+        yogBar.className = 'meter-fill fill-green';
+        yogText.className = 'font-mono text-green';
+        yogText.innerText = `${util.yog}% (Optimal Light)`;
+      }
+
+      // Status Banner Text & Alert
+      const banner = document.getElementById('simStatusBanner');
+      const icon = document.getElementById('simStatusIcon');
+      const text = document.getElementById('simStatusText');
+
+      if (algo === 'random') {
+        banner.className = 'sim-status-banner danger';
+        icon.innerText = '⚠️';
+        text.innerHTML = `<strong>Kelemahan Random Terbukti:</strong> Tugas besar menumpuk di DC Yogyakarta (800 MIPS) hingga <strong>Overload ${util.yog}%</strong>. Sementara Surabaya (6.000 MIPS) terbuang menganggur di <strong>${util.sby}%</strong>!`;
+      } else {
+        banner.className = 'sim-status-banner';
+        icon.innerText = '✅';
+        text.innerHTML = `<strong>AOA Sukses Menyeimbangkan:</strong> Tugas dipetakan cerdas. Beban 3 DC stabil merata (<strong>52% - 57%</strong>) dan Makespan terpangkas hingga <strong>${Math.abs(makespanDeltaPct)}%</strong>!`;
+      }
+    }
+
+    function toggleSimConsole() {
+      const panel = document.getElementById('simConsolePanel');
+      const txt = document.getElementById('toggleConsoleText');
+      panel.classList.toggle('collapsed');
+      if (panel.classList.contains('collapsed')) {
+        txt.innerText = '▲ Tampilkan Konsol';
+      } else {
+        txt.innerText = '▼ Perkecil';
+      }
+    }
+
+    // Modal Benchmark Functions
+    function triggerBenchmarkModal() {
+      document.getElementById('benchmarkModal').classList.add('active');
+    }
+
+    function closeBenchmarkModal(e) {
+      if (e && e.target !== e.currentTarget && e.target.id !== 'benchmarkModal') return;
+      document.getElementById('benchmarkModal').classList.remove('active');
+    }
+
+    function switchModalTab(tab) {
+      document.getElementById('tabBtnRealWorld').classList.toggle('active', tab === 'real-world');
+      document.getElementById('tabBtnCloudSim').classList.toggle('active', tab === 'cloudsim');
+      document.getElementById('tabContentRealWorld').style.display = tab === 'real-world' ? 'block' : 'none';
+      document.getElementById('tabContentCloudSim').style.display = tab === 'cloudsim' ? 'block' : 'none';
+    }
+
+    // ============================================================================
+    // 7. 3D ANIMATION LOOP
+    // ============================================================================
+    function animate() {
+      animId = requestAnimationFrame(animate);
+
+      const t = Date.now() * 0.001;
+
+      // Rotate golden crown & pulse beacon
+      if (goldenCrown) {
+        goldenCrown.rotation.y += 0.02;
+        goldenCrown.rotation.x += 0.01;
+      }
+
+      // Update Flying Tasks
+      if (activeFlyingTasks.length > 0) {
+        for (let i = activeFlyingTasks.length - 1; i >= 0; i--) {
+          const task = activeFlyingTasks[i];
+          task.progress += task.speed;
+
+          if (task.progress >= 0 && task.progress < 1) {
+            task.mesh.visible = true;
+            // Quadratic Bezier Interpolation
+            const u = task.progress;
+            const u1 = 1 - u;
+            task.mesh.position.x = u1 * u1 * task.startP.x + 2 * u1 * u * task.ctrlP.x + u * u * task.endP.x;
+            task.mesh.position.y = u1 * u1 * task.startP.y + 2 * u1 * u * task.ctrlP.y + u * u * task.endP.y;
+            task.mesh.position.z = u1 * u1 * task.startP.z + 2 * u1 * u * task.ctrlP.z + u * u * task.endP.z;
+            task.mesh.rotation.y += 0.04;
+            task.mesh.rotation.x += 0.02;
+          } else if (task.progress >= 1) {
+            // Task Lands at Destination Datacenter
+            task.mesh.position.copy(task.endP);
+            task.mesh.rotation.set(0, 0, 0);
+            landedTasks.push(task.mesh);
+            activeFlyingTasks.splice(i, 1);
+
+            // Update Datacenter Consequence Visuals
+            triggerDatacenterLandingVisuals(task.targetId, currentSimAlgo);
+          } else {
+            task.mesh.visible = false;
+          }
+        }
+      }
+
+      // Animate Datacenter Visual Effects (Pulsing Overload / Optimal Glow)
+      updateDatacenterGlows(t);
+
+      // Animate AOA Drones
+      if (currentSimAlgo === 'aoa' || current3DMode === 'aoa-explore') {
+        aoaExploreDrones.forEach((dr, idx) => {
+          dr.position.x += Math.sin(t * 0.7 + idx) * 0.12;
+          dr.position.z += Math.cos(t * 0.7 + idx) * 0.12;
+          dr.position.y = 7.0 + Math.sin(t * 1.4 + idx) * 0.5;
+        });
+      }
+      if (currentSimAlgo === 'aoa' || current3DMode === 'aoa-exploit') {
+        aoaExploitDrones.forEach((dr, idx) => {
+          dr.position.x += Math.sin(t * 1.2 + idx) * 0.03;
+          dr.position.z += Math.cos(t * 1.2 + idx) * 0.03;
+          dr.position.y = 9.2 + Math.sin(t * 2.0 + idx) * 0.2;
+        });
+      }
+
+      // Animate Default Data Cubes (idle floating)
+      dataCubes.forEach((cb, idx) => {
+        cb.rotation.y += 0.015 + idx * 0.002;
+        cb.position.y = 5 + Math.sin(t * 1.5 + idx) * 0.4;
+      });
+
+      controls.update();
+      renderer.render(scene, camera);
+    }
+
+    function triggerDatacenterLandingVisuals(targetId, algo) {
+      const node = datacenterNodes[targetId];
+      if (!node) return;
+
+      if (algo === 'random') {
+        if (targetId === 'yog') {
+          // Yogyakarta Overloaded!
+          node.state = 'overload';
+          node.ledMesh.material.color.setHex(0xef4444); // Flash Red
+          node.light.color.setHex(0xef4444);
+          node.light.intensity = 3.5;
+          setDatacenterBadge('yog', '⚠️ OVERLOAD 99% (BOTTLENECK)', '#ef4444', true);
+
+          // Congest Network Trunk to Yogyakarta
+          const line = laserLines.find(l => l.userData.id === 'sby_yog');
+          if (line) line.material.color.setHex(0xef4444);
+        } else if (targetId === 'sby') {
+          // Surabaya Underutilized / Idle
+          node.state = 'idle';
+          node.ledMesh.material.color.setHex(0x64748b); // Dim Gray
+          node.light.color.setHex(0x64748b);
+          node.light.intensity = 0.4;
+          setDatacenterBadge('sby', '💤 IDLE 14% (KAPASITAS TERBUANG)', '#64748b', true);
+        } else {
+          setDatacenterBadge('jkt', 'BEBAN 36% (SEDANG)', '#7c3aed', true);
+        }
+      } else {
+        // AOA: All nodes reach harmonious optimal balance
+        node.state = 'optimal';
+        node.ledMesh.material.color.setHex(0x10b981); // Emerald Green
+        node.light.color.setHex(0x10b981);
+        node.light.intensity = 2.0;
+
+        setDatacenterBadge('sby', '✅ OPTIMAL 54% (HEAVY LOAD)', '#0284c7', true);
+        setDatacenterBadge('jkt', '✅ OPTIMAL 53% (MEDIUM LOAD)', '#7c3aed', true);
+        setDatacenterBadge('yog', '✅ OPTIMAL 55% (LIGHT LOAD)', '#059669', true);
+
+        // Synchronized Green Flow on Network Trunks
+        laserLines.forEach(l => l.material.color.setHex(0x10b981));
+      }
+    }
+
+    function updateDatacenterGlows(t) {
+      // Yogyakarta Pulsing Alarm if Overloaded
+      const yogNode = datacenterNodes['yog'];
+      if (yogNode && yogNode.state === 'overload') {
+        const pulse = (Math.sin(t * 12) + 1) * 0.5;
+        yogNode.light.intensity = 2.0 + pulse * 2.5;
+      }
+
+      // Surabaya Golden Glow if AOA Optimal
+      const sbyNode = datacenterNodes['sby'];
+      if (sbyNode && sbyNode.state === 'optimal') {
+        const pulse = (Math.sin(t * 3) + 1) * 0.5;
+        sbyNode.light.intensity = 1.6 + pulse * 0.8;
       }
     }
 
@@ -1062,54 +2308,6 @@
       }
     }
 
-    function animate() {
-      animId = requestAnimationFrame(animate);
-
-      // Rotate golden crown
-      if (goldenCrown) {
-        goldenCrown.rotation.y += 0.02;
-        goldenCrown.rotation.x += 0.01;
-      }
-
-      const t = Date.now() * 0.001;
-
-      // Animate Task Cubes
-      dataCubes.forEach((cb, idx) => {
-        cb.rotation.y += 0.015 + idx * 0.002;
-        if (current3DMode === 'aoa-exploit') {
-          // Tasks flock towards optimal datacenter Surabaya (-14, 0, -4)
-          const targetX = -14 + idx * 2.8;
-          const targetZ = -4 + Math.sin(t + idx) * 1.2;
-          cb.position.x += (targetX - cb.position.x) * 0.05;
-          cb.position.z += (targetZ - cb.position.z) * 0.05;
-          cb.position.y = 5.5 + Math.sin(t * 2 + idx) * 0.3;
-        } else {
-          cb.position.y = 5 + Math.sin(t * 1.5 + idx) * 0.5;
-        }
-      });
-
-      // Animate AOA Exploration Drones (Wide Jumps)
-      if (current3DMode === 'aoa-explore') {
-        aoaExploreDrones.forEach((dr, idx) => {
-          dr.position.x += Math.sin(t * 0.7 + idx) * 0.12;
-          dr.position.z += Math.cos(t * 0.7 + idx) * 0.12;
-          dr.position.y = 7.0 + Math.sin(t * 1.4 + idx) * 0.6;
-        });
-      }
-
-      // Animate AOA Exploitation Drones (Tight Precision Hover)
-      if (current3DMode === 'aoa-exploit') {
-        aoaExploitDrones.forEach((dr, idx) => {
-          dr.position.x += Math.sin(t * 1.2 + idx) * 0.03;
-          dr.position.z += Math.cos(t * 1.2 + idx) * 0.03;
-          dr.position.y = 9.2 + Math.sin(t * 2.0 + idx) * 0.2;
-        });
-      }
-
-      controls.update();
-      renderer.render(scene, camera);
-    }
-
     function onResize() {
       const container = document.getElementById('threeCanvas');
       if (!container) return;
@@ -1120,7 +2318,9 @@
       renderer.setSize(width, height);
     }
 
-    // SLIDE DECK LOGIC
+    // ============================================================================
+    // 8. SLIDE DECK NAVIGATION
+    // ============================================================================
     const slides = document.querySelectorAll('.slide');
     let currentSlide = 0;
 
@@ -1131,7 +2331,7 @@
       document.getElementById('counter').innerText = `Slide ${currentSlide + 1} / ${slides.length}`;
       document.getElementById('progressBar').style.width = `${((currentSlide + 1) / slides.length) * 100}%`;
 
-      // Auto-switch 3D scene mode according to active slide
+      // Auto-switch 3D scene mode based on slide attribute
       const activeSlideEl = slides[currentSlide];
       const targetMode = activeSlideEl.getAttribute('data-3d-mode') || 'topology';
       set3DMode(targetMode);
@@ -1151,7 +2351,9 @@
       }
     }
 
+    // Prevent arrow navigation while focusing on form inputs
     document.addEventListener('keydown', (e) => {
+      if (['INPUT', 'SELECT', 'BUTTON', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
       if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
         nextSlide();
       } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
