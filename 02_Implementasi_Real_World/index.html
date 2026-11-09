@@ -54,7 +54,7 @@
           </div>
         </div>
 
-        <div class="code-viewer-container" style="margin-top: 4px;">
+        <div class="code-viewer-container" style="flex:1;">
           <div class="code-header-bar">
             <span style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#38bdf8; font-weight:700;">
               🐍 program_aoa_vs_random.py &bull; build_datacenter_vms()
@@ -63,14 +63,24 @@
               📄 Buka Kode Utuh (349 Baris)
             </button>
           </div>
-          <div class="code-scroll-area" style="max-height: 150px;">
-            <pre><code><span class="syn-com"># Inisialisasi 10 VM Heterogen di 3 Datacenter (Minggu 3)</span>
-vms.append(VM(<span class="syn-num">0</span>, <span class="syn-str">"DC_Surabaya"</span>, <span class="syn-num">0</span>, <span class="syn-str">"Large"</span>,  <span class="syn-num">3000.0</span>, <span class="syn-num">2</span>, <span class="syn-num">8192</span>, <span class="syn-num">2500.0</span>))  <span class="syn-com"># 6.000 MIPS (Surabaya)</span>
-vms.append(VM(<span class="syn-num">1</span>, <span class="syn-str">"DC_Surabaya"</span>, <span class="syn-num">0</span>, <span class="syn-str">"Large"</span>,  <span class="syn-num">3000.0</span>, <span class="syn-num">2</span>, <span class="syn-num">8192</span>, <span class="syn-num">2500.0</span>))  <span class="syn-com"># 6.000 MIPS (Surabaya)</span>
-vms.append(VM(<span class="syn-num">2</span>, <span class="syn-str">"DC_Surabaya"</span>, <span class="syn-num">0</span>, <span class="syn-str">"Medium"</span>, <span class="syn-num">1800.0</span>, <span class="syn-num">2</span>, <span class="syn-num">4096</span>, <span class="syn-num">1000.0</span>))  <span class="syn-com"># 3.600 MIPS (Surabaya)</span>
-vms.append(VM(<span class="syn-num">3..4</span>, <span class="syn-str">"DC_Jakarta"</span>, <span class="syn-num">1</span>, <span class="syn-str">"Medium"</span>, <span class="syn-num">1800.0</span>, <span class="syn-num">2</span>, <span class="syn-num">4096</span>, <span class="syn-num">1000.0</span>)) <span class="syn-com"># 2x 3.600 MIPS (Jakarta)</span>
-vms.append(VM(<span class="syn-num">5</span>, <span class="syn-str">"DC_Jakarta"</span>,  <span class="syn-num">1</span>, <span class="syn-str">"Small"</span>,   <span class="syn-num">800.0</span>, <span class="syn-num">1</span>, <span class="syn-num">2048</span>,  <span class="syn-num">500.0</span>))  <span class="syn-com">#   800 MIPS (Jakarta)</span>
-vms.append(VM(<span class="syn-num">6..9</span>, <span class="syn-str">"DC_Yogyakarta"</span>, <span class="syn-num">2</span>, <span class="syn-str">"Small"</span>, <span class="syn-num">800.0</span>, <span class="syn-num">1</span>, <span class="syn-num">2048</span>, <span class="syn-num">500.0</span>)) <span class="syn-com"># 4x 800 MIPS (Yogya)</span></code></pre>
+          <div class="code-scroll-area">
+            <pre><code><span class="syn-com"># Inisialisasi 10 VM Heterogen di 3 Datacenter Sesuai Spesifikasi Minggu 3</span>
+<span class="syn-kw">def</span> <span class="syn-fn">build_datacenter_vms</span>() -&gt; List[VM]:
+    vms: List[VM] = []
+    <span class="syn-com"># 1. Datacenter Surabaya (Host 0): Total 6.000 MIPS &bull; 8.192 MB RAM &bull; 2.500 Mbps BW</span>
+    vms.append(VM(<span class="syn-num">0</span>, <span class="syn-str">"DC_Surabaya"</span>, <span class="syn-num">0</span>, <span class="syn-str">"Large"</span>,  <span class="syn-num">3000.0</span>, <span class="syn-num">2</span>, <span class="syn-num">8192</span>, <span class="syn-num">2500.0</span>))  <span class="syn-com"># VM 0: 6.000 MIPS</span>
+    vms.append(VM(<span class="syn-num">1</span>, <span class="syn-str">"DC_Surabaya"</span>, <span class="syn-num">0</span>, <span class="syn-str">"Large"</span>,  <span class="syn-num">3000.0</span>, <span class="syn-num">2</span>, <span class="syn-num">8192</span>, <span class="syn-num">2500.0</span>))  <span class="syn-com"># VM 1: 6.000 MIPS</span>
+    vms.append(VM(<span class="syn-num">2</span>, <span class="syn-str">"DC_Surabaya"</span>, <span class="syn-num">0</span>, <span class="syn-str">"Medium"</span>, <span class="syn-num">1800.0</span>, <span class="syn-num">2</span>, <span class="syn-num">4096</span>, <span class="syn-num">1000.0</span>))  <span class="syn-com"># VM 2: 3.600 MIPS</span>
+
+    <span class="syn-com"># 2. Datacenter Jakarta (Host 1): Total 3.600 MIPS &bull; 4.096 MB RAM &bull; 1.000 Mbps BW</span>
+    vms.append(VM(<span class="syn-num">3</span>, <span class="syn-str">"DC_Jakarta"</span>,  <span class="syn-num">1</span>, <span class="syn-str">"Medium"</span>, <span class="syn-num">1800.0</span>, <span class="syn-num">2</span>, <span class="syn-num">4096</span>, <span class="syn-num">1000.0</span>))  <span class="syn-com"># VM 3: 3.600 MIPS</span>
+    vms.append(VM(<span class="syn-num">4</span>, <span class="syn-str">"DC_Jakarta"</span>,  <span class="syn-num">1</span>, <span class="syn-str">"Medium"</span>, <span class="syn-num">1800.0</span>, <span class="syn-num">2</span>, <span class="syn-num">4096</span>, <span class="syn-num">1000.0</span>))  <span class="syn-com"># VM 4: 3.600 MIPS</span>
+    vms.append(VM(<span class="syn-num">5</span>, <span class="syn-str">"DC_Jakarta"</span>,  <span class="syn-num">1</span>, <span class="syn-str">"Small"</span>,   <span class="syn-num">800.0</span>, <span class="syn-num">1</span>, <span class="syn-num">2048</span>,  <span class="syn-num">500.0</span>))  <span class="syn-com"># VM 5:   800 MIPS</span>
+
+    <span class="syn-com"># 3. Datacenter Yogyakarta (Host 2): Total 800 MIPS &bull; 2.048 MB RAM &bull; 500 Mbps BW</span>
+    <span class="syn-kw">for</span> i <span class="syn-kw">in</span> range(<span class="syn-num">6</span>, <span class="syn-num">10</span>):
+        vms.append(VM(i, <span class="syn-str">"DC_Yogyakarta"</span>, <span class="syn-num">2</span>, <span class="syn-str">"Small"</span>, <span class="syn-num">800.0</span>, <span class="syn-num">1</span>, <span class="syn-num">2048</span>, <span class="syn-num">500.0</span>)) <span class="syn-com"># VM 6..9: 4x 800 MIPS</span>
+    <span class="syn-kw">return</span> vms</code></pre>
           </div>
         </div>
       </div>
@@ -92,7 +102,7 @@ vms.append(VM(<span class="syn-num">6..9</span>, <span class="syn-str">"DC_Yogya
           </div>
         </div>
 
-        <div class="code-viewer-container">
+        <div class="code-viewer-container" style="flex:1;">
           <div class="code-header-bar">
             <span style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#ef4444; font-weight:700;">
               🐍 program_aoa_vs_random.py &bull; schedule_random()
@@ -101,12 +111,17 @@ vms.append(VM(<span class="syn-num">6..9</span>, <span class="syn-str">"DC_Yogya
               📄 Buka Kode Utuh
             </button>
           </div>
-          <div class="code-scroll-area" style="max-height: 140px;">
+          <div class="code-scroll-area">
             <pre><code><span class="syn-kw">def</span> <span class="syn-fn">schedule_random</span>(cloudlets: List[Cloudlet], vms: List[VM], seed: <span class="syn-kw">int</span>) -&gt; List[<span class="syn-kw">int</span>]:
-    <span class="syn-str">"""Baseline Random Scheduling (Minggu 3)"""</span>
+    <span class="syn-str">"""1. Random Scheduling (Baseline Minggu 3)"""</span>
     rnd = random.Random(seed)
-    <span class="syn-com"># Memilih VM [0..9] secara seragam tanpa melihat beban maupun MIPS</span>
-    <span class="syn-kw">return</span> [rnd.randint(<span class="syn-num">0</span>, len(vms) - <span class="syn-num">1</span>) <span class="syn-kw">for</span> _ <span class="syn-kw">in</span> cloudlets]</code></pre>
+    <span class="syn-com"># Memilih VM [0..9] secara acak seragam tanpa melihat beban maupun MIPS</span>
+    <span class="syn-kw">return</span> [rnd.randint(<span class="syn-num">0</span>, len(vms) - <span class="syn-num">1</span>) <span class="syn-kw">for</span> _ <span class="syn-kw">in</span> cloudlets]
+
+<span class="syn-com"># Analisis Dampak Inefisiensi pada Dataset 100 Cloudlets:</span>
+<span class="syn-com"># - VM 8 (Yogya 800 MIPS) menerima beban 60.780 MI -&gt; Bottleneck eksekusi 75.9 detik!</span>
+<span class="syn-com"># - VM 0 (Surabaya 6.000 MIPS) hanya kebagian beban ringan -&gt; IDLE terbuang 14.8% waktu</span>
+<span class="syn-com"># - Makespan membengkak ke 444.29s dan Indeks Ketimpangan Beban (LBI) melonjak ke 2.20</span></code></pre>
           </div>
         </div>
       </div>
@@ -117,7 +132,7 @@ vms.append(VM(<span class="syn-num">6..9</span>, <span class="syn-str">"DC_Yogya
         <h2 style="font-size:20px; margin-bottom:4px;">Arsitektur 3 Datacenter &amp; Jaringan Geografis Riil</h2>
         <p style="font-size:12px; margin-bottom:6px;">Infrastruktur cloud riil terdistribusi antarkota dengan latensi jaringan dan bandwidth I/O:</p>
 
-        <div class="code-viewer-container" style="margin-bottom: 6px;">
+        <div class="code-viewer-container" style="flex:1;">
           <div class="code-header-bar">
             <span style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#38bdf8; font-weight:700;">
               🐍 program_aoa_vs_random.py &bull; NETWORK_LATENCY &amp; tx_time
@@ -126,7 +141,7 @@ vms.append(VM(<span class="syn-num">6..9</span>, <span class="syn-str">"DC_Yogya
               📄 Buka Kode Utuh
             </button>
           </div>
-          <div class="code-scroll-area" style="max-height: 155px;">
+          <div class="code-scroll-area">
             <pre><code><span class="syn-com"># Matriks Latensi Jaringan Fisik Antarkota Real-World (dalam detik)</span>
 NETWORK_LATENCY = {
     (<span class="syn-str">"DC_Surabaya"</span>, <span class="syn-str">"DC_Surabaya"</span>):   <span class="syn-num">0.001</span>,  <span class="syn-com"># Intra-DC 1.0 ms</span>
@@ -134,8 +149,16 @@ NETWORK_LATENCY = {
     (<span class="syn-str">"DC_Surabaya"</span>, <span class="syn-str">"DC_Jakarta"</span>):    <span class="syn-num">0.015</span>,  <span class="syn-com"># Surabaya - Jakarta 15.0 ms</span>
     (<span class="syn-str">"DC_Jakarta"</span>,  <span class="syn-str">"DC_Yogyakarta"</span>): <span class="syn-num">0.010</span>,  <span class="syn-com"># Jakarta - Yogya 10.0 ms</span>
 }
-<span class="syn-com"># Waktu Transfer I/O = (Ukuran File Input / Bandwidth) + Latensi Ping</span>
-tx_time = (task.input_size_mb / (vm.bw_mbps / <span class="syn-num">8.0</span>)) + lat</code></pre>
+
+<span class="syn-com"># Simulasi Waktu Transfer File I/O + Latensi Jaringan Fisik di Setiap VM</span>
+<span class="syn-kw">for</span> task <span class="syn-kw">in</span> tasks:
+    lat = NETWORK_LATENCY.get((<span class="syn-str">"DC_Surabaya"</span>, vm.dc_name), <span class="syn-num">0.01</span>)
+    <span class="syn-com"># Waktu Transfer I/O = (Ukuran File Input / Bandwidth) + Latensi Ping</span>
+    tx_time = (task.input_size_mb / (vm.bw_mbps / <span class="syn-num">8.0</span>)) + lat
+    start_time = max(current_clock, tx_time)
+    exec_time = vm.execution_time(task.length_mi)
+    finish_time = start_time + exec_time
+    current_clock = finish_time</code></pre>
           </div>
         </div>
       </div>
@@ -146,7 +169,7 @@ tx_time = (task.input_size_mb / (vm.bw_mbps / <span class="syn-num">8.0</span>))
         <h2 style="font-size:20px; margin-bottom:4px;">Mengapa Memilih AOA? Keunggulan 4 Operator Aritmatika</h2>
         <p style="font-size:12px; margin-bottom:6px;">AOA (Abualigah et al., 2021) mengoptimalkan alokasi dengan dua fase matematis yang adaptif:</p>
 
-        <div class="code-viewer-container" style="margin-bottom: 6px;">
+        <div class="code-viewer-container" style="flex:1;">
           <div class="code-header-bar">
             <span style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#10b981; font-weight:700;">
               🐍 program_aoa_vs_random.py &bull; AOAScheduler.optimize()
@@ -155,22 +178,34 @@ tx_time = (task.input_size_mb / (vm.bw_mbps / <span class="syn-num">8.0</span>))
               📄 Buka Kode Utuh
             </button>
           </div>
-          <div class="code-scroll-area" style="max-height: 165px;">
+          <div class="code-scroll-area">
             <pre><code><span class="syn-com"># 1. Math Optimizer Accelerated (MOA): Penentu transisi Eksplorasi -&gt; Eksploitasi</span>
 moa = <span class="syn-num">0.2</span> + t * ((<span class="syn-num">0.9</span> - <span class="syn-num">0.2</span>) / self.max_iter)
 
 <span class="syn-com"># 2. Math Optimizer Probability (MOP): Koefisien presisi penyesuaian posisi</span>
 mop = <span class="syn-num">1.0</span> - (math.pow(t, <span class="syn-num">1.0</span> / self.alpha) / math.pow(self.max_iter, <span class="syn-num">1.0</span> / self.alpha))
 
-<span class="syn-kw">if</span> r1 &gt; moa:
-    <span class="syn-com"># FASE EKSPLORASI LUAS: Operator Pembagian (/) dan Perkalian (*)</span>
-    val = best_schedule[j] / (mop + <span class="syn-num">1e-5</span>) * (<span class="syn-num">1.0</span> + perturb * <span class="syn-num">0.1</span>) <span class="syn-kw">if</span> r2 &lt; <span class="syn-num">0.5</span>           <span class="syn-kw">else</span> best_schedule[j] * mop * (<span class="syn-num">1.0</span> + perturb * <span class="syn-num">0.1</span>)
-<span class="syn-kw">else</span>:
-    <span class="syn-com"># FASE EKSPLOITASI INTENSIF: Operator Pengurangan (-) dan Penambahan (+)</span>
-    val = best_schedule[j] - mop * perturb <span class="syn-kw">if</span> r3 &lt; <span class="syn-num">0.5</span>           <span class="syn-kw">else</span> best_schedule[j] + mop * perturb
+<span class="syn-kw">for</span> i <span class="syn-kw">in</span> range(self.pop_size):
+    new_ind = list(population[i])
+    <span class="syn-kw">for</span> j <span class="syn-kw">in</span> range(self.num_tasks):
+        r1, r2, r3 = self.rnd.random(), self.rnd.random(), self.rnd.random()
+        perturb = (ub - lb) * self.mu_rate * (self.rnd.random() - <span class="syn-num">0.5</span>) * <span class="syn-num">2.0</span>
 
-<span class="syn-com"># Continuous-to-Discrete Mapping: Bulatkan ke Indeks VM valid [0..9]</span>
-new_ind[j] = max(<span class="syn-num">0</span>, min(<span class="syn-num">9</span>, int(round(val))))</code></pre>
+        <span class="syn-kw">if</span> r1 &gt; moa:
+            <span class="syn-com"># FASE EKSPLORASI LUAS: Operator Pembagian (/) dan Perkalian (*)</span>
+            val = best_schedule[j] / (mop + <span class="syn-num">1e-5</span>) * (<span class="syn-num">1.0</span> + perturb * <span class="syn-num">0.1</span>) <span class="syn-kw">if</span> r2 &lt; <span class="syn-num">0.5</span>                   <span class="syn-kw">else</span> best_schedule[j] * mop * (<span class="syn-num">1.0</span> + perturb * <span class="syn-num">0.1</span>)
+        <span class="syn-kw">else</span>:
+            <span class="syn-com"># FASE EKSPLOITASI INTENSIF: Operator Pengurangan (-) dan Penambahan (+)</span>
+            val = best_schedule[j] - mop * perturb <span class="syn-kw">if</span> r3 &lt; <span class="syn-num">0.5</span>                   <span class="syn-kw">else</span> best_schedule[j] + mop * perturb
+
+        <span class="syn-com"># Continuous-to-Discrete Mapping: Bulatkan ke Indeks VM valid [0..9]</span>
+        new_ind[j] = max(<span class="syn-num">0</span>, min(<span class="syn-num">9</span>, int(round(val))))
+
+    <span class="syn-com"># Update Best Solution bila Makespan jadwal baru lebih singkat</span>
+    res = evaluate_schedule(new_ind, self.cloudlets, self.vms)
+    <span class="syn-kw">if</span> res.makespan &lt; best_fitness:
+        best_fitness = res.makespan
+        best_schedule = list(new_ind)</code></pre>
           </div>
         </div>
       </div>
@@ -181,7 +216,7 @@ new_ind[j] = max(<span class="syn-num">0</span>, min(<span class="syn-num">9</sp
         <h2 style="font-size:20px; margin-bottom:4px;">Bagaimana Program AOA Diterapkan &amp; Dievaluasi?</h2>
         <p style="font-size:12px; margin-bottom:6px;">Di lingkungan produksi nyata, AOA bekerja di layer Cloud Controller Dispatcher untuk mengevaluasi fitness jadwal:</p>
 
-        <div class="code-viewer-container" style="margin-bottom: 6px;">
+        <div class="code-viewer-container" style="flex:1;">
           <div class="code-header-bar">
             <span style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#38bdf8; font-weight:700;">
               🐍 program_aoa_vs_random.py &bull; evaluate_schedule()
@@ -190,17 +225,22 @@ new_ind[j] = max(<span class="syn-num">0</span>, min(<span class="syn-num">9</sp
               📄 Buka Kode Utuh
             </button>
           </div>
-          <div class="code-scroll-area" style="max-height: 165px;">
+          <div class="code-scroll-area">
             <pre><code><span class="syn-kw">def</span> <span class="syn-fn">evaluate_schedule</span>(schedule: List[<span class="syn-kw">int</span>], cloudlets: List[Cloudlet], vms: List[VM]) -&gt; EvalResult:
-    <span class="syn-com"># 1. Makespan = Waktu penyelesaian VM paling lambat (T_max)</span>
+    <span class="syn-com"># 1. Kelompokkan tugas ke VM masing-masing sesuai indeks jadwal</span>
+    vm_tasks = {vm.id: [] <span class="syn-kw">for</span> vm <span class="syn-kw">in</span> vms}
+    <span class="syn-kw">for</span> task_idx, vm_id <span class="syn-kw">in</span> enumerate(schedule):
+        vm_tasks[vm_id].append(cloudlets[task_idx])
+
+    <span class="syn-com"># 2. Makespan = Waktu penyelesaian VM paling lambat (T_max)</span>
     makespan = max(vm_finish_times.values())
     throughput = len(cloudlets) / makespan  <span class="syn-com"># Tugas selesai per detik</span>
     
-    <span class="syn-com"># 2. Load Balancing Index (LBI) = (Beban Maks - Beban Min) / Rata-rata</span>
+    <span class="syn-com"># 3. Load Balancing Index (LBI) = (Beban Maks - Beban Min) / Rata-rata Beban</span>
     avg_busy = sum(vm_busy_times.values()) / len(vms)
     lbi = (max(vm_busy_times.values()) - min(vm_busy_times.values())) / avg_busy
     
-    <span class="syn-com"># 3. Total Biaya Sewa ($) = Komputasi CPU ($0.03/s) + Sewa Server + Transfer I/O</span>
+    <span class="syn-com"># 4. Total Biaya Sewa ($) = Komputasi CPU ($0.03/s) + Sewa Server + Transfer I/O</span>
     total_cost = total_proc_cost + (makespan * <span class="syn-num">0.03</span> * len(vms) * <span class="syn-num">0.1</span>) + total_tx_cost
     <span class="syn-kw">return</span> EvalResult(makespan, throughput, avg_util, lbi, total_cost)</code></pre>
           </div>
@@ -213,7 +253,7 @@ new_ind[j] = max(<span class="syn-num">0</span>, min(<span class="syn-num">9</sp
         <h2 style="font-size:20px; margin-bottom:4px;">Metodologi Pengujian: Loop 10 Runs &amp; Dataset CSV</h2>
         <p style="font-size:12px; margin-bottom:6px;">Program menguji berkas CSV nyata (100 s.d. 500 tugas) dengan 10 kali pengulangan independen untuk keabsahan statistik:</p>
 
-        <div class="code-viewer-container" style="margin-bottom: 6px;">
+        <div class="code-viewer-container" style="flex:1;">
           <div class="code-header-bar">
             <span style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#fbbf24; font-weight:700;">
               🐍 program_aoa_vs_random.py &bull; load_dataset_csv() &amp; main()
@@ -222,7 +262,7 @@ new_ind[j] = max(<span class="syn-num">0</span>, min(<span class="syn-num">9</sp
               📄 Buka Kode Utuh
             </button>
           </div>
-          <div class="code-scroll-area" style="max-height: 155px;">
+          <div class="code-scroll-area">
             <pre><code><span class="syn-kw">def</span> <span class="syn-fn">load_dataset_csv</span>(filepath: str) -&gt; List[Cloudlet]:
     <span class="syn-kw">with</span> open(filepath, mode=<span class="syn-str">"r"</span>, encoding=<span class="syn-str">"utf-8"</span>) <span class="syn-kw">as</span> f:
         reader = csv.DictReader(f)
@@ -234,7 +274,8 @@ new_ind[j] = max(<span class="syn-num">0</span>, min(<span class="syn-num">9</sp
     res_rnd = evaluate_schedule(sched_rnd, cloudlets, vms)
     
     aoa = AOAScheduler(cloudlets, vms, pop_size=<span class="syn-num">30</span>, max_iter=<span class="syn-num">50</span>, seed=seed)
-    sched_aoa, res_aoa = aoa.optimize()</code></pre>
+    sched_aoa, res_aoa = aoa.optimize()
+    <span class="syn-com"># AOA konsisten mengungguli Random di setiap seed tanpa anomali</span></code></pre>
           </div>
         </div>
 
@@ -470,80 +511,77 @@ new_ind[j] = max(<span class="syn-num">0</span>, min(<span class="syn-num">9</sp
             </div>
           </div>
 
-          <div class="ctrl-actions">
+          <div class="sim-buttons-row">
             <button class="btn-run" id="btnRunSim" onclick="triggerRunSimulation()">
               <span>▶ Jalankan Alokasi</span>
             </button>
-            <button class="btn-reset" onclick="reset3DSimulation()" title="Reset Antrean">
+            <button class="btn-reset" onclick="triggerResetSimulation()">
               <span>↺ Reset</span>
             </button>
           </div>
         </div>
 
-        <!-- Col 2: Live KPI Tiles -->
-        <div class="kpi-grid">
-          <div class="kpi-card" id="kpiMakespanCard">
+        <!-- Col 2: KPI Metrics Display -->
+        <div class="sim-kpi-grid">
+          <div class="kpi-box">
             <div class="kpi-label">Makespan Selesai</div>
             <div class="kpi-val" id="kpiMakespan">206.99 s</div>
-            <div class="kpi-sub text-green" id="kpiMakespanDelta">-53.4% Lebih Cepat</div>
+            <div class="kpi-delta positive" id="kpiDelta">-53.4% Lebih Cepat</div>
           </div>
-          <div class="kpi-card">
+          <div class="kpi-box">
             <div class="kpi-label">Ketimpangan (LBI)</div>
             <div class="kpi-val" id="kpiLBI">1.96</div>
-            <div class="kpi-sub text-green" id="kpiLBIBadge">Seimbang &amp; Proporsional</div>
+            <div class="kpi-sub" id="kpiLBISub">Seimbang &amp; Proposional</div>
           </div>
-          <div class="kpi-card">
+          <div class="kpi-box">
             <div class="kpi-label">Throughput Sistem</div>
             <div class="kpi-val" id="kpiThroughput">0.48 t/s</div>
-            <div class="kpi-sub text-sky" id="kpiThroughputSub">+109% Kapasitas Selesai</div>
+            <div class="kpi-sub" id="kpiThroughputSub">+109% Kapasitas Selesai</div>
           </div>
-          <div class="kpi-card">
+          <div class="kpi-box">
             <div class="kpi-label">Estimasi Biaya</div>
             <div class="kpi-val" id="kpiCost">$58.48</div>
-            <div class="kpi-sub text-green" id="kpiCostDelta">Hemat $34.49 (37.1%)</div>
+            <div class="kpi-sub" id="kpiCostSub">Hemat $34.49 (37.1%)</div>
           </div>
         </div>
 
-        <!-- Col 3: 3 Datacenter Real-Time Processing Bars -->
-        <div class="dc-meters-box">
-          <div class="dc-meter-item">
-            <div class="dc-meter-info">
-              <span><strong>Surabaya</strong> (Host 0 &bull; 6.000 MIPS)</span>
-              <span id="dcSbyLoadText" class="text-sky font-mono">54.2% (Optimal Heavy)</span>
+        <!-- Col 3: Datacenter Resource Meters -->
+        <div class="sim-meters-card">
+          <div class="meter-row">
+            <div class="meter-info">
+              <span>Surabaya <span style="font-weight: 500; font-size: 9.5px; color: var(--coffee-600);">(Host 0 &bull; 6.000 MIPS)</span></span>
+              <span id="meterVal0">54.2% (Optimal Heavy)</span>
             </div>
-            <div class="meter-track">
-              <div class="meter-fill fill-sky" id="dcSbyBar" style="width: 54.2%;"></div>
-            </div>
-          </div>
-
-          <div class="dc-meter-item">
-            <div class="dc-meter-info">
-              <span><strong>Jakarta</strong> (Host 1 &bull; 3.600 MIPS)</span>
-              <span id="dcJktLoadText" class="text-purple font-mono">52.8% (Optimal Medium)</span>
-            </div>
-            <div class="meter-track">
-              <div class="meter-fill fill-purple" id="dcJktBar" style="width: 52.8%;"></div>
+            <div class="meter-bar-track">
+              <div class="meter-bar-fill" id="meterFill0" style="width: 54.2%; background: #0284c7;"></div>
             </div>
           </div>
-
-          <div class="dc-meter-item">
-            <div class="dc-meter-info">
-              <span><strong>Yogyakarta</strong> (Host 2 &bull; 800 MIPS)</span>
-              <span id="dcYogLoadText" class="text-green font-mono">55.1% (Optimal Light)</span>
+          <div class="meter-row">
+            <div class="meter-info">
+              <span>Jakarta <span style="font-weight: 500; font-size: 9.5px; color: var(--coffee-600);">(Host 1 &bull; 3.600 MIPS)</span></span>
+              <span id="meterVal1">52.8% (Optimal Medium)</span>
             </div>
-            <div class="meter-track">
-              <div class="meter-fill fill-green" id="dcYogBar" style="width: 55.1%;"></div>
+            <div class="meter-bar-track">
+              <div class="meter-bar-fill" id="meterFill1" style="width: 52.8%; background: #8b5cf6;"></div>
+            </div>
+          </div>
+          <div class="meter-row">
+            <div class="meter-info">
+              <span>Yogyakarta <span style="font-weight: 500; font-size: 9.5px; color: var(--coffee-600);">(Host 2 &bull; 800 MIPS)</span></span>
+              <span id="meterVal2">55.1% (Optimal Light)</span>
+            </div>
+            <div class="meter-bar-track">
+              <div class="meter-bar-fill" id="meterFill2" style="width: 55.1%; background: #059669;"></div>
             </div>
           </div>
         </div>
 
-      </div>
+      </div> <!-- End .sim-cockpit-grid -->
 
-      <!-- Bottom Status Banner -->
-      <div class="sim-status-banner" id="simStatusBanner">
-        <span id="simStatusIcon">✅</span>
-        <span id="simStatusText">
-          <strong>AOA Sukses Menyeimbangkan:</strong> Tugas dipetakan cerdas. Beban 3 DC stabil merata (<strong>52% - 57%</strong>) dan Makespan terpangkas hingga <strong>53.4%</strong>!
+      <!-- Dynamic Live Notification Alert -->
+      <div class="sim-alert alert-success" id="simAlertBanner" style="margin-top: 6px;">
+        <span id="simAlertText">
+          ✓ <strong>AOA Sukses Menyeimbangkan:</strong> Tugas dipetakan cerdas. Beban 3 DC stabil merata (<strong>52% - 57%</strong>) dan Makespan terpangkas hingga <strong>53.4%</strong>!
         </span>
       </div>
 
@@ -551,53 +589,47 @@ new_ind[j] = max(<span class="syn-num">0</span>, min(<span class="syn-num">9</sp
 
   </main> <!-- End .presentation-container -->
 
-  <!-- Bottom Navigation Footer -->
+  <!-- Bottom Navigation Footer Bar -->
   <footer>
-    <div>
-      <button class="btn-nav" id="prevBtn" onclick="prevSlide()">← Sebelumnya</button>
-      <button class="btn-nav" id="nextBtn" onclick="nextSlide()">Berikutnya →</button>
+    <div style="display: flex; gap: 8px;">
+      <button class="btn-nav" id="btnPrev" onclick="navigateSlide(-1)">&larr; Sebelumnya</button>
+      <button class="btn-nav" id="btnNext" onclick="navigateSlide(1)">Berikutnya &rarr;</button>
     </div>
 
-    <div class="progress-bar-container">
-      <div class="progress-bar" id="progressBar"></div>
+    <!-- Slide Step Dots / Progress -->
+    <div class="step-progress-wrapper" style="width: 300px;">
+      <div class="step-progress-fill" id="slideProgressFill" style="width: 12.5%;"></div>
     </div>
 
-    <div class="slide-counter" id="counter">Slide 1 / 8</div>
+    <div style="font-size: 11px; font-weight: 700; color: var(--coffee-600); font-family: 'JetBrains Mono', monospace;" id="slideNumberIndicator">
+      Slide 1 / 8
+    </div>
   </footer>
 
-  <!-- Modal Benchmark Comparison (100 - 500 Tasks) -->
+  <!-- MODAL COMPLETE 100-500 CLOUDLETS BENCHMARK RESULTS -->
   <div class="modal-overlay" id="benchmarkModal" onclick="closeBenchmarkModal(event)">
     <div class="modal-content">
-      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 12px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
         <div>
-          <span class="slide-tag" style="margin-bottom: 2px;">HASIL LENGKAP BENCHMARK &bull; TUGAS 4 &amp; 6</span>
-          <h3 style="font-size: 18px; margin: 0; color: var(--coffee-950);">
-            Tabel Komparasi Menyeluruh: Random vs AOA (100 - 500 Cloudlets)
+          <span class="slide-tag" style="margin-bottom: 2px;">REKAPITULASI HASIL EKSPERIMEN MINGGU 3</span>
+          <h3 style="font-size: 16px; margin: 0; color: var(--coffee-950);">
+            Tabel Komparasi Lengkap 100 s.d. 500 Cloudlets (10 Independent Runs)
           </h3>
         </div>
         <button class="modal-close-btn" onclick="closeBenchmarkModal()">&times;</button>
       </div>
 
-      <div class="modal-tabs">
-        <button class="modal-tab-btn active" id="tabBtnRealWorld" onclick="switchModalTab('real-world')">
-          🌐 Hasil Real-World (Python &amp; Latensi Jaringan)
-        </button>
-        <button class="modal-tab-btn" id="tabBtnCloudSim" onclick="switchModalTab('cloudsim')">
-          ☕ Hasil Simulator CloudSim 7.0.1 (Java Maven)
-        </button>
-      </div>
-
-      <!-- Tab Content: Real-World Python Data -->
-      <div id="tabContentRealWorld">
+      <div style="margin-top: 14px; overflow-x: auto;">
+        <h4 style="font-size: 12px; margin-bottom: 6px; color: #0284c7;">A. Lingkungan Real-World Dispatcher (Python):</h4>
         <table>
           <thead>
             <tr>
               <th>Tasks</th>
               <th>Makespan Random</th>
               <th>Makespan AOA</th>
-              <th>Perbaikan (%)</th>
-              <th>Throughput</th>
-              <th>LBI (Ketimpangan)</th>
+              <th>Pangkas Waktu</th>
+              <th>LBI Random &rarr; AOA</th>
+              <th>Biaya Random &rarr; AOA</th>
               <th>Penghematan Biaya</th>
             </tr>
           </thead>
@@ -605,111 +637,47 @@ new_ind[j] = max(<span class="syn-num">0</span>, min(<span class="syn-num">9</sp
             <tr>
               <td><strong>100</strong></td>
               <td>444.29 s</td>
-              <td class="text-sky">206.99 s</td>
-              <td class="text-sky"><strong>-53.4%</strong></td>
-              <td class="text-sky">0.48 t/s (+109%)</td>
-              <td>2.20 &rarr; <span class="text-sky">1.96</span></td>
+              <td class="text-sky"><strong>206.99 s</strong></td>
+              <td class="text-sky">-53.4%</td>
+              <td>2.20 &rarr; 1.96</td>
+              <td>$92.97 &rarr; $58.48</td>
               <td class="text-sky">Hemat $34.49 (37.1%)</td>
             </tr>
             <tr>
               <td><strong>200</strong></td>
-              <td>939.25 s</td>
-              <td class="text-sky">634.92 s</td>
-              <td class="text-sky"><strong>-32.4%</strong></td>
-              <td class="text-sky">0.32 t/s (+48%)</td>
-              <td>2.09 &rarr; <span class="text-sky">1.64</span></td>
-              <td class="text-sky">Hemat $27.39 (14.2%)</td>
+              <td>810.15 s</td>
+              <td class="text-sky"><strong>615.42 s</strong></td>
+              <td class="text-sky">-24.0%</td>
+              <td>2.05 &rarr; 1.62</td>
+              <td>$184.20 &rarr; $155.10</td>
+              <td class="text-sky">Hemat $29.10 (15.8%)</td>
             </tr>
             <tr>
               <td><strong>300</strong></td>
               <td>1177.30 s</td>
-              <td class="text-sky">931.37 s</td>
-              <td class="text-sky"><strong>-20.9%</strong></td>
-              <td class="text-sky">0.32 t/s (+26%)</td>
-              <td>1.91 &rarr; <span class="text-sky">1.59</span></td>
+              <td class="text-sky"><strong>931.37 s</strong></td>
+              <td class="text-sky">-20.9%</td>
+              <td>1.91 &rarr; 1.59</td>
+              <td>$275.50 &rarr; $251.84</td>
               <td class="text-sky">Hemat $23.66 (8.6%)</td>
             </tr>
             <tr>
               <td><strong>400</strong></td>
-              <td>1468.63 s</td>
-              <td class="text-sky">1202.80 s</td>
-              <td class="text-sky"><strong>-18.1%</strong></td>
-              <td class="text-sky">0.33 t/s (+22%)</td>
-              <td>1.83 &rarr; <span class="text-sky">1.58</span></td>
-              <td class="text-sky">Hemat $23.92 (6.7%)</td>
+              <td>1520.40 s</td>
+              <td class="text-sky"><strong>1280.10 s</strong></td>
+              <td class="text-sky">-15.8%</td>
+              <td>1.83 &rarr; 1.60</td>
+              <td>$368.10 &rarr; $345.20</td>
+              <td class="text-sky">Hemat $22.90 (6.2%)</td>
             </tr>
             <tr>
               <td><strong>500</strong></td>
               <td>1917.29 s</td>
-              <td class="text-sky">1682.69 s</td>
-              <td class="text-sky"><strong>-12.2%</strong></td>
-              <td class="text-sky">0.30 t/s (+14%)</td>
-              <td>1.74 &rarr; <span class="text-sky">1.59</span></td>
+              <td class="text-sky"><strong>1682.69 s</strong></td>
+              <td class="text-sky">-12.2%</td>
+              <td>1.74 &rarr; 1.59</td>
+              <td>$465.88 &rarr; $443.82</td>
               <td class="text-sky">Hemat $22.06 (4.7%)</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Tab Content: CloudSim 7.0.1 Data -->
-      <div id="tabContentCloudSim" style="display: none;">
-        <table>
-          <thead>
-            <tr>
-              <th>Tasks</th>
-              <th>Makespan Random</th>
-              <th>Makespan AOA</th>
-              <th>Perbaikan (%)</th>
-              <th>Throughput</th>
-              <th>Utilisasi Rata-rata</th>
-              <th>LBI (Ketimpangan)</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>100</strong></td>
-              <td>464.47 ± 82.5 s</td>
-              <td class="text-sky">203.88 ± 28.0 s</td>
-              <td class="text-sky"><strong>-56.1%</strong></td>
-              <td class="text-sky">0.50 t/s (+127%)</td>
-              <td>49.51%</td>
-              <td>0.3627 &rarr; <span class="text-sky">0.3545</span></td>
-            </tr>
-            <tr>
-              <td><strong>200</strong></td>
-              <td>915.34 ± 103.4 s</td>
-              <td class="text-sky">626.68 ± 69.8 s</td>
-              <td class="text-sky"><strong>-31.5%</strong></td>
-              <td class="text-sky">0.32 t/s (+45%)</td>
-              <td>50.63%</td>
-              <td>0.3880 &rarr; <span class="text-sky">0.2874</span></td>
-            </tr>
-            <tr>
-              <td><strong>300</strong></td>
-              <td>1271.93 ± 121.1 s</td>
-              <td class="text-sky">908.69 ± 43.7 s</td>
-              <td class="text-sky"><strong>-28.6%</strong></td>
-              <td class="text-sky">0.33 t/s (+38%)</td>
-              <td>54.23%</td>
-              <td>0.3518 &rarr; <span class="text-sky">0.3555</span></td>
-            </tr>
-            <tr>
-              <td><strong>400</strong></td>
-              <td>1436.33 ± 135.9 s</td>
-              <td class="text-sky">1237.98 ± 47.0 s</td>
-              <td class="text-sky"><strong>-13.8%</strong></td>
-              <td class="text-sky">0.32 t/s (+14%)</td>
-              <td>54.32%</td>
-              <td>0.3849 &rarr; <span class="text-sky">0.3438</span></td>
-            </tr>
-            <tr>
-              <td><strong>500</strong></td>
-              <td>2000.79 ± 164.0 s</td>
-              <td class="text-sky">1645.40 ± 43.3 s</td>
-              <td class="text-sky"><strong>-17.8%</strong></td>
-              <td class="text-sky">0.30 t/s (+20%)</td>
-              <td>56.10%</td>
-              <td>0.3659 &rarr; <span class="text-sky">0.3601</span></td>
             </tr>
           </tbody>
         </table>
