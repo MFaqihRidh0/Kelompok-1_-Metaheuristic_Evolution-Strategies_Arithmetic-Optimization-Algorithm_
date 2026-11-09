@@ -622,12 +622,10 @@
       border: 1px solid #1e293b;
       border-radius: 12px;
       overflow: hidden;
-      margin-top: 8px;
+      margin-top: 6px;
       box-shadow: 0 8px 24px -6px rgba(0,0,0,0.4);
       display: flex;
       flex-direction: column;
-      flex: 1;
-      min-height: 250px;
     }
 
     .code-header-bar {
@@ -681,14 +679,11 @@
     }
 
     .code-scroll-area {
-      flex: 1;
-      min-height: 210px;
-      max-height: none;
       overflow-y: auto;
-      padding: 10px 14px;
+      padding: 8px 12px;
       font-family: 'JetBrains Mono', monospace;
       font-size: 11px;
-      line-height: 1.55;
+      line-height: 1.48;
       color: #e2e8f0;
       background: #090d16;
     }

@@ -5,6 +5,8 @@
     let currentSlide = 0;
 
     function updateSlide() {
+      const wrapper = document.querySelector('.slides-wrapper');
+      if (wrapper) wrapper.scrollTop = 0;
       slides.forEach((s, idx) => {
         s.classList.toggle('active', idx === currentSlide);
       });
