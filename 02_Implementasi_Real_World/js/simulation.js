@@ -45,8 +45,8 @@
         assignedTargets = assignedTargets.sort(() => Math.random() - 0.5);
 
         // Turn Drones OFF, hide golden beam
-        aoaExploreDrones.forEach(d => d.visible = false);
-        aoaExploitDrones.forEach(d => d.visible = false);
+        aoaExploreDrones.forEach(d => (d.droneGroup || d).visible = false);
+        aoaExploitDrones.forEach(d => (d.droneGroup || d).visible = false);
         if (goldenBeam) goldenBeam.visible = false;
       } else {
         // AOA: Capacitated matching! Surabaya (15.600 MIPS) takes heavy tasks, Jakarta medium, Yogya light
@@ -55,8 +55,8 @@
         for (let i = 0; i < 4; i++)  assignedTargets.push('yog'); // 20% Workload
 
         // Turn Drones ON, show golden beam!
-        aoaExploreDrones.forEach(d => d.visible = true);
-        aoaExploitDrones.forEach(d => d.visible = true);
+        aoaExploreDrones.forEach(d => (d.droneGroup || d).visible = true);
+        aoaExploitDrones.forEach(d => (d.droneGroup || d).visible = true);
         if (goldenBeam) goldenBeam.visible = true;
       }
 

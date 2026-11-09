@@ -696,55 +696,173 @@
     }
 
     // ============================================================================
-    // 4. AOA EXPLORATION & EXPLOITATION DRONES
+        // ============================================================================
+    // 4. REALISTIC AUTONOMOUS QUADCOPTER DRONES (AOA AGENTS)
     // ============================================================================
+    function buildQuadcopterMesh(accentColor, isExploit) {
+      const droneGroup = new THREE.Group();
+      const rotors = [];
+
+      // A. Aerodynamic Carbon Fuselage Pod
+      const bodyGeo = new THREE.BoxGeometry(0.7, 0.22, 0.85);
+      const bodyMat = new THREE.MeshStandardMaterial({
+        color: 0x1e293b,
+        metalness: 0.85,
+        roughness: 0.25
+      });
+      const body = new THREE.Mesh(bodyGeo, bodyMat);
+      body.castShadow = true;
+      droneGroup.add(body);
+
+      // Curved Canopy Shell
+      const canopyGeo = new THREE.CylinderGeometry(0.25, 0.35, 0.5, 8);
+      const canopyMat = new THREE.MeshStandardMaterial({
+        color: accentColor,
+        metalness: 0.9,
+        roughness: 0.2
+      });
+      const canopy = new THREE.Mesh(canopyGeo, canopyMat);
+      canopy.rotation.x = Math.PI / 2;
+      canopy.position.set(0, 0.12, 0.05);
+      canopy.scale.set(0.9, 1.2, 0.6);
+      droneGroup.add(canopy);
+
+      // Forward-facing Optical Lidar Sensor Gimbal
+      const eyeGeo = new THREE.SphereGeometry(0.12, 14, 14);
+      const eyeMat = new THREE.MeshBasicMaterial({ color: accentColor });
+      const eye = new THREE.Mesh(eyeGeo, eyeMat);
+      eye.position.set(0, -0.04, 0.45);
+      droneGroup.add(eye);
+
+      // B. 4 X-Frame Carbon Fiber Boom Arms & Motor Nacelles
+      const armAngles = [Math.PI / 4, 3 * Math.PI / 4, 5 * Math.PI / 4, 7 * Math.PI / 4];
+      const armLen = 0.88;
+
+      armAngles.forEach((ang) => {
+        const armGeo = new THREE.CylinderGeometry(0.03, 0.03, armLen, 8);
+        const armMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, metalness: 0.9, roughness: 0.3 });
+        const arm = new THREE.Mesh(armGeo, armMat);
+        arm.rotation.z = Math.PI / 2;
+        arm.rotation.y = ang;
+        arm.position.set(Math.cos(ang) * (armLen / 2), 0, Math.sin(ang) * (armLen / 2));
+        droneGroup.add(arm);
+
+        // Motor Nacelle at tip of boom
+        const motorX = Math.cos(ang) * armLen;
+        const motorZ = Math.sin(ang) * armLen;
+
+        const motorGeo = new THREE.CylinderGeometry(0.11, 0.11, 0.16, 14);
+        const motorMat = new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.9, roughness: 0.2 });
+        const motor = new THREE.Mesh(motorGeo, motorMat);
+        motor.position.set(motorX, 0.05, motorZ);
+        droneGroup.add(motor);
+
+        // Navigation Strobe LED (Front: Cyan/Green, Rear: Red)
+        const isFront = ang < Math.PI;
+        const navColor = isFront ? accentColor : 0xef4444;
+        const navLed = new THREE.Mesh(
+          new THREE.SphereGeometry(0.04, 8, 8),
+          new THREE.MeshBasicMaterial({ color: navColor })
+        );
+        navLed.position.set(motorX, -0.04, motorZ);
+        droneGroup.add(navLed);
+
+        // 2-Blade High-Speed Carbon Propeller
+        const propGroup = new THREE.Group();
+        propGroup.position.set(motorX, 0.15, motorZ);
+
+        const propGeo = new THREE.BoxGeometry(0.07, 0.015, 0.78);
+        const propMat = new THREE.MeshStandardMaterial({
+          color: 0x94a3b8,
+          metalness: 0.6,
+          roughness: 0.4,
+          transparent: true,
+          opacity: 0.85
+        });
+        const prop = new THREE.Mesh(propGeo, propMat);
+        propGroup.add(prop);
+
+        // Center spinner nut
+        const nut = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.035, 0.035, 0.04, 8),
+          new THREE.MeshStandardMaterial({ color: 0x0284c7 })
+        );
+        propGroup.add(nut);
+
+        droneGroup.add(propGroup);
+        rotors.push(propGroup);
+      });
+
+      // C. Downward Scanning Visuals
+      let scanner = null;
+      if (!isExploit) {
+        // Exploration: Downward Lidar Radar Cone
+        const scanGeo = new THREE.ConeGeometry(1.6, 4.2, 16, 1, true);
+        const scanMat = new THREE.MeshBasicMaterial({
+          color: 0x0284c7,
+          transparent: true,
+          opacity: 0.18,
+          side: THREE.DoubleSide,
+          depthWrite: false
+        });
+        scanner = new THREE.Mesh(scanGeo, scanMat);
+        scanner.rotation.x = Math.PI;
+        scanner.position.y = -2.1;
+        droneGroup.add(scanner);
+      } else {
+        // Exploitation: Vertical Pulse Laser & Ground Reticle Ring
+        const laserGeo = new THREE.CylinderGeometry(0.03, 0.03, 4.5, 8);
+        const laserMat = new THREE.MeshBasicMaterial({
+          color: 0x10b981,
+          transparent: true,
+          opacity: 0.85
+        });
+        const laser = new THREE.Mesh(laserGeo, laserMat);
+        laser.position.y = -2.25;
+        droneGroup.add(laser);
+
+        const reticleGeo = new THREE.RingGeometry(0.3, 0.45, 16);
+        const reticleMat = new THREE.MeshBasicMaterial({ color: 0x10b981, side: THREE.DoubleSide });
+        const reticle = new THREE.Mesh(reticleGeo, reticleMat);
+        reticle.rotation.x = -Math.PI / 2;
+        reticle.position.y = -4.4;
+        droneGroup.add(reticle);
+        scanner = reticle;
+      }
+
+      return { droneGroup, rotors, scanner };
+    }
+
     function createAOAExploreDrones() {
+      aoaExploreDrones = [];
       for (let i = 0; i < 5; i++) {
-        const drone = new THREE.Group();
-        const body = new THREE.Mesh(
-          new THREE.BoxGeometry(1.1, 0.3, 1.1),
-          new THREE.MeshStandardMaterial({ color: 0x0284c7, metalness: 0.7, roughness: 0.3 })
+        const droneData = buildQuadcopterMesh(0x0284c7, false);
+        droneData.droneGroup.position.set(
+          (Math.random() - 0.5) * 28,
+          7.5 + Math.random() * 3.0,
+          (Math.random() - 0.5) * 20
         );
-        drone.add(body);
-
-        const ring = new THREE.Mesh(
-          new THREE.TorusGeometry(0.7, 0.04, 8, 20),
-          new THREE.MeshBasicMaterial({ color: 0x38bdf8 })
-        );
-        ring.rotation.x = Math.PI / 2;
-        drone.add(ring);
-
-        drone.position.set((Math.random() - 0.5) * 28, 7.0 + Math.random() * 3.5, (Math.random() - 0.5) * 20);
-        drone.visible = false;
-        scene.add(drone);
-        aoaExploreDrones.push(drone);
+        droneData.droneGroup.visible = false;
+        scene.add(droneData.droneGroup);
+        aoaExploreDrones.push(droneData);
       }
     }
 
     function createAOAExploitDrones() {
+      aoaExploitDrones = [];
       for (let i = 0; i < 4; i++) {
-        const drone = new THREE.Group();
-        const body = new THREE.Mesh(
-          new THREE.BoxGeometry(1.0, 0.28, 1.0),
-          new THREE.MeshStandardMaterial({ color: 0x059669, metalness: 0.6, roughness: 0.3 })
+        const droneData = buildQuadcopterMesh(0x10b981, true);
+        droneData.droneGroup.position.set(
+          -11 + (Math.random() - 0.5) * 6,
+          9.8 + Math.random() * 2,
+          -2 + (Math.random() - 0.5) * 6
         );
-        drone.add(body);
-
-        const laser = new THREE.Mesh(
-          new THREE.CylinderGeometry(0.03, 0.03, 4.5, 8),
-          new THREE.MeshBasicMaterial({ color: 0x10b981, transparent: true, opacity: 0.85 })
-        );
-        laser.position.y = -2.25;
-        drone.add(laser);
-
-        drone.position.set(-11 + (Math.random() - 0.5) * 6, 9.5 + Math.random() * 2, -2 + (Math.random() - 0.5) * 6);
-        drone.visible = false;
-        scene.add(drone);
-        aoaExploitDrones.push(drone);
+        droneData.droneGroup.visible = false;
+        scene.add(droneData.droneGroup);
+        aoaExploitDrones.push(droneData);
       }
     }
 
-    // ============================================================================
     // 7. 3D ANIMATION LOOP (LIVING DATACENTER WORLD)
     // ============================================================================
     const setDatacenterBadge = setDatacenterBillboardStatus;
@@ -827,19 +945,51 @@
       // 7. Animate Datacenter Visual Effects (Pulsing Overload / Optimal Glow)
       updateDatacenterGlows(t);
 
-      // 8. Animate AOA Drones
+      // 8. Animate Realistic AOA Quadcopter Drones with Physics
       if (currentSimAlgo === 'aoa' || current3DMode === 'aoa-explore') {
-        aoaExploreDrones.forEach((dr, idx) => {
-          dr.position.x += Math.sin(t * 0.7 + idx) * 0.12;
-          dr.position.z += Math.cos(t * 0.7 + idx) * 0.12;
-          dr.position.y = 7.5 + Math.sin(t * 1.4 + idx) * 0.5;
+        aoaExploreDrones.forEach((dObj, idx) => {
+          // Spin all 4 propellers at high RPM
+          dObj.rotors.forEach(r => r.rotation.y += 0.45);
+
+          // Wide sweeping Lissajous search orbits
+          const speed = 0.45;
+          const theta = t * speed + (idx * Math.PI * 2) / aoaExploreDrones.length;
+          const targetX = Math.sin(theta) * 15.0;
+          const targetZ = Math.cos(theta * 1.4) * 10.0;
+          const targetY = 8.5 + Math.sin(t * 1.4 + idx) * 0.65;
+
+          // Velocity vector for realistic banking and forward pitch
+          const vx = Math.cos(theta) * speed * 15.0;
+          const vz = -Math.sin(theta * 1.4) * 1.4 * speed * 10.0;
+
+          dObj.droneGroup.position.set(targetX, targetY, targetZ);
+          dObj.droneGroup.rotation.z = -vx * 0.025; // Bank into turn
+          dObj.droneGroup.rotation.x = vz * 0.025;  // Pitch forward
+          dObj.droneGroup.rotation.y = Math.atan2(vx, vz);
+
+          // Pulse radar scanner opacity
+          if (dObj.scanner) {
+            dObj.scanner.material.opacity = 0.12 + (Math.sin(t * 4 + idx) + 1) * 0.08;
+          }
         });
       }
+
       if (currentSimAlgo === 'aoa' || current3DMode === 'aoa-exploit') {
-        aoaExploitDrones.forEach((dr, idx) => {
-          dr.position.x += Math.sin(t * 1.2 + idx) * 0.03;
-          dr.position.z += Math.cos(t * 1.2 + idx) * 0.03;
-          dr.position.y = 10.2 + Math.sin(t * 2.0 + idx) * 0.2;
+        aoaExploitDrones.forEach((dObj, idx) => {
+          // Spin all 4 propellers at high RPM
+          dObj.rotors.forEach(r => r.rotation.y += 0.55);
+
+          // Precision hovering & micro-stabilization focus over DC Surabaya [-11, 0, -2]
+          const ang = t * 0.75 + (idx * Math.PI * 2) / aoaExploitDrones.length;
+          const rad = 2.4 + Math.sin(t * 1.8 + idx) * 0.5;
+          const targetX = -11 + Math.cos(ang) * rad;
+          const targetZ = -2 + Math.sin(ang) * rad;
+          const targetY = 11.2 + Math.sin(t * 2.2 + idx) * 0.3;
+
+          dObj.droneGroup.position.set(targetX, targetY, targetZ);
+          dObj.droneGroup.rotation.z = -Math.sin(ang) * 0.10;
+          dObj.droneGroup.rotation.x = Math.cos(ang) * 0.10;
+          dObj.droneGroup.rotation.y = ang + Math.PI / 2;
         });
       }
 
@@ -923,20 +1073,20 @@
       if (mode === 'topology') {
         titleEl.innerText = 'Topologi 3 Datacenter (Minggu 3)';
         telemEl.innerText = 'Surabaya (6.000 MIPS) • Jakarta (3.600 MIPS) • Yogyakarta (800 MIPS)';
-        aoaExploreDrones.forEach(d => d.visible = false);
-        aoaExploitDrones.forEach(d => d.visible = false);
+        aoaExploreDrones.forEach(d => d.droneGroup.visible = false);
+        aoaExploitDrones.forEach(d => d.droneGroup.visible = false);
         if (goldenBeam) goldenBeam.visible = false;
       } else if (mode === 'aoa-explore') {
         titleEl.innerText = 'Fase Eksplorasi AOA: Pembagian (÷) & Perkalian (×)';
-        telemEl.innerText = 'Drone Biru Melompat Jauh Menjelajahi Seluruh Ruang VM & Datacenter';
-        aoaExploreDrones.forEach(d => d.visible = true);
-        aoaExploitDrones.forEach(d => d.visible = false);
+        telemEl.innerText = 'Drone Biru Menjelajah Luas & Memindai Seluruh Ruang VM Datacenter';
+        aoaExploreDrones.forEach(d => d.droneGroup.visible = true);
+        aoaExploitDrones.forEach(d => d.droneGroup.visible = false);
         if (goldenBeam) goldenBeam.visible = true;
       } else if (mode === 'aoa-exploit') {
         titleEl.innerText = 'Fase Eksploitasi AOA: Pengurangan (-) & Penambahan (+)';
-        telemEl.innerText = 'Drone Hijau Memindai Presisi di Sekitar Solusi Terbaik (Surabaya 6.000 MIPS)';
-        aoaExploreDrones.forEach(d => d.visible = false);
-        aoaExploitDrones.forEach(d => d.visible = true);
+        telemEl.innerText = 'Drone Hijau Memindai Presisi di Sekitar Host Terbaik (Surabaya 6.000 MIPS)';
+        aoaExploreDrones.forEach(d => d.droneGroup.visible = false);
+        aoaExploitDrones.forEach(d => d.droneGroup.visible = true);
         if (goldenBeam) goldenBeam.visible = true;
       }
     }
