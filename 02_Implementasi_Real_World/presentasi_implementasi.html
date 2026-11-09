@@ -64,7 +64,7 @@
               📄 Buka Kode Utuh (349 Baris)
             </button>
           </div>
-          <div class="code-scroll-area" style="max-height: 125px;">
+          <div class="code-scroll-area" style="max-height: 155px;">
             <pre><code><span class="syn-com"># Inisialisasi 10 VM Heterogen di 3 Datacenter (Minggu 3)</span>
 vms.append(VM(<span class="syn-num">0</span>, <span class="syn-str">"DC_Surabaya"</span>, <span class="syn-num">0</span>, <span class="syn-str">"Large"</span>,  <span class="syn-num">3000.0</span>, <span class="syn-num">2</span>, <span class="syn-num">8192</span>, <span class="syn-num">2500.0</span>))  <span class="syn-com"># 6.000 MIPS (Surabaya)</span>
 vms.append(VM(<span class="syn-num">1</span>, <span class="syn-str">"DC_Surabaya"</span>, <span class="syn-num">0</span>, <span class="syn-str">"Large"</span>,  <span class="syn-num">3000.0</span>, <span class="syn-num">2</span>, <span class="syn-num">8192</span>, <span class="syn-num">2500.0</span>))  <span class="syn-com"># 6.000 MIPS (Surabaya)</span>
@@ -74,14 +74,7 @@ vms.append(VM(<span class="syn-num">4</span>, <span class="syn-str">"DC_Jakarta"
 vms.append(VM(<span class="syn-num">5</span>, <span class="syn-str">"DC_Jakarta"</span>,  <span class="syn-num">1</span>, <span class="syn-str">"Small"</span>,   <span class="syn-num">800.0</span>, <span class="syn-num">1</span>, <span class="syn-num">2048</span>,  <span class="syn-num">500.0</span>))  <span class="syn-com">#   800 MIPS (Jakarta)</span>
 vms.append(VM(<span class="syn-num">6..9</span>, <span class="syn-str">"DC_Yogyakarta"</span>, <span class="syn-num">2</span>, <span class="syn-str">"Small"</span>, <span class="syn-num">800.0</span>, <span class="syn-num">1</span>, <span class="syn-num">2048</span>, <span class="syn-num">500.0</span>)) <span class="syn-com"># 4x 800 MIPS (Yogya)</span></code></pre>
           </div>
-          <div class="code-explainer-bar">
-            <span>💡</span>
-            <div><strong>Poin Dosen:</strong> Kode program memodelkan rasio komputasi heterogen 7.5x lipat antara VM terbesar Surabaya (6.000 MIPS) dengan VM terkecil Yogyakarta (800 MIPS).</div>
-          </div>
         </div>
-
-        <div class="speaker-box" style="margin-top: 6px;">
-          🎙️ <strong>Panduan Bicara (Babak 1):</strong> Sambut dosen &amp; audiens. Tunjukkan bahwa arsitektur cloud di program Python langsung memetakan spesifikasi tugas Minggu 3 secara presisi!
         </div>
       </div>
 
@@ -112,21 +105,14 @@ vms.append(VM(<span class="syn-num">6..9</span>, <span class="syn-str">"DC_Yogya
               📄 Buka Kode Utuh
             </button>
           </div>
-          <div class="code-scroll-area" style="max-height: 110px;">
+          <div class="code-scroll-area" style="max-height: 140px;">
             <pre><code><span class="syn-kw">def</span> <span class="syn-fn">schedule_random</span>(cloudlets: List[Cloudlet], vms: List[VM], seed: <span class="syn-kw">int</span>) -&gt; List[<span class="syn-kw">int</span>]:
     <span class="syn-str">"""Baseline Random Scheduling (Minggu 3)"""</span>
     rnd = random.Random(seed)
     <span class="syn-com"># Kelemahan Fatal: Memilih VM [0..9] secara seragam tanpa memperhitungkan beban/MIPS</span>
     <span class="syn-kw">return</span> [rnd.randint(<span class="syn-num">0</span>, len(vms) - <span class="syn-num">1</span>) <span class="syn-kw">for</span> _ <span class="syn-kw">in</span> cloudlets]</code></pre>
           </div>
-          <div class="code-explainer-bar">
-            <span>⚠️</span>
-            <div><strong>Poin Dosen:</strong> Kode 1 baris <code>rnd.randint(0, 9)</code> ini membuktikan mengapa Random Scheduling gagal di dunia nyata: probabilitas tugas besar jatuh ke VM kecil sama besarnya dengan ke VM besar (LBI timpang 2.20).</div>
-          </div>
         </div>
-
-        <div class="speaker-box" style="margin-top: 6px;">
-          🎙️ <strong>Panduan Bicara (Babak 2):</strong> Tekan tombol Random di konsol simulator bawah. Tunjukkan ke dosen menara Yogyakarta yang langsung berkedip merah OVERLOAD 98% dan kipas HVAC berputar darurat!
         </div>
       </div>
 
@@ -146,7 +132,7 @@ vms.append(VM(<span class="syn-num">6..9</span>, <span class="syn-str">"DC_Yogya
               📄 Buka Kode Utuh
             </button>
           </div>
-          <div class="code-scroll-area" style="max-height: 120px;">
+          <div class="code-scroll-area" style="max-height: 150px;">
             <pre><code><span class="syn-com"># Matriks Latensi Jaringan Fisik Antarkota Real-World (dalam detik)</span>
 NETWORK_LATENCY = {
     (<span class="syn-str">"DC_Surabaya"</span>, <span class="syn-str">"DC_Surabaya"</span>):   <span class="syn-num">0.001</span>,  <span class="syn-com"># Intra-DC 1.0 ms</span>
@@ -157,14 +143,7 @@ NETWORK_LATENCY = {
 <span class="syn-com"># Waktu Transfer I/O = (Ukuran File Input / Bandwidth) + Latensi Ping</span>
 tx_time = (task.input_size_mb / (vm.bw_mbps / <span class="syn-num">8.0</span>)) + lat</code></pre>
           </div>
-          <div class="code-explainer-bar">
-            <span>💡</span>
-            <div><strong>Poin Dosen:</strong> Menugaskan tugas ke Jakarta menambah overhead transfer 15ms. Program menghitung komputasi CPU dan latensi transfer sekaligus dalam kalkulasi Makespan.</div>
-          </div>
         </div>
-
-        <div class="speaker-box" style="margin-top: 6px;">
-          🎙️ <strong>Panduan Bicara (Babak 3):</strong> Ajak dosen mengamati kanvas 3D di sebelah kanan. Tunjukkan kabel trunk laser yang menghubungkan Client Dispatcher dengan 3 Datacenter dan butiran paket data yang mengalir aktif.
         </div>
       </div>
 
@@ -184,7 +163,7 @@ tx_time = (task.input_size_mb / (vm.bw_mbps / <span class="syn-num">8.0</span>))
               📄 Buka Kode Utuh
             </button>
           </div>
-          <div class="code-scroll-area" style="max-height: 135px;">
+          <div class="code-scroll-area" style="max-height: 165px;">
             <pre><code><span class="syn-com"># 1. Math Optimizer Accelerated (MOA): Penentu transisi Eksplorasi -&gt; Eksploitasi</span>
 moa = <span class="syn-num">0.2</span> + t * ((<span class="syn-num">0.9</span> - <span class="syn-num">0.2</span>) / self.max_iter)
 
@@ -201,14 +180,7 @@ mop = <span class="syn-num">1.0</span> - (math.pow(t, <span class="syn-num">1.0<
 <span class="syn-com"># Continuous-to-Discrete Mapping: Bulatkan ke Indeks VM valid [0..9]</span>
 new_ind[j] = max(<span class="syn-num">0</span>, min(<span class="syn-num">9</span>, int(round(val))))</code></pre>
           </div>
-          <div class="code-explainer-bar">
-            <span>💡</span>
-            <div><strong>Poin Dosen:</strong> Operator $div$ dan $	imes$ menghasilkan lonjakan nilai besar untuk menjelajahi kombinasi VM, sementara $-$ dan $+$ melakukan <em>fine-tuning</em> di sekitar VM terbaik (Surabaya).</div>
-          </div>
         </div>
-
-        <div class="speaker-box" style="margin-top: 6px;">
-          🎙️ <strong>Panduan Bicara (Babak 4):</strong> Arahkan pandangan ke drone biru dan hijau di kanvas 3D yang sedang bermanuver miring (*banking physics*) melakukan pemindaian radar di atas datacenter!
         </div>
       </div>
 
@@ -228,7 +200,7 @@ new_ind[j] = max(<span class="syn-num">0</span>, min(<span class="syn-num">9</sp
               📄 Buka Kode Utuh
             </button>
           </div>
-          <div class="code-scroll-area" style="max-height: 125px;">
+          <div class="code-scroll-area" style="max-height: 155px;">
             <pre><code><span class="syn-kw">def</span> <span class="syn-fn">evaluate_schedule</span>(schedule: List[<span class="syn-kw">int</span>], cloudlets: List[Cloudlet], vms: List[VM]) -&gt; EvalResult:
     <span class="syn-com"># 1. Makespan = Waktu penyelesaian VM paling lambat (T_max)</span>
     makespan = max(vm_finish_times.values())
@@ -242,14 +214,7 @@ new_ind[j] = max(<span class="syn-num">0</span>, min(<span class="syn-num">9</sp
     total_cost = total_proc_cost + (makespan * <span class="syn-num">0.03</span> * len(vms) * <span class="syn-num">0.1</span>) + total_tx_cost
     <span class="syn-kw">return</span> EvalResult(makespan, throughput, avg_util, lbi, total_cost)</code></pre>
           </div>
-          <div class="code-explainer-bar">
-            <span>💡</span>
-            <div><strong>Poin Dosen:</strong> Fitness function meminimalkan Makespan. Ketika Makespan terpangkas dari 444s ke 206s, durasi sewa VM ikut turun sehingga menghemat biaya sewa cloud sebesar 37.1%!</div>
-          </div>
         </div>
-
-        <div class="speaker-box" style="margin-top: 6px;">
-          🎙️ <strong>Panduan Bicara (Babak 5):</strong> Tekan tombol AOA di konsol simulator. Tunjukkan bagaimana Makespan terpangkas hingga 53.4% dan LBI seimbang di 1.96.
         </div>
       </div>
 
@@ -269,7 +234,7 @@ new_ind[j] = max(<span class="syn-num">0</span>, min(<span class="syn-num">9</sp
               📄 Buka Kode Utuh
             </button>
           </div>
-          <div class="code-scroll-area" style="max-height: 125px;">
+          <div class="code-scroll-area" style="max-height: 155px;">
             <pre><code><span class="syn-kw">def</span> <span class="syn-fn">load_dataset_csv</span>(filepath: str) -&gt; List[Cloudlet]:
     <span class="syn-com"># Membaca dataset riil: CloudletId, Length_MI, InputSize_MB, OutputSize_MB</span>
     <span class="syn-kw">with</span> open(filepath, mode=<span class="syn-str">"r"</span>, encoding=<span class="syn-str">"utf-8"</span>) <span class="syn-kw">as</span> f:
@@ -284,10 +249,7 @@ new_ind[j] = max(<span class="syn-num">0</span>, min(<span class="syn-num">9</sp
     aoa = AOAScheduler(cloudlets, vms, pop_size=<span class="syn-num">30</span>, max_iter=<span class="syn-num">50</span>, seed=seed)
     sched_aoa, res_aoa = aoa.optimize()</code></pre>
           </div>
-          <div class="code-explainer-bar">
-            <span>💡</span>
-            <div><strong>Poin Dosen:</strong> Setiap skenario diuji 10 kali dengan seed acak berbeda untuk membuktikan bahwa keunggulan AOA stabil secara statistik dan bukan kebetulan satu kali jalan.</div>
-          </div>
+        </div>
         </div>
 
         <!-- Live Trigger Buttons -->
@@ -301,10 +263,6 @@ new_ind[j] = max(<span class="syn-num">0</span>, min(<span class="syn-num">9</sp
           <button class="btn-nav" style="background:#f0f9ff; border-color:#7dd3fc; color:#075985; padding:4px 10px; font-size:11px;" onclick="openFullCodeModal()">
             📄 Buka Source Code Utuh
           </button>
-        </div>
-
-        <div class="speaker-box" style="margin-top: 6px;">
-          🎙️ <strong>Panduan Bicara (Babak 6):</strong> Jelaskan ke dosen bahwa tabel komparasi di slide berikutnya adalah rekapitulasi rata-rata dari 10 kali pengujian per skenario dataset tersebut.
         </div>
       </div>
 
@@ -413,10 +371,6 @@ new_ind[j] = max(<span class="syn-num">0</span>, min(<span class="syn-num">9</sp
             </tr>
           </tbody>
         </table>
-
-        <div class="speaker-box" style="margin-top: 8px;">
-          🎙️ <strong>Panduan Bicara (Babak 7):</strong> Tegaskan ke dosen bahwa AOA telah divalidasi pada DUA lingkungan: Simulator CloudSim 7.0.1 (memotong Makespan hingga 56.1%) dan Real-World dengan latensi jaringan (memotong Makespan hingga 53.4% dan hemat biaya 37.1%)!
-        </div>
       </div>
 
       <!-- Slide 8: Kesimpulan & Live Demo Ready -->
@@ -438,10 +392,6 @@ new_ind[j] = max(<span class="syn-num">0</span>, min(<span class="syn-num">9</sp
             2. Java CloudSim 7.0.1: <code>mvn compile exec:java</code><br>
             3. Menu Interaktif: Klik ganda <code>run.bat</code>
           </p>
-        </div>
-
-        <div class="speaker-box" style="margin-top: 10px;">
-          🎙️ <strong>Panduan Bicara (Babak 8):</strong> Tutup presentasi dengan percaya diri dan undang dosen penguji untuk memberikan pertanyaan. Pegang cheat-sheet Q&amp;A yang telah disiapkan!
         </div>
       </div>
 
