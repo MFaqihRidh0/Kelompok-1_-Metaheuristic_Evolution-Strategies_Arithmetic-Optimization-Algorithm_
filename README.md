@@ -20,7 +20,7 @@ Diurutkan berdasarkan kontribusi jumlah commit di repositori GitHub (`git shortl
 
 | Nama | NRP | Jumlah Commit di GitHub |
 | :--- | :---: | :---: |
-| **M. Faqih Ridho** | 5027241123 | 43 |
+| **M. Faqih Ridho** | 5027241123 | 44 |
 | **Dimas Satya A** | 5027241032 | 0 |
 | **Hanif Mawla Faizi** | 5027241064 | 0 |
 | **Muhammad Ardiansyah Tri Wibowo** | 5027241091 | 0 |
@@ -36,7 +36,7 @@ Diurutkan berdasarkan kontribusi jumlah commit di repositori GitHub (`git shortl
 - **Karakter Utama 3D (*3D Action RPG Cyber-Mage*):**
   - Desain anatomi multi-sendi (bahu, siku, pinggul, lutut) dengan rambut putih *spiky*, *Cyber Visor* bercahaya, zirah emas-hitam, jubah merah berkibar, *Solar Fire Chakram* di tangan kanan, serta **5 Raijin Lightning Orbs** melayang dalam formasi kurva ke atas di belakang punggung.
 - **Sistem Pertarungan Cepat 2-Hit & Buka Materi (`[O]`):**
-  - Setiap Pos dijaga oleh monster (100 HP) yang dapat dikalahkan dengan **2x serangan** (`J / Klik Kiri`: 🔥 Jurus Api 50 HP + `K / Klik Kanan`: ⚡ Jurus Listrik 50 HP, atau `L / Spasi`: 💥 Ultimate 100 HP).
+  - Setiap Pos dijaga oleh monster (100 HP) yang dapat dikalahkan dengan **2x serangan** (`Tombol J`: 🔥 Jurus Api 50 HP + `Tombol K`: ⚡ Jurus Listrik 50 HP, atau `Tombol L`: 💥 Ultimate 100 HP).
   - Saat kalah, monster roboh menjadi mayat tetap di arena dengan lencana **`🔓 [O] / Klik : Buka Slide`**, dan membuka **Jendela Slide Mengambang di Tengah Layar** (dilengkapi tombol **Layar Penuh `⛶`** dan **Tutup `✕`**).
 - **8 Karakter Monster 3D Organik Unik di Sepanjang Rute Berkelok (*S-Curve Trail*):**
   1. **Pos 1 — 🐍 Ular Kobra Abyssal:** Tubuh & leher S-curve utuh mulus tanpa potongan bertumpuk, tudung kobra lebar menyatu, kepala ular segitiga pipih dengan mata *slit-pupil* kuning, taring berbisa panjang, dan lidah merah bercabang dua.

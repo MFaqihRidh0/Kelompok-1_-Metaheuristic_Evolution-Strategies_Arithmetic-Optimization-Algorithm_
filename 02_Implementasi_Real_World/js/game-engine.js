@@ -3419,14 +3419,20 @@ function setupInputListeners() {
     }
 
     if (isIntroMode) return;
+    if (e.repeat) return;
+
+    // Lepaskan fokus dari tombol HUD agar tombol keyboard tidak memicu klik tombol secara tidak sengaja
+    if (document.activeElement && document.activeElement.tagName === 'BUTTON') {
+      document.activeElement.blur();
+    }
 
     const isModalOpen = document.getElementById('slideModalOverlay').classList.contains('active');
     if (!isModalOpen) {
-      if (code === 'KeyJ' || code === 'Digit1') {
+      if (code === 'KeyJ') {
         castElementalSkill('fire');
-      } else if (code === 'KeyK' || code === 'Digit2') {
+      } else if (code === 'KeyK') {
         castElementalSkill('lightning');
-      } else if (code === 'KeyL' || code === 'Space') {
+      } else if (code === 'KeyL') {
         e.preventDefault();
         castElementalSkill('ultimate');
       } else if (code === 'KeyO' || code === 'Enter') {
@@ -3477,19 +3483,9 @@ function setupInputListeners() {
   window.addEventListener('mouseup', () => {
     if (!isDraggingCamera) return;
     isDraggingCamera = false;
-
-    if (isIntroMode) return;
-    if (document.getElementById('slideModalOverlay').classList.contains('active')) return;
-
-    // Jika hanya klik cepat (bukan drag memutar kamera), tembakkan Jurus Api / Listrik!
-    if (totalDragDist < 6) {
-      if (dragMouseButton === 0) {
-        castElementalSkill('fire');
-      } else if (dragMouseButton === 2) {
-        castElementalSkill('lightning');
-      }
-    }
     dragMouseButton = -1;
+    // Klik/sentuh pada kanvas atau touchpad HANYA untuk kontrol kamera 360°,
+    // TIDAK memicu serangan otomatis agar karakter hanya menyerang saat menekan J / K / L!
   });
 
   // GESTURE 2 JARI DI TOUCHPAD LAPTOP & MOUSE WHEEL (Damped & Clamped agar Tidak Loncat)

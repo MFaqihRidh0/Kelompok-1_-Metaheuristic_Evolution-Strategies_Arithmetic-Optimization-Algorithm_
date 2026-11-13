@@ -90,19 +90,19 @@
       </div>
 
       <div class="skill-hotbar">
-        <button class="skill-btn fire" onclick="castElementalSkill('fire')" title="Jurus Api: 50% HP Damage">
-          <span class="skill-key">J / Klik Kiri</span>
+        <button class="skill-btn fire" id="pillFire" onclick="this.blur(); castElementalSkill('fire')" title="Tekan J: Jurus Api (50% HP Damage)">
+          <span class="skill-key">Tombol J</span>
           <span class="skill-name">🔥 Jurus Api</span>
         </button>
-        <button class="skill-btn lightning" onclick="castElementalSkill('lightning')" title="Jurus Listrik: 50% HP Damage">
-          <span class="skill-key">K / Klik Kanan</span>
+        <button class="skill-btn lightning" id="pillLightning" onclick="this.blur(); castElementalSkill('lightning')" title="Tekan K: Jurus Listrik (50% HP Damage)">
+          <span class="skill-key">Tombol K</span>
           <span class="skill-name">⚡ Jurus Listrik</span>
         </button>
-        <button class="skill-btn ultimate" onclick="castElementalSkill('ultimate')" title="Ultimate Combo: 100% HP Langsung Kalah">
-          <span class="skill-key">L / Spasi</span>
+        <button class="skill-btn ultimate" id="pillUltimate" onclick="this.blur(); castElementalSkill('ultimate')" title="Tekan L: Ultimate Combo (100% HP Langsung Kalah)">
+          <span class="skill-key">Tombol L</span>
           <span class="skill-name">💥 Ultimate</span>
         </button>
-        <button class="skill-btn reopen" onclick="triggerOpenNearestDefeatedSlide()" title="Buka kembali slide dari mayat musuh terdekat">
+        <button class="skill-btn reopen" onclick="this.blur(); triggerOpenNearestDefeatedSlide()" title="Tekan O: Buka kembali slide dari mayat musuh terdekat">
           <span class="skill-key">Tombol O</span>
           <span class="skill-name">🔓 Buka Slide</span>
         </button>
