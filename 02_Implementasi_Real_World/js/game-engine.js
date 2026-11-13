@@ -19,16 +19,22 @@ let autoWalkTarget = null;
 let autoWalkCurveTargetT = null;
 const keysPressed = {};
 
-// 360-Degree Orbit Camera State (Bisa melihat sekeliling 360 derajat penuh)
-let cameraYaw = 0;       // 0 = Kamera di belakang karakter menghadap -Z (360° penuh tanpa batas)
-let cameraPitch = 0.28;  // Sudut pandang horizontal/horizon agar leluasa melihat sekeliling
-let cameraDist = 15.5;   // Jarak kamera dari karakter
+// 360-Degree Damped Spherical Orbit Camera State (Stabil untuk Putar 360°, Naik/Turun & Zoom)
+let cameraYaw = 0;             // Sudut horizontal aktual kamera (radian)
+let targetCameraYaw = 0;       // Target sudut horizontal kamera (360° penuh)
+let cameraPitch = 0.34;        // Sudut vertikal aktual kamera (radian)
+let targetCameraPitch = 0.34;  // Target sudut vertikal (dibatasi 0.12 s.d 1.12 agar tidak terbalik)
+let cameraDist = 15.5;         // Jarak zoom aktual kamera
+let targetCameraDist = 15.5;   // Target jarak zoom (dibatasi 8.5 s.d 26.0)
+let smoothFocusPos = new THREE.Vector3(0, 1.9, 17.5); // Titik pusat orbit yang stabil di bahu karakter
+
 let isDraggingCamera = false;
 let dragMouseButton = -1;
 let dragStartPos = { x: 0, y: 0 };
 let lastMousePos = { x: 0, y: 0 };
 let totalDragDist = 0;
 let lastTouchPos = null;
+let lastPinchDist = null;
 
 let hemiLight, dirLight, introSpotLight, introRingMesh;
 
@@ -2617,6 +2623,10 @@ function setupInputListeners() {
         triggerOpenNearestDefeatedSlide();
       } else if (code === 'KeyR') {
         resetPlayerPosition();
+      } else if (code === 'Equal' || code === 'NumpadAdd') {
+        adjustCameraZoom(-1.8);
+      } else if (code === 'Minus' || code === 'NumpadSubtract') {
+        adjustCameraZoom(1.8);
       }
     }
   });
@@ -2625,11 +2635,8 @@ function setupInputListeners() {
     keysPressed[e.code] = false;
   });
 
-  // 360-DEGREE CAMERA ORBIT:
-  // 1) Geser 2 Jari di Touchpad (event 'wheel' deltaX / deltaY) -> Langsung memutar kamera 360° melihat sekeliling!
-  // 2) Klik & Geser Mouse (Drag) di mana saja -> Memutar kamera 360° melihat sekeliling!
-  // 3) Layar Sentuh (Touch Drag 1 atau 2 jari) -> Memutar kamera 360°!
-  // 4) Tombol Q / E -> Memutar kamera 360°!
+  // 360-DEGREE STABLE SPHERICAL ORBIT CAMERA:
+  // Memisahkan sumbu Kiri/Kanan (Yaw), Naik/Turun (Pitch), dan Zoom (Dist) dengan peredam (damping)
   const canvasEl = document.getElementById('gameCanvasContainer');
 
   window.addEventListener('mousedown', (e) => {
@@ -2647,14 +2654,14 @@ function setupInputListeners() {
 
   window.addEventListener('mousemove', (e) => {
     if (!isDraggingCamera) return;
-    const dx = e.clientX - lastMousePos.x;
-    const dy = e.clientY - lastMousePos.y;
+    const dx = Math.max(-45, Math.min(45, e.clientX - lastMousePos.x));
+    const dy = Math.max(-45, Math.min(45, e.clientY - lastMousePos.y));
     lastMousePos = { x: e.clientX, y: e.clientY };
     totalDragDist += Math.hypot(dx, dy);
 
-    // Putar kamera 360 derajat penuh secara horizontal (cameraYaw) & vertikal (cameraPitch)
-    cameraYaw -= dx * 0.0085;
-    cameraPitch = Math.max(0.05, Math.min(1.22, cameraPitch + dy * 0.006));
+    // Kiri/Kanan -> targetCameraYaw (360°), Atas/Bawah -> targetCameraPitch (Stabil)
+    targetCameraYaw -= dx * 0.007;
+    targetCameraPitch = Math.max(0.12, Math.min(1.12, targetCameraPitch + dy * 0.005));
   });
 
   window.addEventListener('mouseup', () => {
@@ -2675,7 +2682,7 @@ function setupInputListeners() {
     dragMouseButton = -1;
   });
 
-  // GESTURE 2 JARI DI TOUCHPAD LAPTOP (memicu event 'wheel' di browser)
+  // GESTURE 2 JARI DI TOUCHPAD LAPTOP & MOUSE WHEEL (Damped & Clamped agar Tidak Loncat)
   window.addEventListener('wheel', (e) => {
     if (isIntroMode) return;
     if (document.getElementById('slideModalOverlay').classList.contains('active')) return;
@@ -2683,48 +2690,70 @@ function setupInputListeners() {
 
     e.preventDefault();
 
-    // Jika cubit 2 jari (Pinch-to-Zoom di touchpad mengirim e.ctrlKey === true) -> Zoom In/Out
-    if (e.ctrlKey) {
-      cameraDist = Math.max(8.0, Math.min(28.0, cameraDist + e.deltaY * 0.04));
+    // Normalisasi nilai delta agar tidak pernah meloncat tajam di berbagai perangkat
+    const normFactor = e.deltaMode === 1 ? 16 : 1;
+    const rawDX = e.deltaX * normFactor;
+    const rawDY = e.deltaY * normFactor;
+    const clampedDX = Math.max(-36, Math.min(36, rawDX));
+    const clampedDY = Math.max(-36, Math.min(36, rawDY));
+
+    // 1. ZOOM IN / ZOOM OUT: Cubit 2 jari di Touchpad (e.ctrlKey) ATAU tahan Shift/Alt + Scroll
+    if (e.ctrlKey || e.altKey) {
+      const zoomStep = Math.max(-1.2, Math.min(1.2, rawDY * 0.022));
+      targetCameraDist = Math.max(8.5, Math.min(26.0, targetCameraDist + zoomStep));
       return;
     }
 
-    // Geser 2 Jari di Touchpad -> Putar Kamera 360 Derajat Melihat Sekeliling!
-    if (Math.abs(e.deltaX) > 0.5) {
-      cameraYaw -= e.deltaX * 0.014;
-      cameraPitch = Math.max(0.05, Math.min(1.22, cameraPitch + e.deltaY * 0.005));
-    } else {
-      // Jika touchpad mengirim deltaY saat geser 2 jari, tetap putar 360 derajat secara mulus!
-      cameraYaw -= e.deltaY * 0.012;
-    }
+    // 2. PUTAR KIRI / KANAN 360° (Sumbu Horizontal Touchpad) & NAIK / TURUN (Sumbu Vertikal Touchpad)
+    // Dipisahkan secara murni per sumbu agar saat menggeser naik-turun kamera TIDAK goyang ke kiri-kanan!
+    targetCameraYaw -= clampedDX * 0.0065;
+    targetCameraPitch = Math.max(0.12, Math.min(1.12, targetCameraPitch + clampedDY * 0.0038));
   }, { passive: false });
 
-  // DUKUNGAN TOUCH / MULTI-TOUCH (1 atau 2 Jari)
+  // DUKUNGAN TOUCHSCREEN / MULTI-TOUCH (1 Jari Orbit, 2 Jari Pinch Zoom)
   window.addEventListener('touchstart', (e) => {
     if (isIntroMode) return;
     if (document.getElementById('slideModalOverlay').classList.contains('active')) return;
-    if (e.touches.length > 0) {
+    if (e.touches.length === 2) {
+      lastPinchDist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+    } else if (e.touches.length === 1) {
       lastTouchPos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
     }
   }, { passive: true });
 
   window.addEventListener('touchmove', (e) => {
-    if (isIntroMode || !lastTouchPos) return;
+    if (isIntroMode) return;
     if (document.getElementById('slideModalOverlay').classList.contains('active')) return;
-    if (e.touches.length > 0) {
-      const dx = e.touches[0].clientX - lastTouchPos.x;
-      const dy = e.touches[0].clientY - lastTouchPos.y;
+    if (e.touches.length === 2 && lastPinchDist !== null) {
+      const curDist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      const diff = lastPinchDist - curDist;
+      lastPinchDist = curDist;
+      targetCameraDist = Math.max(8.5, Math.min(26.0, targetCameraDist + Math.max(-1.0, Math.min(1.0, diff * 0.035))));
+    } else if (e.touches.length === 1 && lastTouchPos) {
+      const dx = Math.max(-40, Math.min(40, e.touches[0].clientX - lastTouchPos.x));
+      const dy = Math.max(-40, Math.min(40, e.touches[0].clientY - lastTouchPos.y));
       lastTouchPos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
-      cameraYaw -= dx * 0.010;
-      cameraPitch = Math.max(0.05, Math.min(1.22, cameraPitch + dy * 0.006));
+      targetCameraYaw -= dx * 0.007;
+      targetCameraPitch = Math.max(0.12, Math.min(1.12, targetCameraPitch + dy * 0.005));
     }
   }, { passive: true });
 
   window.addEventListener('touchend', () => {
     lastTouchPos = null;
+    lastPinchDist = null;
   });
 
   canvasEl.addEventListener('contextmenu', (e) => e.preventDefault());
+}
+
+function adjustCameraZoom(deltaDist) {
+  targetCameraDist = Math.max(8.5, Math.min(26.0, targetCameraDist + deltaDist));
 }
 
 // Menjaga agar Karakter Utama TIDAK BISA keluar dari Rute Jalan Berkelok
@@ -2793,7 +2822,11 @@ function resetPlayerPosition() {
   playerPos.set(0, 0, 16);
   playerRotY = Math.PI;
   cameraYaw = 0;
-  cameraPitch = 0.50;
+  targetCameraYaw = 0;
+  cameraPitch = 0.34;
+  targetCameraPitch = 0.34;
+  cameraDist = 15.5;
+  targetCameraDist = 15.5;
   autoWalkTarget = null;
   autoWalkCurveTargetT = null;
 }
@@ -2871,9 +2904,9 @@ function gameLoop() {
   const isModalOpen = document.getElementById('slideModalOverlay').classList.contains('active');
 
   if (!isIntroMode && !isModalOpen) {
-    // Tombol Q & E untuk memutar kamera 360 derajat dari keyboard
-    if (keysPressed['KeyQ']) cameraYaw += 2.2 * dt;
-    if (keysPressed['KeyE']) cameraYaw -= 2.2 * dt;
+    // Tombol Q & E untuk memutar kamera 360 derajat dari keyboard dengan mulus
+    if (keysPressed['KeyQ']) targetCameraYaw += 2.0 * dt;
+    if (keysPressed['KeyE']) targetCameraYaw -= 2.0 * dt;
 
     let inputForward = 0;
     let inputRight = 0;
@@ -2991,28 +3024,32 @@ function gameLoop() {
   playerGroup.position.copy(playerPos);
   playerGroup.rotation.y = playerRotY;
 
-  // 360-DEGREE ORBIT CAMERA CALCULATION AROUND PLAYER (Bisa melihat sekeliling 360° penuh)
+  // 360-DEGREE STABLE SPHERICAL ORBIT CAMERA (Interpolasi Sudut Bola & Fokus Mulus)
   if (isIntroMode) {
     const introCamPos = new THREE.Vector3(0, 11.2, 29.0);
     camera.position.lerp(introCamPos, dt * 4.8);
     camera.lookAt(new THREE.Vector3(0, 1.8, 17.5));
+    smoothFocusPos.set(playerPos.x, 1.9, playerPos.z);
   } else {
-    const horizDist = cameraDist * Math.cos(cameraPitch);
-    const vertHeight = Math.max(1.4, cameraDist * Math.sin(cameraPitch) + 1.8);
-    const camTargetPos = new THREE.Vector3(
-      playerPos.x + Math.sin(cameraYaw) * horizDist,
-      vertHeight,
-      playerPos.z + Math.cos(cameraYaw) * horizDist
-    );
-    camera.position.lerp(camTargetPos, Math.min(1, dt * 14.0));
+    // Exponential Damping pada koordinat sudut bola (Yaw, Pitch, Dist) agar 100% stabil tanpa sentakan
+    const camSmooth = 1.0 - Math.exp(-12.5 * dt);
+    cameraYaw = THREE.MathUtils.lerp(cameraYaw, targetCameraYaw, camSmooth);
+    cameraPitch = THREE.MathUtils.lerp(cameraPitch, targetCameraPitch, camSmooth);
+    cameraDist = THREE.MathUtils.lerp(cameraDist, targetCameraDist, camSmooth);
 
-    // Titik pandang menghadap ke cakrawala sekeliling melewati bahu/kepala karakter
-    const lookAheadTarget = new THREE.Vector3(
-      playerPos.x - Math.sin(cameraYaw) * 4.2,
-      2.35,
-      playerPos.z - Math.cos(cameraYaw) * 4.2
+    // Fokus kamera mengikuti bahu/dada karakter dengan redaman halus (tidak goyang saat naik/turun/zoom)
+    const desiredFocus = new THREE.Vector3(playerPos.x, 1.9, playerPos.z);
+    smoothFocusPos.lerp(desiredFocus, 1.0 - Math.exp(-15.0 * dt));
+
+    const horizDist = cameraDist * Math.cos(cameraPitch);
+    const vertOffset = cameraDist * Math.sin(cameraPitch);
+
+    camera.position.set(
+      smoothFocusPos.x + Math.sin(cameraYaw) * horizDist,
+      Math.max(1.15, smoothFocusPos.y + vertOffset),
+      smoothFocusPos.z + Math.cos(cameraYaw) * horizDist
     );
-    camera.lookAt(lookAheadTarget);
+    camera.lookAt(smoothFocusPos);
   }
 
   // Move directional light shadow frustum with player so shadows stay crisp along the whole trail

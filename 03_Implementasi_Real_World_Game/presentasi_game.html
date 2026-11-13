@@ -51,13 +51,19 @@
       </div>
     </div>
 
-    <!-- Top-Right Action Icons (Menu/Credits, Teleport Pos 1-8, Audio Toggle) -->
+    <!-- Top-Right Action Icons (Menu/Credits, Teleport Pos 1-8, Zoom In/Out, Audio Toggle) -->
     <div class="hud-top-right">
       <button class="btn-icon-square" onclick="openCreditsModal()" title="Menu, Panduan Kontrol & Kredit Pihak Ketiga">
         ☰
       </button>
       <button class="btn-icon-square" onclick="toggleTeleportPopover()" title="Teleport & Buka Cepat Pos 1 s.d. Pos 8">
         📍
+      </button>
+      <button class="btn-icon-square" onclick="adjustCameraZoom(-2.2)" title="Zoom In Kamera (+)" style="font-size:14px; font-weight:900;">
+        🔍+
+      </button>
+      <button class="btn-icon-square" onclick="adjustCameraZoom(2.2)" title="Zoom Out Kamera (-)" style="font-size:14px; font-weight:900;">
+        🔍-
       </button>
       <button class="btn-icon-square" id="btnAudioToggle" onclick="CloudAudio.toggleMute()" title="Aktifkan / Matikan Suara">
         🔊
