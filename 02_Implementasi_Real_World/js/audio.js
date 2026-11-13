@@ -1,49 +1,90 @@
 // ============================================================================
-// AOA CLOUD BATTLE ARENA — PROCEDURAL CLOUD OPS AUDIO & HOWLER SYNTH ENGINE
-// Menyediakan BGM Ambient Adventure (gaya Kounine) & Efek Suara Jurus Api/Listrik
+// AOA CLOUD BATTLE ARENA — FULL WEB AUDIO & HOWLER SYNTHESIS ENGINE
+// 1. Suara Game Jernih & Terdengar Jelas di Speaker Laptop (Master Compressor + Lead Melody + SFX)
+// 2. Otomatis Berhenti (Pause) Saat Jendela Slide Presentasi Dibuka,
+//    dan Otomatis Menyala Kembali Saat Kembali ke Arena Pertarungan 3D!
 // ============================================================================
 
 const CloudAudio = (() => {
   let ctx = null;
+  let masterGain = null;
+  let compressor = null;
+  let bgmGain = null;
+
   let isMuted = false;
+  let isPausedForSlide = false;
   let bgmInterval = null;
   let bgmStep = 0;
+  let lastFootstepTime = 0;
 
   function ensureContext() {
     if (!ctx) {
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      if (AudioCtx) ctx = new AudioCtx();
+      if (AudioCtx) {
+        ctx = new AudioCtx();
+        compressor = ctx.createDynamicsCompressor();
+        compressor.threshold.setValueAtTime(-18, ctx.currentTime);
+        compressor.knee.setValueAtTime(12, ctx.currentTime);
+        compressor.ratio.setValueAtTime(4, ctx.currentTime);
+        compressor.attack.setValueAtTime(0.005, ctx.currentTime);
+        compressor.release.setValueAtTime(0.15, ctx.currentTime);
+
+        masterGain = ctx.createGain();
+        masterGain.gain.setValueAtTime(0.95, ctx.currentTime);
+
+        bgmGain = ctx.createGain();
+        bgmGain.gain.setValueAtTime(0.65, ctx.currentTime);
+
+        bgmGain.connect(compressor);
+        masterGain.connect(compressor);
+        compressor.connect(ctx.destination);
+      }
     }
     if (ctx && ctx.state === 'suspended') {
-      ctx.resume();
+      ctx.resume().catch(() => {});
+    }
+    if (window.Howler && window.Howler.ctx && window.Howler.ctx.state === 'suspended') {
+      window.Howler.ctx.resume().catch(() => {});
     }
   }
 
-  function playTone(freq, type, duration, gainVal = 0.12, slideFreq = null) {
+  // Unlock AudioContext secara otomatis pada interaksi pertama di halaman
+  ['pointerdown', 'mousedown', 'keydown', 'touchstart'].forEach(evtName => {
+    window.addEventListener(evtName, () => {
+      ensureContext();
+    }, { passive: true });
+  });
+
+  function playTone(freq, type, duration, gainVal = 0.25, slideFreq = null, useBgmBus = false) {
     if (isMuted) return;
+    if (useBgmBus && isPausedForSlide) return;
     ensureContext();
     if (!ctx) return;
 
     const now = ctx.currentTime;
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
+
     osc.type = type;
-    osc.frequency.setValueAtTime(freq, now);
+    osc.frequency.setValueAtTime(Math.max(20, freq), now);
     if (slideFreq) {
       osc.frequency.exponentialRampToValueAtTime(Math.max(20, slideFreq), now + duration);
     }
 
-    gain.gain.setValueAtTime(gainVal, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+    // Attack cepat + decay halus agar terdengar jelas & tidak klik di speaker laptop
+    gain.gain.setValueAtTime(0.001, now);
+    gain.gain.linearRampToValueAtTime(gainVal, now + 0.015);
+    gain.gain.exponentialRampToValueAtTime(0.0008, now + duration);
 
     osc.connect(gain);
-    gain.connect(ctx.destination);
+    gain.connect(useBgmBus ? bgmGain : masterGain);
+
     osc.start(now);
-    osc.stop(now + duration);
+    osc.stop(now + duration + 0.02);
   }
 
-  function playNoiseBurst(duration, filterFreq = 800, filterType = 'lowpass', gainVal = 0.22) {
-    if (isMuted) return;
+  function playNoiseBurst(duration, filterFreq = 1000, filterType = 'lowpass', gainVal = 0.38) {
+    if (isMuted || isPausedForSlide) return;
     ensureContext();
     if (!ctx) return;
 
@@ -52,7 +93,7 @@ const CloudAudio = (() => {
     const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
     const data = buffer.getChannelData(0);
     for (let i = 0; i < bufferSize; i++) {
-      data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.45));
+      data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.42));
     }
 
     const noise = ctx.createBufferSource();
@@ -61,6 +102,7 @@ const CloudAudio = (() => {
     const filter = ctx.createBiquadFilter();
     filter.type = filterType;
     filter.frequency.setValueAtTime(filterFreq, now);
+    filter.Q.setValueAtTime(1.5, now);
 
     const gain = ctx.createGain();
     gain.gain.setValueAtTime(gainVal, now);
@@ -68,88 +110,191 @@ const CloudAudio = (() => {
 
     noise.connect(filter);
     filter.connect(gain);
-    gain.connect(ctx.destination);
+    gain.connect(masterGain);
     noise.start(now);
   }
 
-  // 1. Efek Suara Jurus Api (Pyro Multiplication Blast)
+  // 1. Efek Suara Langkah Kaki di Jalan Batu (Footsteps)
+  function playFootstep() {
+    if (isMuted || isPausedForSlide) return;
+    const nowMs = performance.now();
+    if (nowMs - lastFootstepTime < 260) return;
+    lastFootstepTime = nowMs;
+
+    playNoiseBurst(0.055, 520 + Math.random() * 180, 'bandpass', 0.16);
+    playTone(135 + Math.random() * 25, 'triangle', 0.06, 0.12, 75);
+  }
+
+  // 2. 🔥 Efek Suara Jurus Api (Solar Fireball Launch & Explosion)
   function playFireSkill() {
-    playNoiseBurst(0.42, 650, 'bandpass', 0.32);
-    playTone(180, 'sawtooth', 0.35, 0.15, 55);
+    if (isMuted || isPausedForSlide) return;
+    ensureContext();
+    // Suara semburan api meluncur
+    playNoiseBurst(0.45, 780, 'bandpass', 0.52);
+    playTone(320, 'sawtooth', 0.35, 0.28, 85);
+    playTone(480, 'triangle', 0.25, 0.24, 120);
+
+    // Suara ledakan bola api saat menghantam musuh
     setTimeout(() => {
-      playNoiseBurst(0.38, 420, 'lowpass', 0.36);
-      playTone(110, 'triangle', 0.32, 0.2, 40);
-    }, 140);
+      if (isMuted || isPausedForSlide) return;
+      playNoiseBurst(0.48, 380, 'lowpass', 0.62);
+      playTone(160, 'sawtooth', 0.38, 0.35, 42);
+      playTone(240, 'triangle', 0.30, 0.28, 60);
+    }, 150);
   }
 
-  // 2. Efek Suara Jurus Listrik (Thunder Division Strike)
+  // 3. ⚡ Efek Suara Jurus Listrik (5-Orb Raijin Thunder Strike)
   function playLightningSkill() {
-    playNoiseBurst(0.25, 2400, 'highpass', 0.28);
-    playTone(920, 'sawtooth', 0.14, 0.14, 240);
+    if (isMuted || isPausedForSlide) return;
+    ensureContext();
+    // Sengatan listrik frekuensi tinggi & menengah
+    playNoiseBurst(0.28, 2200, 'highpass', 0.48);
+    playTone(1250, 'sawtooth', 0.14, 0.28, 280);
+    playTone(880, 'square', 0.16, 0.24, 190);
+
     setTimeout(() => {
-      playTone(1350, 'square', 0.16, 0.12, 180);
-      playNoiseBurst(0.32, 1400, 'bandpass', 0.3);
-    }, 70);
+      if (isMuted || isPausedForSlide) return;
+      playTone(1560, 'sawtooth', 0.18, 0.28, 210);
+      playTone(620, 'triangle', 0.26, 0.32, 95);
+      playNoiseBurst(0.36, 1200, 'bandpass', 0.52);
+    }, 65);
   }
 
-  // 3. Efek Suara Ultimate Elemental Overload
+  // 4. 💥 Efek Suara Ultimate Elemental Overload
   function playUltimateSkill() {
+    if (isMuted || isPausedForSlide) return;
     playFireSkill();
-    setTimeout(playLightningSkill, 90);
     setTimeout(() => {
-      playTone(220, 'sawtooth', 0.5, 0.18, 55);
-    }, 180);
+      if (!isPausedForSlide) playLightningSkill();
+    }, 85);
+    setTimeout(() => {
+      if (!isPausedForSlide) {
+        playTone(440, 'sawtooth', 0.48, 0.32, 90);
+        playTone(660, 'triangle', 0.45, 0.28, 130);
+      }
+    }, 170);
   }
 
-  // 4. Efek Suara Musuh Kalah & Membuka Slide Presentasi
+  // 5. 🏆 Efek Suara Musuh Kalah (Fanfare singkat sebelum Slide terbuka)
   function playVictoryUnlock() {
+    if (isMuted) return;
+    ensureContext();
     const notes = [523.25, 659.25, 783.99, 1046.50]; // C5 - E5 - G5 - C6
     notes.forEach((n, idx) => {
       setTimeout(() => {
-        playTone(n, 'triangle', 0.35, 0.14);
-      }, idx * 85);
+        if (isMuted) return;
+        playTone(n, 'triangle', 0.28, 0.28);
+        playTone(n * 1.5, 'sine', 0.24, 0.14);
+      }, idx * 70);
     });
   }
 
-  // 5. Efek Suara Re-open Slide dari Mayat Musuh [O]
+  // 6. Efek Suara Buka Slide [O]
   function playReopenSlide() {
-    playTone(587.33, 'sine', 0.16, 0.12, 880);
-    setTimeout(() => playTone(880, 'triangle', 0.22, 0.12), 90);
+    if (isMuted) return;
+    playTone(587.33, 'triangle', 0.14, 0.22, 880);
   }
 
-  // 6. Efek Klik UI
+  // 7. Efek Klik UI
   function playClick() {
-    playTone(660, 'sine', 0.08, 0.08, 880);
+    if (isMuted) return;
+    playTone(720, 'triangle', 0.07, 0.18, 960);
   }
 
-  // 7. Musik Latar (Warm Chiptune/Ambient Synth ala Kounine)
+  // 8. Musik Latar Game (Adventure Synth Melody + Bass + Chords yang Jelas Terdengar)
   function startBGM() {
     ensureContext();
-    if (bgmInterval) return;
-    const scale = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25, 587.33, 659.25];
-    const pattern = [0, 2, 4, 5, 4, 2, 3, 1, 0, 4, 7, 5, 4, 2, 1, 2];
+    isPausedForSlide = false;
+    if (bgmGain && ctx) {
+      bgmGain.gain.cancelScheduledValues(ctx.currentTime);
+      bgmGain.gain.setValueAtTime(0.68, ctx.currentTime);
+    }
 
-    bgmInterval = setInterval(() => {
-      if (isMuted || !ctx) return;
-      const noteIdx = pattern[bgmStep % pattern.length];
-      const freq = scale[noteIdx];
-      playTone(freq * 0.5, 'sine', 0.42, 0.032);
-      if (bgmStep % 4 === 0) {
-        playTone(freq * 0.25, 'triangle', 0.75, 0.038);
+    if (bgmInterval) return;
+
+    // Tangga nada A Minor / C Major Heroic Adventure (Frekuensi 330Hz - 880Hz agar jelas di speaker laptop!)
+    const melodyNotes = [
+      440.00, 523.25, 659.25, 587.33, 523.25, 659.25, 783.99, 659.25,
+      440.00, 523.25, 659.25, 880.00, 783.99, 659.25, 587.33, 523.25
+    ];
+    const bassNotes = [
+      220.00, 220.00, 174.61, 174.61, 130.81, 130.81, 196.00, 196.00,
+      220.00, 220.00, 174.61, 174.61, 146.83, 146.83, 164.81, 196.00
+    ];
+
+    const playBgmTick = () => {
+      if (isMuted || isPausedForSlide || !ctx) return;
+      ensureContext();
+
+      const idx = bgmStep % melodyNotes.length;
+      const melFreq = melodyNotes[idx];
+      const bassFreq = bassNotes[idx];
+
+      // Lead Melody (Triangle + Harmonik Oktaf Atas agar jernih di speaker laptop)
+      playTone(melFreq, 'triangle', 0.28, 0.22, null, true);
+      playTone(melFreq * 2, 'sine', 0.20, 0.08, null, true);
+
+      // Bass & Chord pada ketukan genap
+      if (bgmStep % 2 === 0) {
+        playTone(bassFreq, 'sawtooth', 0.36, 0.14, null, true);
+        playTone(bassFreq * 1.5, 'triangle', 0.34, 0.12, null, true);
       }
+
+      // Ketukan perkusi ritmis ringan
+      if (bgmStep % 4 === 0) {
+        playTone(110, 'triangle', 0.12, 0.20, 48, true);
+      } else if (bgmStep % 2 === 1) {
+        playNoiseBurst(0.035, 3200, 'highpass', 0.09);
+      }
+
       bgmStep++;
-    }, 460);
+    };
+
+    // Mainkan nada pertama seketika saat game dimulai
+    playBgmTick();
+    bgmInterval = setInterval(playBgmTick, 320);
+  }
+
+  // OTOMATIS HENTIKAN SUARA GAME SAAT SLIDE PRESENTASI DIBUKA
+  function pauseForPresentation() {
+    isPausedForSlide = true;
+    if (bgmGain && ctx) {
+      const now = ctx.currentTime;
+      bgmGain.gain.cancelScheduledValues(now);
+      bgmGain.gain.setValueAtTime(0.0001, now);
+    }
+  }
+
+  // OTOMATIS NYALAKAN KEMBALI SUARA GAME SAAT SLIDE PRESENTASI DITUTUP
+  function resumeFromPresentation() {
+    isPausedForSlide = false;
+    ensureContext();
+    if (bgmGain && ctx && !isMuted) {
+      const now = ctx.currentTime;
+      bgmGain.gain.cancelScheduledValues(now);
+      bgmGain.gain.setValueAtTime(0.68, now);
+    }
+    if (!bgmInterval) {
+      startBGM();
+    }
   }
 
   function toggleMute() {
+    ensureContext();
     isMuted = !isMuted;
     const btn = document.getElementById('btnAudioToggle');
     if (btn) btn.innerText = isMuted ? '🔇' : '🔊';
+    if (!isMuted && !isPausedForSlide) {
+      playClick();
+    }
     return isMuted;
   }
 
   return {
     startBGM,
+    pauseForPresentation,
+    resumeFromPresentation,
+    playFootstep,
     playFireSkill,
     playLightningSkill,
     playUltimateSkill,
@@ -159,4 +304,3 @@ const CloudAudio = (() => {
     toggleMute
   };
 })();
-

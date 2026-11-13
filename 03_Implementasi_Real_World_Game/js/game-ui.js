@@ -46,6 +46,11 @@ function openSlideWindow(slideIdx) {
   const overlay = document.getElementById('slideModalOverlay');
   overlay.classList.add('active');
 
+  // Otomatis hentikan suara/musik game saat slide presentasi dibuka!
+  if (typeof CloudAudio !== 'undefined' && CloudAudio.pauseForPresentation) {
+    CloudAudio.pauseForPresentation();
+  }
+
   const slides = document.querySelectorAll('.game-slide-pane');
   slides.forEach((s, idx) => {
     s.style.display = idx === slideIdx ? 'block' : 'none';
@@ -63,9 +68,15 @@ function openSlideWindow(slideIdx) {
 }
 
 function closeSlideWindow() {
-  CloudAudio.playClick();
   const overlay = document.getElementById('slideModalOverlay');
+  const wasActive = overlay && overlay.classList.contains('active');
   if (overlay) overlay.classList.remove('active');
+
+  // Nyalakan kembali suara game saat jendela presentasi ditutup dan kembali ke arena!
+  if (wasActive && typeof CloudAudio !== 'undefined' && CloudAudio.resumeFromPresentation) {
+    CloudAudio.resumeFromPresentation();
+    CloudAudio.playClick();
+  }
 }
 
 function toggleSlideFullscreen() {

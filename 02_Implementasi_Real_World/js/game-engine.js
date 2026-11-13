@@ -2963,6 +2963,9 @@ function gameLoop() {
     playerRotY += diff * Math.min(1, dt * 12);
 
     walkTime += dt * 12.0;
+    if (typeof CloudAudio !== 'undefined' && CloudAudio.playFootstep) {
+      CloudAudio.playFootstep();
+    }
 
     // Multi-Jointed Hero Run Cycle (Hips + Knees + Shoulders + Elbows + Torso Twist)
     const swingL = Math.sin(walkTime);
