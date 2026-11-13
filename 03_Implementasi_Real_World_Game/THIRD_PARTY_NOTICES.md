@@ -31,3 +31,4 @@ Adaptasi edukatif terinspirasi dari **Folio 2025 karya Bruno Simon** dan konsep 
   * **Nunito** — dirancang oleh Vernon Adams, Cyreal, dan Jacques Le Bailly.
   * **Plus Jakarta Sans** — dirancang oleh Gumpita Rahayu (Tokotype).
   * **JetBrains Mono** — dirancang oleh JetBrains.
+

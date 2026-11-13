@@ -290,3 +290,4 @@ window.addEventListener('DOMContentLoaded', () => {
   initGameEngine();
   updateSimDashboardUI();
 });
+

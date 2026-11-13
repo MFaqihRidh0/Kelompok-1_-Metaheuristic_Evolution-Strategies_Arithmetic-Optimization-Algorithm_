@@ -49,95 +49,119 @@ const BENCHMARK_DATA = {
 };
 
 // ============================================================================
-// 2. KONFIGURASI 8 POS MUSUH DUMMY DI ARENA 3D (POS 1 S.D. POS 8)
+// 2. KONFIGURASI 8 POS MONSTER UNIK DI ARENA 3D (POS 1 S.D. POS 8)
 // ============================================================================
 const ENEMY_STATIONS = [
   {
     id: 0,
     posNum: 1,
-    name: "POS 1 • UNCONFIGURED NODE",
-    enemyTitle: "Dummy 01: Unconfigured Server",
+    monsterType: "serpent",
+    icon: "🐍",
+    name: "POS 1 • ULAR KOBRA ABYSSAL",
+    enemyTitle: "Venomous Cyber-Serpent",
     slideTitle: "Slide 1: Komparasi Kinerja & Topologi 10 VM",
     x: 0,
     z: 5,
-    color: 0x38bdf8,
-    scale: 1.0
+    color: 0x10b981,
+    accent: 0xef4444,
+    scale: 1.15
   },
   {
     id: 1,
     posNum: 2,
-    name: "POS 2 • RANDOM BOTTLENECK",
-    enemyTitle: "Dummy 02: Blind Random Imp",
+    monsterType: "eagle",
+    icon: "🦅",
+    name: "POS 2 • ELANG BADAI PETIR",
+    enemyTitle: "Storm Talon Giant Eagle",
     slideTitle: "Slide 2: Inefisiensi Fatal Random Scheduling",
-    x: -10,
+    x: -9.5,
     z: -7,
-    color: 0xef4444,
-    scale: 1.05
+    color: 0xf59e0b,
+    accent: 0x38bdf8,
+    scale: 1.18
   },
   {
     id: 2,
     posNum: 3,
-    name: "POS 3 • LATENCY PHANTOM",
-    enemyTitle: "Dummy 03: Network Latency Golem",
+    monsterType: "spider",
+    icon: "🕷️",
+    name: "POS 3 • LABA-LABA LATENSI",
+    enemyTitle: "Shadow Network Arachnid",
     slideTitle: "Slide 3: Arsitektur 3 DC & Latensi Geografis",
-    x: 10,
+    x: 9.5,
     z: -19,
     color: 0xa855f7,
-    scale: 1.05
+    accent: 0xf43f5e,
+    scale: 1.18
   },
   {
     id: 3,
     posNum: 4,
-    name: "POS 4 • ARITHMETIC CORE",
-    enemyTitle: "Dummy 04: 4-Operator Sentinel",
+    monsterType: "wolf",
+    icon: "🐺",
+    name: "POS 4 • SERIGALA FENRIR",
+    enemyTitle: "Frostbite Arithmetic Fenrir",
     slideTitle: "Slide 4: Matematika AOA (MOA, MOP, ÷, ×, -, +)",
-    x: -10,
+    x: -9.5,
     z: -31,
-    color: 0x10b981,
-    scale: 1.12
+    color: 0x38bdf8,
+    accent: 0xe0f2fe,
+    scale: 1.22
   },
   {
     id: 4,
     posNum: 5,
-    name: "POS 5 • IMBALANCE GOLEM",
-    enemyTitle: "Dummy 05: LBI & Cost Construct",
+    monsterType: "scorpion",
+    icon: "🦂",
+    name: "POS 5 • KALAJENGKING BESI",
+    enemyTitle: "Scorpius Imbalance Golem",
     slideTitle: "Slide 5: Evaluator Fitness (Makespan, LBI, Cost)",
-    x: 10,
+    x: 9.5,
     z: -43,
-    color: 0xf59e0b,
-    scale: 1.12
+    color: 0xea580c,
+    accent: 0xfacc15,
+    scale: 1.22
   },
   {
     id: 5,
     posNum: 6,
-    name: "POS 6 • DATASET SENTINEL",
-    enemyTitle: "Dummy 06: CSV 10-Runs Guardian",
+    monsterType: "minotaur",
+    icon: "👹",
+    name: "POS 6 • MINOTAUR DATASET",
+    enemyTitle: "Infernal Horned Minotaur",
     slideTitle: "Slide 6: Metodologi Loop 10 Runs & Parser CSV",
-    x: -10,
+    x: -9.5,
     z: -55,
-    color: 0x06b6d4,
-    scale: 1.15
+    color: 0xdc2626,
+    accent: 0xfbbf24,
+    scale: 1.25
   },
   {
     id: 6,
     posNum: 7,
-    name: "POS 7 • BENCHMARK COLOSSUS",
-    enemyTitle: "Dummy 07: CloudSim vs Real-World Titan",
+    monsterType: "hydra",
+    icon: "🐙",
+    name: "POS 7 • HYDRA KRAKEN",
+    enemyTitle: "Abyssal Multi-Headed Hydra",
     slideTitle: "Slide 7: Tabel Hasil Empiris CloudSim & Real-World",
-    x: 10,
+    x: 9.5,
     z: -67,
-    color: 0xec4899,
-    scale: 1.2
+    color: 0x06b6d4,
+    accent: 0xec4899,
+    scale: 1.28
   },
   {
     id: 7,
     posNum: 8,
-    name: "POS 8 • BOTTLENECK OVERLORD",
-    enemyTitle: "Boss Dummy 08: Cloud Overlord",
+    monsterType: "dragon",
+    icon: "🐉",
+    name: "POS 8 • RAJA Naga BAHAMUT",
+    enemyTitle: "Final Boss: Ancient Cyber-Dragon",
     slideTitle: "Slide 8: Kesimpulan Akademik & Konsol Simulator",
     x: 0,
     z: -80,
     color: 0xfbbf24,
-    scale: 1.38
+    accent: 0xef4444,
+    scale: 1.5
   }
 ];
