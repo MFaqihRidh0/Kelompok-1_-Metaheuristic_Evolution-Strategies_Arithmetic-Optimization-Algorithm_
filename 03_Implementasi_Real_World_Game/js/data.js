@@ -49,7 +49,32 @@ const BENCHMARK_DATA = {
 };
 
 // ============================================================================
-// 2. KONFIGURASI 8 POS MONSTER UNIK DI ARENA 3D (POS 1 S.D. POS 8)
+// 2. RUTE JALAN BERKELOK (LURUS -> BELOK KIRI -> BELOK KANAN -> S-CURVE)
+//    Setiap Pos berjarak ~38-55 unit di balik tikungan tebing batu & pepohonan
+//    sehingga musuh pos berikutnya tidak langsung terlihat dari pos sebelumnya!
+// ============================================================================
+const ROAD_WAYPOINTS = [
+  { x: 0,   z: 20 },   // Titik Awal Sanctuary
+  { x: 0,   z: 8 },    // Gerbang Arena (Lurus ke depan)
+  { x: 0,   z: -8 },   // POS 1: Ular Kobra Abyssal (Lurus di depan gerbang)
+  { x: -14, z: -22 },  // Tikungan Belok Kiri 1
+  { x: -34, z: -34 },  // POS 2: Elang Badai Petir (Di balik tikungan kiri)
+  { x: -54, z: -48 },  // Tikungan Lembah Barat
+  { x: -60, z: -68 },  // POS 3: Laba-Laba Latensi
+  { x: -38, z: -86 },  // Tikungan Belok Kanan melintasi ngarai batu
+  { x: -10, z: -98 },  // POS 4: Serigala Fenrir
+  { x: 20,  z: -110 }, // Tikungan Belok Kanan Jauh ke Hutan Timur
+  { x: 46,  z: -126 }, // POS 5: Kalajengking Besi
+  { x: 58,  z: -148 }, // Tikungan Tebing Timur Laut
+  { x: 42,  z: -170 }, // POS 6: Minotaur Dataset
+  { x: 14,  z: -186 }, // Tikungan Belok Kiri menuju Rawa Kristal
+  { x: -16, z: -202 }, // POS 7: Hydra Kraken
+  { x: -6,  z: -220 }, // Jalur Lurus Menuju Kuil Boss Terakhir
+  { x: 0,   z: -240 }  // POS 8: Raja Naga Bahamut (Final Boss Sanctuary)
+];
+
+// ============================================================================
+// 3. KONFIGURASI 8 POS MONSTER UNIK DI SEPANJANG RUTE BERKELOK (POS 1 - POS 8)
 // ============================================================================
 const ENEMY_STATIONS = [
   {
@@ -61,10 +86,11 @@ const ENEMY_STATIONS = [
     enemyTitle: "Venomous Cyber-Serpent",
     slideTitle: "Slide 1: Komparasi Kinerja & Topologi 10 VM",
     x: 0,
-    z: 5,
+    z: -8,
+    faceAngle: 0,
     color: 0x10b981,
     accent: 0xef4444,
-    scale: 1.15
+    scale: 1.2
   },
   {
     id: 1,
@@ -74,11 +100,12 @@ const ENEMY_STATIONS = [
     name: "POS 2 • ELANG BADAI PETIR",
     enemyTitle: "Storm Talon Giant Eagle",
     slideTitle: "Slide 2: Inefisiensi Fatal Random Scheduling",
-    x: -9.5,
-    z: -7,
+    x: -34,
+    z: -34,
+    faceAngle: 0.75,
     color: 0xf59e0b,
     accent: 0x38bdf8,
-    scale: 1.18
+    scale: 1.22
   },
   {
     id: 2,
@@ -88,11 +115,12 @@ const ENEMY_STATIONS = [
     name: "POS 3 • LABA-LABA LATENSI",
     enemyTitle: "Shadow Network Arachnid",
     slideTitle: "Slide 3: Arsitektur 3 DC & Latensi Geografis",
-    x: 9.5,
-    z: -19,
+    x: -60,
+    z: -68,
+    faceAngle: 0.25,
     color: 0xa855f7,
     accent: 0xf43f5e,
-    scale: 1.18
+    scale: 1.25
   },
   {
     id: 3,
@@ -102,11 +130,12 @@ const ENEMY_STATIONS = [
     name: "POS 4 • SERIGALA FENRIR",
     enemyTitle: "Frostbite Arithmetic Fenrir",
     slideTitle: "Slide 4: Matematika AOA (MOA, MOP, ÷, ×, -, +)",
-    x: -9.5,
-    z: -31,
+    x: -10,
+    z: -98,
+    faceAngle: -0.85,
     color: 0x38bdf8,
     accent: 0xe0f2fe,
-    scale: 1.22
+    scale: 1.25
   },
   {
     id: 4,
@@ -114,13 +143,14 @@ const ENEMY_STATIONS = [
     monsterType: "scorpion",
     icon: "🦂",
     name: "POS 5 • KALAJENGKING BESI",
-    enemyTitle: "Scorpius Imbalance Golem",
+    enemyTitle: "Scorpius Chitin Dreadnought",
     slideTitle: "Slide 5: Evaluator Fitness (Makespan, LBI, Cost)",
-    x: 9.5,
-    z: -43,
+    x: 46,
+    z: -126,
+    faceAngle: -0.75,
     color: 0xea580c,
     accent: 0xfacc15,
-    scale: 1.22
+    scale: 1.28
   },
   {
     id: 5,
@@ -130,11 +160,12 @@ const ENEMY_STATIONS = [
     name: "POS 6 • MINOTAUR DATASET",
     enemyTitle: "Infernal Horned Minotaur",
     slideTitle: "Slide 6: Metodologi Loop 10 Runs & Parser CSV",
-    x: -9.5,
-    z: -55,
+    x: 42,
+    z: -170,
+    faceAngle: 0.45,
     color: 0xdc2626,
     accent: 0xfbbf24,
-    scale: 1.25
+    scale: 1.32
   },
   {
     id: 6,
@@ -142,26 +173,28 @@ const ENEMY_STATIONS = [
     monsterType: "hydra",
     icon: "🐙",
     name: "POS 7 • HYDRA KRAKEN",
-    enemyTitle: "Abyssal Multi-Headed Hydra",
+    enemyTitle: "Abyssal Multi-Headed Leviathan",
     slideTitle: "Slide 7: Tabel Hasil Empiris CloudSim & Real-World",
-    x: 9.5,
-    z: -67,
+    x: -16,
+    z: -202,
+    faceAngle: 0.85,
     color: 0x06b6d4,
     accent: 0xec4899,
-    scale: 1.28
+    scale: 1.35
   },
   {
     id: 7,
     posNum: 8,
     monsterType: "dragon",
     icon: "🐉",
-    name: "POS 8 • RAJA Naga BAHAMUT",
+    name: "POS 8 • RAJA NAGA BAHAMUT",
     enemyTitle: "Final Boss: Ancient Cyber-Dragon",
     slideTitle: "Slide 8: Kesimpulan Akademik & Konsol Simulator",
     x: 0,
-    z: -80,
+    z: -240,
+    faceAngle: 0,
     color: 0xfbbf24,
     accent: 0xef4444,
-    scale: 1.5
+    scale: 1.55
   }
 ];
