@@ -97,15 +97,15 @@ const ENEMY_STATIONS = [
     posNum: 2,
     monsterType: "eagle",
     icon: "🦅",
-    name: "POS 2 • ELANG BADAI PETIR",
-    enemyTitle: "Storm Talon Giant Eagle",
+    name: "POS 2 • ELANG RAJA LANGIT",
+    enemyTitle: "Majestic Feathered Golden Eagle",
     slideTitle: "Slide 2: Inefisiensi Fatal Random Scheduling",
     x: -34,
     z: -34,
     faceAngle: 0.75,
-    color: 0xf59e0b,
-    accent: 0x38bdf8,
-    scale: 1.22
+    color: 0x5c3419,
+    accent: 0xfbbf24,
+    scale: 1.25
   },
   {
     id: 2,
@@ -172,15 +172,15 @@ const ENEMY_STATIONS = [
     posNum: 7,
     monsterType: "hydra",
     icon: "🐙",
-    name: "POS 7 • HYDRA KRAKEN",
-    enemyTitle: "Abyssal Multi-Headed Leviathan",
+    name: "POS 7 • KRAKEN GURITA RAKSASA",
+    enemyTitle: "Colossal Brown Octopus Kraken",
     slideTitle: "Slide 7: Tabel Hasil Empiris CloudSim & Real-World",
     x: -16,
     z: -202,
     faceAngle: 0.85,
-    color: 0x06b6d4,
-    accent: 0xec4899,
-    scale: 1.35
+    color: 0x7c3f1d,
+    accent: 0xfbbf24,
+    scale: 1.38
   },
   {
     id: 7,
