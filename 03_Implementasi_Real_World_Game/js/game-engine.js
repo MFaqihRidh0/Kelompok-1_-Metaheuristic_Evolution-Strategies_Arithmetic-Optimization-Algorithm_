@@ -14,9 +14,20 @@ let playerRotY = Math.PI; // Menghadap ke arah -Z (ke dalam arena)
 let walkTime = 0;
 
 let roadCurve = null;
+let roadSamplePoints = [];
 let autoWalkTarget = null;
 let autoWalkCurveTargetT = null;
 const keysPressed = {};
+
+// 360-Degree Orbit Camera State
+let cameraYaw = 0;       // 0 = Kamera di belakang karakter menghadap -Z (360° penuh)
+let cameraPitch = 0.50;  // Sudut vertikal kamera
+let cameraDist = 17.5;   // Jarak zoom kamera dari karakter
+let isDraggingCamera = false;
+let dragMouseButton = -1;
+let dragStartPos = { x: 0, y: 0 };
+let lastMousePos = { x: 0, y: 0 };
+let totalDragDist = 0;
 
 let hemiLight, dirLight, introSpotLight, introRingMesh;
 
@@ -344,6 +355,12 @@ function buildWindingRoadAndScenery() {
   // Construct Smooth CatmullRomCurve3 from ROAD_WAYPOINTS
   const wpVectors = ROAD_WAYPOINTS.map(wp => new THREE.Vector3(wp.x, 0, wp.z));
   roadCurve = new THREE.CatmullRomCurve3(wpVectors, false, 'catmullrom', 0.45);
+
+  // Pre-sample 600 titik di sepanjang kurva jalan untuk pembatas rute (Road Clamping)
+  roadSamplePoints = [];
+  for (let s = 0; s <= 600; s++) {
+    roadSamplePoints.push(roadCurve.getPointAt(s / 600));
+  }
 
   // Build Continuous Winding Cobblestone Road Ribbon
   buildWindingRoadMesh(roadCurve, 14.5, 340);
@@ -1051,25 +1068,26 @@ function buildAllEnemyStations() {
 
     scene.add(stationGroup);
 
-    // Floating 3D HTML Label (Hanya muncul saat karakter sudah dekat dengan Pos!)
+    // Floating 3D HTML Label (Ringkas, tidak memanjang, dan badge [O] berwarna terang kontras!)
     const labelEl = document.createElement('div');
-    labelEl.className = 'enemy-label-3d';
+    labelEl.className = 'world-label enemy-label-3d';
     labelEl.id = `enemyLabel_${idx}`;
+    labelEl.style.cssText = 'position:absolute; transform:translate(-50%, -100%); width:max-content; max-width:240px; display:flex; flex-direction:column; align-items:center; gap:4px; pointer-events:auto;';
     labelEl.innerHTML = `
-      <div class="enemy-pos-tag">
+      <div class="enemy-pos-tag" style="width:max-content; padding:2px 12px; font-size:20px;">
         <span class="icon-boxing">${st.icon}</span>
         <span>${st.name}</span>
       </div>
       <div class="enemy-hp-track" id="hpTrack_${idx}">
         <div class="enemy-hp-fill" id="hpFill_${idx}"></div>
       </div>
-      <div class="enemy-attack-hint" id="atkHint_${idx}">
-        🔥 Klik Kiri [J] / ⚡ Klik Kanan [K] (100 HP)
+      <div class="enemy-attack-hint" id="atkHint_${idx}" style="width:max-content; padding:2px 10px; font-size:10.5px; color:#fde047; background:rgba(24,18,36,0.92); border:1px solid rgba(253,224,71,0.55);">
+        🔥 [J] Api &bull; ⚡ [K] Listrik
       </div>
-      <div class="corpse-unlock-badge" id="corpseBadge_${idx}" style="display:none;" onclick="reopenSlideFromCorpse(${idx})">
-        <span>🔓 ${st.icon} Kalah • Klik / Tekan</span>
-        <span class="key-o">O</span>
-        <span>Buka Slide ${st.posNum}</span>
+      <div class="corpse-reopen-badge corpse-unlock-badge" id="corpseBadge_${idx}" style="display:none; width:max-content; background:linear-gradient(135deg, #059669 0%, #0d9488 100%); border:2px solid #fde047; color:#ffffff; text-shadow:0 1px 3px rgba(0,0,0,0.7); padding:5px 13px; border-radius:10px; font-weight:800; box-shadow:0 8px 22px rgba(16,185,129,0.75);" onclick="reopenSlideFromCorpse(${idx})">
+        <span style="color:#ffffff;">🔓 ${st.icon} Kalah &bull; Klik / Tekan</span>
+        <span class="key-o" style="background:#fde047; color:#064e3b; padding:1px 6px; border-radius:5px; font-weight:900;">O</span>
+        <span style="color:#fef08a;">Buka Slide ${st.posNum}</span>
       </div>
     `;
     labelsContainer.appendChild(labelEl);
@@ -2506,14 +2524,17 @@ function spawnFloatingDamageText(wx, wy, wz, text, color) {
 }
 
 // ============================================================================
-// 10. PLAYER INPUT & CURVE-FOLLOWING NAVIGATION ALONG THE WINDING ROAD
+// 10. PLAYER INPUT, 360° CAMERA ORBIT & ROAD BOUNDARY CLAMPING
 // ============================================================================
 function setupInputListeners() {
   window.addEventListener('keydown', (e) => {
     const code = e.code;
     keysPressed[code] = true;
-    autoWalkTarget = null;
-    autoWalkCurveTargetT = null;
+
+    if (['KeyW', 'KeyA', 'KeyS', 'KeyD', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(code)) {
+      autoWalkTarget = null;
+      autoWalkCurveTargetT = null;
+    }
 
     if (code === 'Escape') {
       closeSlideWindow();
@@ -2533,7 +2554,7 @@ function setupInputListeners() {
       } else if (code === 'KeyL' || code === 'Space') {
         e.preventDefault();
         castElementalSkill('ultimate');
-      } else if (code === 'KeyO' || code === 'KeyE' || code === 'Enter') {
+      } else if (code === 'KeyO' || code === 'Enter') {
         triggerOpenNearestDefeatedSlide();
       } else if (code === 'KeyR') {
         resetPlayerPosition();
@@ -2545,17 +2566,93 @@ function setupInputListeners() {
     keysPressed[e.code] = false;
   });
 
+  // 360-DEGREE CAMERA ORBIT (Drag Mouse untuk putar 360°; Klik Cepat untuk Serang; Scroll untuk Zoom)
   const canvasEl = document.getElementById('gameCanvasContainer');
+
   canvasEl.addEventListener('mousedown', (e) => {
     if (isIntroMode) return;
     if (document.getElementById('slideModalOverlay').classList.contains('active')) return;
-    if (e.button === 0) {
-      castElementalSkill('fire');
-    } else if (e.button === 2) {
-      castElementalSkill('lightning');
-    }
+    isDraggingCamera = true;
+    dragMouseButton = e.button;
+    dragStartPos = { x: e.clientX, y: e.clientY };
+    lastMousePos = { x: e.clientX, y: e.clientY };
+    totalDragDist = 0;
   });
+
+  window.addEventListener('mousemove', (e) => {
+    if (!isDraggingCamera) return;
+    const dx = e.clientX - lastMousePos.x;
+    const dy = e.clientY - lastMousePos.y;
+    lastMousePos = { x: e.clientX, y: e.clientY };
+    totalDragDist += Math.hypot(dx, dy);
+
+    // Putar kamera 360 derajat penuh secara horizontal (cameraYaw) & vertikal (cameraPitch)
+    cameraYaw -= dx * 0.0075;
+    cameraPitch = Math.max(0.18, Math.min(1.18, cameraPitch + dy * 0.006));
+  });
+
+  window.addEventListener('mouseup', (e) => {
+    if (!isDraggingCamera) return;
+    isDraggingCamera = false;
+
+    if (isIntroMode) return;
+    if (document.getElementById('slideModalOverlay').classList.contains('active')) return;
+
+    // Jika hanya klik cepat (bukan drag memutar kamera), tembakkan Jurus Api / Listrik!
+    if (totalDragDist < 6) {
+      if (dragMouseButton === 0) {
+        castElementalSkill('fire');
+      } else if (dragMouseButton === 2) {
+        castElementalSkill('lightning');
+      }
+    }
+    dragMouseButton = -1;
+  });
+
+  canvasEl.addEventListener('wheel', (e) => {
+    if (isIntroMode) return;
+    if (document.getElementById('slideModalOverlay').classList.contains('active')) return;
+    e.preventDefault();
+    cameraDist = Math.max(8.5, Math.min(28.0, cameraDist + e.deltaY * 0.012));
+  }, { passive: false });
+
   canvasEl.addEventListener('contextmenu', (e) => e.preventDefault());
+}
+
+// Menjaga agar Karakter Utama TIDAK BISA keluar dari Rute Jalan Berkelok
+function clampPlayerToRoad(posVec) {
+  if (!roadSamplePoints || roadSamplePoints.length === 0) return;
+
+  // Area Bundaran Start Sanctuary (0, 0, 17.5)
+  const distToStartHub = Math.hypot(posVec.x - 0, posVec.z - 17.5);
+
+  // Cari titik terdekat di sepanjang garis tengah jalan berkelok
+  let nearestPt = roadSamplePoints[0];
+  let minDist = Infinity;
+  for (let i = 0; i < roadSamplePoints.length; i++) {
+    const pt = roadSamplePoints[i];
+    const d = Math.hypot(posVec.x - pt.x, posVec.z - pt.z);
+    if (d < minDist) {
+      minDist = d;
+      nearestPt = pt;
+    }
+  }
+
+  // Lebar jalan = 14.5 unit (batas batu pinggir jalan di 7.1 unit dari tengah).
+  // Batasi karakter di dalam radius 6.05 unit dari garis tengah jalan!
+  const maxRoadHalfWidth = 6.05;
+
+  if (posVec.z > 13.5 && distToStartHub <= 6.1) {
+    return; // Masih di dalam lingkaran Start Sanctuary
+  }
+
+  if (minDist > maxRoadHalfWidth) {
+    const dx = posVec.x - nearestPt.x;
+    const dz = posVec.z - nearestPt.z;
+    const len = Math.hypot(dx, dz) || 1;
+    posVec.x = nearestPt.x + (dx / len) * maxRoadHalfWidth;
+    posVec.z = nearestPt.z + (dz / len) * maxRoadHalfWidth;
+  }
 }
 
 function triggerOpenNearestDefeatedSlide() {
@@ -2587,6 +2684,8 @@ function resetPlayerPosition() {
   CloudAudio.playClick();
   playerPos.set(0, 0, 16);
   playerRotY = Math.PI;
+  cameraYaw = 0;
+  cameraPitch = 0.50;
   autoWalkTarget = null;
   autoWalkCurveTargetT = null;
 }
@@ -2614,7 +2713,6 @@ function walkToNextUndefeatedPos() {
   if (nextEn && roadCurve) {
     const stationVec = new THREE.Vector3(nextEn.station.x, 0, nextEn.station.z);
     const targetStationT = findClosestCurveT(stationVec);
-    // Stop ~5.5 units before the monster along the winding road curve
     autoWalkCurveTargetT = Math.max(0.02, targetStationT - 0.018);
     autoWalkTarget = roadCurve.getPointAt(autoWalkCurveTargetT);
   }
@@ -2644,7 +2742,7 @@ function teleportToPos(idx) {
 }
 
 // ============================================================================
-// 11. MAIN ANIMATION LOOP (MULTI-JOINTED HERO & MONSTER ANIMATIONS + CAMERA)
+// 11. MAIN ANIMATION LOOP (MULTI-JOINTED HERO & MONSTER ANIMATIONS + 360° CAMERA)
 // ============================================================================
 function gameLoop() {
   requestAnimationFrame(gameLoop);
@@ -2659,18 +2757,35 @@ function gameLoop() {
     introRingMesh.scale.setScalar(1 + Math.sin(elapsed * 3) * 0.025);
   }
 
-  // Player Movement (WASD + Curve-Following Auto-Walk)
+  // Player Movement (Camera-Relative WASD + Keyboard 360° Camera Orbit Q/E + Auto-Walk)
   let moveX = 0;
   let moveZ = 0;
   const isModalOpen = document.getElementById('slideModalOverlay').classList.contains('active');
 
   if (!isIntroMode && !isModalOpen) {
-    if (keysPressed['KeyW'] || keysPressed['ArrowUp']) moveZ -= 1;
-    if (keysPressed['KeyS'] || keysPressed['ArrowDown']) moveZ += 1;
-    if (keysPressed['KeyA'] || keysPressed['ArrowLeft']) moveX -= 1;
-    if (keysPressed['KeyD'] || keysPressed['ArrowRight']) moveX += 1;
+    // Tombol Q & E untuk memutar kamera 360 derajat dari keyboard
+    if (keysPressed['KeyQ']) cameraYaw += 2.2 * dt;
+    if (keysPressed['KeyE']) cameraYaw -= 2.2 * dt;
 
-    // Curve-Following Auto-Walk so character smoothly turns left & right along the road!
+    let inputForward = 0;
+    let inputRight = 0;
+    if (keysPressed['KeyW'] || keysPressed['ArrowUp']) inputForward += 1;
+    if (keysPressed['KeyS'] || keysPressed['ArrowDown']) inputForward -= 1;
+    if (keysPressed['KeyA'] || keysPressed['ArrowLeft']) inputRight -= 1;
+    if (keysPressed['KeyD'] || keysPressed['ArrowRight']) inputRight += 1;
+
+    if (inputForward !== 0 || inputRight !== 0) {
+      // Arah pandang horizontal kamera saat ini
+      const forwardX = -Math.sin(cameraYaw);
+      const forwardZ = -Math.cos(cameraYaw);
+      const rightX = Math.cos(cameraYaw);
+      const rightZ = -Math.sin(cameraYaw);
+
+      moveX = forwardX * inputForward + rightX * inputRight;
+      moveZ = forwardZ * inputForward + rightZ * inputRight;
+    }
+
+    // Curve-Following Auto-Walk
     if (autoWalkCurveTargetT !== null && roadCurve) {
       const currentT = findClosestCurveT(playerPos);
       if (Math.abs(autoWalkCurveTargetT - currentT) > 0.006) {
@@ -2697,12 +2812,10 @@ function gameLoop() {
     playerPos.x += (moveX / norm) * speed * dt;
     playerPos.z += (moveZ / norm) * speed * dt;
 
-    // Wide world bounds covering the entire winding canyon/forest trail
-    playerPos.x = Math.max(-85, Math.min(85, playerPos.x));
-    playerPos.z = Math.max(-255, Math.min(24, playerPos.z));
+    // BATASI KARAKTER AGAR TIDAK BISA KELUAR DARI RUTE JALAN!
+    clampPlayerToRoad(playerPos);
 
     const targetYaw = Math.atan2(moveX, moveZ);
-    // Smooth angular interpolation for natural turning on curves
     let diff = targetYaw - playerRotY;
     while (diff > Math.PI) diff -= Math.PI * 2;
     while (diff < -Math.PI) diff += Math.PI * 2;
@@ -2770,16 +2883,22 @@ function gameLoop() {
   playerGroup.position.copy(playerPos);
   playerGroup.rotation.y = playerRotY;
 
-  // Dynamic Camera Follow that tracks player X & Z smoothly around left & right road turns!
-  const camTargetPos = isIntroMode
-    ? new THREE.Vector3(0, 11.2, 29.0)
-    : new THREE.Vector3(playerPos.x, 12.8, playerPos.z + 15.8);
-  camera.position.lerp(camTargetPos, dt * 4.8);
-
-  const lookTarget = isIntroMode
-    ? new THREE.Vector3(0, 1.8, 17.5)
-    : new THREE.Vector3(playerPos.x, 1.8, playerPos.z - 4.0);
-  camera.lookAt(lookTarget);
+  // 360-DEGREE ORBIT CAMERA CALCULATION AROUND PLAYER
+  if (isIntroMode) {
+    const introCamPos = new THREE.Vector3(0, 11.2, 29.0);
+    camera.position.lerp(introCamPos, dt * 4.8);
+    camera.lookAt(new THREE.Vector3(0, 1.8, 17.5));
+  } else {
+    const horizDist = cameraDist * Math.cos(cameraPitch);
+    const vertHeight = cameraDist * Math.sin(cameraPitch) + 2.2;
+    const camTargetPos = new THREE.Vector3(
+      playerPos.x + Math.sin(cameraYaw) * horizDist,
+      vertHeight,
+      playerPos.z + Math.cos(cameraYaw) * horizDist
+    );
+    camera.position.lerp(camTargetPos, dt * 8.0);
+    camera.lookAt(new THREE.Vector3(playerPos.x, 2.0, playerPos.z));
+  }
 
   // Move directional light shadow frustum with player so shadows stay crisp along the whole trail
   dirLight.position.set(playerPos.x + 28, 55, playerPos.z + 25);

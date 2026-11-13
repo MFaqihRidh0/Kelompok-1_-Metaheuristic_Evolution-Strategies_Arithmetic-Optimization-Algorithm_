@@ -63,9 +63,12 @@ html, body {
 }
 
 /* Floating 3D Sign / Enemy HP / Corpse [O] Prompt */
-.world-label {
+.world-label,
+.enemy-label-3d {
   position: absolute;
   transform: translate(-50%, -100%);
+  width: max-content;
+  max-width: 240px;
   pointer-events: auto;
   transition: opacity 0.2s ease;
   display: flex;
@@ -75,27 +78,29 @@ html, body {
 }
 
 .enemy-pos-tag {
-  background: rgba(24, 18, 36, 0.88);
-  border: 1.5px solid rgba(255, 255, 255, 0.22);
+  background: rgba(24, 18, 36, 0.92);
+  border: 1.5px solid rgba(255, 255, 255, 0.28);
   color: #ffffff;
   font-family: 'Amatic SC', cursive;
-  font-size: 22px;
+  font-size: 21px;
   font-weight: 700;
-  letter-spacing: 1.5px;
-  padding: 2px 14px;
+  letter-spacing: 1.2px;
+  padding: 2px 12px;
   border-radius: 8px;
   white-space: nowrap;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+  width: max-content;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
+  gap: 6px;
 }
 
 .enemy-hp-track {
-  width: 124px;
+  width: 118px;
   height: 9px;
-  background: rgba(15, 23, 42, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.4);
   border-radius: 999px;
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0,0,0,0.5);
@@ -109,49 +114,59 @@ html, body {
 }
 
 .enemy-attack-hint {
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 800;
   color: #fde047;
-  background: rgba(24, 18, 36, 0.85);
-  padding: 2px 9px;
+  background: rgba(24, 18, 36, 0.92);
+  padding: 2px 10px;
   border-radius: 999px;
-  border: 1px solid rgba(253, 224, 71, 0.4);
+  border: 1px solid rgba(253, 224, 71, 0.5);
   white-space: nowrap;
+  width: max-content;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45);
   animation: pulseBounce 1.4s infinite ease-in-out;
 }
 
 /* Simbol di atas Mayat Musuh yang sudah dikalahkan: "Klik / Tekan O" */
-.corpse-reopen-badge {
-  background: linear-gradient(135deg, rgba(5, 150, 105, 0.95) 0%, rgba(15, 118, 110, 0.95) 100%);
-  border: 2px solid #a7f3d0;
-  color: #ffffff;
-  padding: 5px 14px;
+.corpse-reopen-badge,
+.corpse-unlock-badge {
+  background: linear-gradient(135deg, #059669 0%, #0d9488 100%);
+  border: 2px solid #fde047;
+  color: #ffffff !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.65);
+  padding: 5px 13px;
   border-radius: 10px;
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 800;
   cursor: pointer;
   white-space: nowrap;
-  box-shadow: 0 8px 22px rgba(5, 150, 105, 0.5);
+  width: max-content;
+  box-shadow: 0 8px 22px rgba(5, 150, 105, 0.65);
   display: flex;
   align-items: center;
-  gap: 7px;
+  justify-content: center;
+  gap: 6px;
   transition: transform 0.18s ease, box-shadow 0.18s ease;
   animation: floatBadge 2s infinite ease-in-out;
 }
 
-.corpse-reopen-badge:hover {
+.corpse-reopen-badge:hover,
+.corpse-unlock-badge:hover {
   transform: scale(1.08);
-  box-shadow: 0 10px 28px rgba(16, 185, 129, 0.75);
+  box-shadow: 0 10px 28px rgba(16, 185, 129, 0.85);
 }
 
-.corpse-reopen-badge .key-o {
-  background: #ffffff;
-  color: #065f46;
+.corpse-reopen-badge .key-o,
+.corpse-unlock-badge .key-o {
+  background: #fde047;
+  color: #064e3b !important;
+  text-shadow: none;
   font-family: 'JetBrains Mono', monospace;
   font-weight: 800;
   padding: 1px 6px;
   border-radius: 5px;
   font-size: 11px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
 @keyframes floatBadge {
