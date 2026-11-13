@@ -1,0 +1,1051 @@
+/* ==========================================================================
+   AOA CLOUD BATTLE ARENA — GAME UI & FLOATING PRESENTATION STYLES
+   Inspired by Cloud Ops / Folio 2025 + Elemental 3D Action Arena
+   ========================================================================== */
+
+:root {
+  --cream-50: #fdfbf7;
+  --cream-100: #f6efe2;
+  --cream-200: #e8dcc8;
+  --cream-border: #d8c9b0;
+  --coffee-950: #1e1815;
+  --coffee-800: #3d332c;
+  --coffee-600: #6e5f53;
+  --teal-700: #1f6357;
+  --teal-600: #287a6c;
+  --plum-900: #24172b;
+  --plum-800: #39203d;
+  --plum-700: #592848;
+  --sky-600: #0284c7;
+  --sky-700: #0369a1;
+  --fire-500: #f97316;
+  --fire-600: #ea580c;
+  --volt-500: #8b5cf6;
+  --volt-400: #38bdf8;
+  --emerald-600: #059669;
+  --border: #e2d7c5;
+  --card-bg: #fcf9f2;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: 'Nunito', 'Plus Jakarta Sans', sans-serif;
+  background: #120d24;
+  color: var(--coffee-950);
+  user-select: none;
+}
+
+/* ==========================================================================
+   1. 3D CANVAS & WORLD LABELS LAYER
+   ========================================================================== */
+#gameCanvasContainer {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1;
+}
+
+#worldLabelsContainer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10;
+  overflow: hidden;
+}
+
+/* Floating 3D Sign / Enemy HP / Corpse [O] Prompt */
+.world-label {
+  position: absolute;
+  transform: translate(-50%, -100%);
+  pointer-events: auto;
+  transition: opacity 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.enemy-pos-tag {
+  background: rgba(24, 18, 36, 0.88);
+  border: 1.5px solid rgba(255, 255, 255, 0.22);
+  color: #ffffff;
+  font-family: 'Amatic SC', cursive;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  padding: 2px 14px;
+  border-radius: 8px;
+  white-space: nowrap;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.enemy-hp-track {
+  width: 124px;
+  height: 9px;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 999px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+}
+
+.enemy-hp-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ef4444 0%, #f97316 100%);
+  width: 100%;
+  transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.enemy-attack-hint {
+  font-size: 11px;
+  font-weight: 800;
+  color: #fde047;
+  background: rgba(24, 18, 36, 0.85);
+  padding: 2px 9px;
+  border-radius: 999px;
+  border: 1px solid rgba(253, 224, 71, 0.4);
+  white-space: nowrap;
+  animation: pulseBounce 1.4s infinite ease-in-out;
+}
+
+/* Simbol di atas Mayat Musuh yang sudah dikalahkan: "Klik / Tekan O" */
+.corpse-reopen-badge {
+  background: linear-gradient(135deg, rgba(5, 150, 105, 0.95) 0%, rgba(15, 118, 110, 0.95) 100%);
+  border: 2px solid #a7f3d0;
+  color: #ffffff;
+  padding: 5px 14px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 0 8px 22px rgba(5, 150, 105, 0.5);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  animation: floatBadge 2s infinite ease-in-out;
+}
+
+.corpse-reopen-badge:hover {
+  transform: scale(1.08);
+  box-shadow: 0 10px 28px rgba(16, 185, 129, 0.75);
+}
+
+.corpse-reopen-badge .key-o {
+  background: #ffffff;
+  color: #065f46;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 800;
+  padding: 1px 6px;
+  border-radius: 5px;
+  font-size: 11px;
+}
+
+@keyframes floatBadge {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-5px); }
+}
+
+@keyframes pulseBounce {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.06); }
+}
+
+/* Floating Damage Numbers */
+.floating-dmg {
+  position: absolute;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 800;
+  font-size: 18px;
+  pointer-events: none;
+  text-shadow: 0 3px 10px rgba(0, 0, 0, 0.75);
+  animation: dmgRise 1.1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  z-index: 25;
+  white-space: nowrap;
+}
+
+@keyframes dmgRise {
+  0% { opacity: 1; transform: translate(-50%, 0) scale(0.7); }
+  25% { opacity: 1; transform: translate(-50%, -22px) scale(1.15); }
+  100% { opacity: 0; transform: translate(-50%, -65px) scale(0.95); }
+}
+
+/* ==========================================================================
+   2. BERANDA SPOTLIGHT INTRO ("CLICK TO START" - Gambar 1)
+   ========================================================================== */
+#introOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.65s ease, visibility 0.65s ease;
+}
+
+#introOverlay.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.intro-click-prompt {
+  position: absolute;
+  left: calc(50% + 145px);
+  top: calc(50% - 95px);
+  color: #f8fafc;
+  font-family: 'Amatic SC', cursive;
+  font-size: 46px;
+  font-weight: 700;
+  line-height: 0.95;
+  letter-spacing: 2px;
+  text-align: center;
+  text-shadow: 0 0 18px rgba(168, 85, 247, 0.75);
+  animation: pulsePrompt 2.2s infinite ease-in-out;
+}
+
+.intro-sub-caption {
+  position: absolute;
+  bottom: 42px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(18, 13, 36, 0.82);
+  border: 1px solid rgba(167, 139, 250, 0.35);
+  color: #e2e8f0;
+  padding: 8px 20px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  backdrop-filter: blur(8px);
+}
+
+@keyframes pulsePrompt {
+  0%, 100% { transform: scale(1) rotate(-4deg); }
+  50% { transform: scale(1.06) rotate(-2deg); }
+}
+
+/* ==========================================================================
+   3. CLOUD OPS STYLE HUD (Gambar 2, 3, 4)
+   ========================================================================== */
+#gameHudLayer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 20;
+  transition: opacity 0.4s ease;
+}
+
+#gameHudLayer.hidden {
+  opacity: 0;
+}
+
+/* Top-Left Card */
+.hud-brand-card {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  background: var(--cream-100);
+  border: 2px solid var(--cream-border);
+  border-radius: 16px;
+  padding: 12px 16px;
+  min-width: 225px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.32);
+  pointer-events: auto;
+}
+
+.hud-group-tag {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--coffee-600);
+  margin-bottom: 2px;
+}
+
+.hud-game-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--coffee-950);
+  letter-spacing: -0.3px;
+  margin-bottom: 8px;
+}
+
+.hud-brand-actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.btn-hud-primary {
+  background: var(--teal-700);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 7px 13px;
+  font-family: inherit;
+  font-size: 11.5px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+}
+
+.btn-hud-primary:hover {
+  background: var(--teal-600);
+  transform: translateY(-1px);
+}
+
+.btn-hud-secondary {
+  background: #ffffff;
+  color: var(--coffee-800);
+  border: 1.5px solid var(--cream-border);
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.btn-hud-secondary:hover {
+  background: var(--cream-200);
+}
+
+/* Top-Right Action Buttons (Menu & Teleport) */
+.hud-top-right {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: auto;
+}
+
+.btn-icon-square {
+  width: 44px;
+  height: 44px;
+  background: rgba(74, 25, 54, 0.9);
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
+  border-radius: 10px;
+  color: #ffffff;
+  font-size: 19px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+  transition: transform 0.15s, background 0.2s;
+}
+
+.btn-icon-square:hover {
+  background: rgba(107, 33, 78, 0.98);
+  transform: scale(1.06);
+}
+
+/* Teleport Quick Popover */
+.teleport-popover {
+  position: absolute;
+  top: 16px;
+  right: 70px;
+  width: 310px;
+  background: var(--cream-100);
+  border: 2px solid var(--cream-border);
+  border-radius: 14px;
+  padding: 12px;
+  box-shadow: 0 16px 36px rgba(0,0,0,0.45);
+  pointer-events: auto;
+  display: none;
+}
+
+.teleport-popover.active {
+  display: block;
+}
+
+.teleport-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 8px;
+  border-radius: 8px;
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.teleport-item:hover {
+  background: var(--cream-200);
+}
+
+/* Bottom-Left Quest & Elemental Skills Card */
+.hud-quest-card {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  background: var(--cream-100);
+  border: 2px solid var(--cream-border);
+  border-radius: 14px;
+  padding: 12px 15px;
+  width: 380px;
+  max-width: calc(100vw - 32px);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.32);
+  pointer-events: auto;
+}
+
+.quest-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.quest-title {
+  font-size: 12.5px;
+  font-weight: 800;
+  color: var(--teal-700);
+}
+
+.quest-desc {
+  font-size: 12px;
+  color: var(--coffee-800);
+  line-height: 1.35;
+  margin-bottom: 10px;
+}
+
+/* Elemental Skill Hotbar */
+.skill-hotbar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+
+.skill-btn {
+  background: #ffffff;
+  border: 1.5px solid var(--cream-border);
+  border-radius: 9px;
+  padding: 6px 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+
+.skill-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+}
+
+.skill-btn:active {
+  transform: scale(0.95);
+}
+
+.skill-btn.fire {
+  border-color: #fdba74;
+  background: linear-gradient(180deg, #fff7ed 0%, #ffedd5 100%);
+}
+
+.skill-btn.lightning {
+  border-color: #c4b5fd;
+  background: linear-gradient(180deg, #f5f3ff 0%, #ede9fe 100%);
+}
+
+.skill-btn.ultimate {
+  border-color: #fde047;
+  background: linear-gradient(180deg, #fefce8 0%, #fef08a 100%);
+}
+
+.skill-btn.reopen {
+  border-color: #6ee7b7;
+  background: linear-gradient(180deg, #ecfdf5 0%, #d1fae5 100%);
+}
+
+.skill-key {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  font-weight: 800;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: rgba(30, 24, 21, 0.1);
+  color: var(--coffee-950);
+}
+
+.skill-name {
+  font-size: 10.5px;
+  font-weight: 800;
+  color: var(--coffee-950);
+}
+
+/* Bottom-Center Help Pill */
+.hud-bottom-pill {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(24, 20, 28, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: #f8fafc;
+  padding: 8px 18px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  pointer-events: auto;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+}
+
+@media (max-width: 1100px) {
+  .hud-bottom-pill {
+    display: none;
+  }
+}
+
+/* ==========================================================================
+   4. CENTERED FLOATING PRESENTATION WINDOW (Slide + Code + Simulator)
+   ========================================================================== */
+#slideModalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 12, 26, 0.42);
+  backdrop-filter: blur(4px);
+  z-index: 50;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+#slideModalOverlay.active {
+  display: flex;
+  animation: modalFadeIn 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.slide-floating-window {
+  width: 84vw;
+  max-width: 1060px;
+  height: 82vh;
+  background: var(--cream-50);
+  border: 2.5px solid var(--cream-border);
+  border-radius: 20px;
+  box-shadow: 0 25px 65px rgba(0, 0, 0, 0.65);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: width 0.25s ease, height 0.25s ease, max-width 0.25s ease, border-radius 0.25s ease;
+}
+
+.slide-floating-window.fullscreen-mode {
+  width: 99vw;
+  max-width: 99vw;
+  height: 97vh;
+  border-radius: 12px;
+}
+
+/* Window Top Header (Cloud Ops Learning Station Style) */
+.window-header {
+  background: var(--cream-100);
+  border-bottom: 1.5px solid var(--cream-border);
+  padding: 12px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.window-station-label {
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--teal-700);
+}
+
+.window-station-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--coffee-950);
+}
+
+.window-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.btn-win-ctrl {
+  background: #ffffff;
+  border: 1.5px solid var(--cream-border);
+  color: var(--coffee-950);
+  padding: 6px 12px;
+  border-radius: 9px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.15s;
+}
+
+.btn-win-ctrl:hover {
+  background: var(--cream-200);
+}
+
+.btn-win-close {
+  background: #fee2e2;
+  border-color: #fca5a5;
+  color: #991b1b;
+  font-size: 14px;
+  padding: 6px 12px;
+}
+
+.btn-win-close:hover {
+  background: #fecaca;
+}
+
+/* Window Body */
+.window-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 18px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Window Footer Navigation */
+.window-footer {
+  background: var(--cream-100);
+  border-top: 1.5px solid var(--cream-border);
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* Slide Content Styles (Matching 02_Implementasi_Real_World) */
+.slide-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--sky-700);
+  margin-bottom: 4px;
+  display: block;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.card {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+
+.takeaway-box {
+  background: #e6f4ea;
+  border: 1.5px solid #a8dab5;
+  border-radius: 12px;
+  padding: 10px 14px;
+  margin-top: 4px;
+}
+
+.takeaway-tag {
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #137333;
+  margin-bottom: 2px;
+}
+
+.takeaway-text {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+/* Code Viewer Inside Slide Window */
+.code-viewer-container {
+  background: #090d16;
+  border: 1px solid #1e293b;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px -6px rgba(0,0,0,0.35);
+  display: flex;
+  flex-direction: column;
+}
+
+.code-header-bar {
+  background: #0f172a;
+  border-bottom: 1px solid #1e293b;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 7px 12px;
+}
+
+.code-scroll-area {
+  overflow-y: auto;
+  padding: 12px 16px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11.5px;
+  line-height: 1.55;
+  color: #e2e8f0;
+  background: #090d16;
+}
+
+.code-scroll-area pre {
+  margin: 0;
+  font-family: inherit;
+}
+
+.syn-kw { color: #c084fc; font-weight: 700; }
+.syn-fn { color: #38bdf8; font-weight: 700; }
+.syn-str { color: #4ade80; }
+.syn-num { color: #fbbf24; }
+.syn-com { color: #64748b; font-style: italic; }
+
+/* Tables */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  background: #ffffff;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+th {
+  background: var(--cream-100);
+  color: var(--coffee-950);
+  font-weight: 800;
+  text-align: left;
+  padding: 7px 10px;
+  border-bottom: 1.5px solid var(--border);
+}
+
+td {
+  padding: 6px 10px;
+  border-bottom: 1px solid #f1ece1;
+  color: var(--coffee-800);
+}
+
+.text-sky { color: #0284c7; font-weight: 700; }
+.text-green { color: #059669; font-weight: 700; }
+.text-purple { color: #7c3aed; font-weight: 700; }
+
+/* Embedded Simulator Console inside Window */
+.sim-dashboard {
+  background: #ffffff;
+  border: 1.5px solid var(--cream-border);
+  border-radius: 14px;
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sim-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 6px;
+}
+
+.sim-cockpit-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 1.35fr 1.25fr;
+  gap: 12px;
+  align-items: center;
+}
+
+@media (max-width: 900px) {
+  .sim-cockpit-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.sim-selectors-row {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.ctrl-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.ctrl-group label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--coffee-600);
+}
+
+.ctrl-group select {
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 6px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+}
+
+.ctrl-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.btn-run {
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  color: #ffffff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.btn-reset {
+  background: #f5f5f4;
+  border: 1px solid var(--border);
+  padding: 6px 10px;
+  border-radius: 7px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+
+.kpi-card {
+  background: #fbf9f5;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 5px 6px;
+  text-align: center;
+}
+
+.kpi-label {
+  font-size: 9px;
+  color: var(--coffee-600);
+  font-weight: 700;
+}
+
+.kpi-val {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--coffee-950);
+}
+
+.kpi-sub {
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.dc-meters-box {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 6px 8px;
+}
+
+.dc-meter-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 9.5px;
+}
+
+.meter-track {
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.meter-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.45s ease;
+}
+
+.fill-sky { background: #0284c7; }
+.fill-purple { background: #7c3aed; }
+.fill-green { background: #059669; }
+.fill-danger { background: #ef4444; }
+.fill-idle { background: #94a3b8; }
+
+.sim-status-banner {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 7px;
+  padding: 5px 10px;
+  font-size: 11px;
+  color: #166534;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sim-status-banner.danger {
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #991b1b;
+}
+
+/* ==========================================================================
+   5. SPLIT-SCREEN MENU & CREDITS MODAL (Replica of Reference Image 6)
+   ========================================================================== */
+#creditsModalOverlay, #fullCodeModal {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 11, 24, 0.72);
+  backdrop-filter: blur(6px);
+  z-index: 70;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+#creditsModalOverlay.active, #fullCodeModal.active {
+  display: flex;
+}
+
+.credits-modal-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.credits-top-tabs {
+  display: flex;
+  gap: 6px;
+}
+
+.tab-sq-btn {
+  width: 42px;
+  height: 42px;
+  background: #1e162b;
+  border: 1.5px solid rgba(255,255,255,0.28);
+  color: #cbd5e1;
+  border-radius: 8px;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tab-sq-btn.active {
+  background: #3b2554;
+  color: #ffffff;
+  border-color: #c084fc;
+}
+
+.tab-sq-btn.close {
+  background: #7f1d1d;
+  border-color: #f87171;
+  color: #ffffff;
+}
+
+.credits-split-card {
+  width: 820px;
+  max-width: 94vw;
+  height: 490px;
+  max-height: 82vh;
+  display: grid;
+  grid-template-columns: 1fr 1.05fr;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 28px 65px rgba(0,0,0,0.65);
+  border: 2px solid rgba(255,255,255,0.18);
+}
+
+.credits-left-art {
+  background: #efe6d5;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+}
+
+.credits-right-info {
+  background: #181224;
+  color: #e2e8f0;
+  padding: 28px;
+  overflow-y: auto;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.credits-right-info h4 {
+  font-family: 'Amatic SC', cursive;
+  font-size: 24px;
+  letter-spacing: 1.5px;
+  color: #f8fafc;
+  margin-top: 14px;
+  margin-bottom: 4px;
+}
+
+.credits-right-info a {
+  color: #f8fafc;
+  font-weight: 800;
+  text-decoration: underline;
+}

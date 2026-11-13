@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Komparasi Penjadwalan Cloud: Random Scheduling vs Algoritma AOA yang Baru</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <!-- Three.js & OrbitControls via CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header>
+    <div class="brand">
+      <span>☁️ Presentasi Interaktif 3D &bull; Kelompok 1</span>
+      <span class="badge-top">Live Three.js Stage</span>
+      <a href="index.html" style="margin-left:8px; background:#1f6357; color:#ffffff; text-decoration:none; font-size:11px; font-weight:800; padding:4px 11px; border-radius:999px;">🎮 Mainkan Mode Game 3D</a>
+    </div>
+    <div style="font-size: 12px; font-weight: 600; color: var(--coffee-600);">
+      Random Scheduling vs Algoritma AOA yang Baru &bull; Dataset Minggu 3
+    </div>
+  </header>
+
+  <!-- Main Presentation Container: 3 Bagian (Penjelasan, Animasi, Controller) -->
+  <main class="presentation-container">
+    
+    <!-- TOP ROW: Bagian 1 (Penjelasan) di Kiri & Bagian 2 (Animasi 3D) di Kanan -->
+    <div class="top-row">
+
+      <!-- Bagian 1: Left Slide Panel (Penjelasan) -->
+      <div class="slides-wrapper">
+      <!-- Slide 1: Pembukaan & Topologi VM -->
+      <div class="slide active" data-3d-mode="topology">
+        <span class="slide-tag">DEMO IMPLEMENTASI &bull; TUGAS 1 S.D 6</span>
+        <h2 style="font-size:20px; margin-bottom:4px;">Komparasi Kinerja Penjadwalan Cloud</h2>
+        <p style="color: var(--sky-700); font-weight: 600; font-size:12px; margin-bottom: 8px;">
+          Baseline Random Scheduling (Minggu 3) vs. Algoritma Arithmetic Optimization Algorithm (AOA) yang Baru
+        </p>
+
+        <div class="grid-2" style="margin-bottom: 8px;">
+          <div class="card" style="border-left: 3px solid #0284c7; padding:8px 10px;">
+            <h4 style="font-size:11.5px; margin-bottom:2px;">3 Datacenter Heterogen</h4>
+            <p style="font-size:10.5px; margin:0;">Surabaya (6.000 MIPS), Jakarta (3.600 MIPS), Yogya (800 MIPS) dengan latensi fisik antarkota.</p>
+          </div>
+          <div class="card" style="border-left: 3px solid #10b981; padding:8px 10px;">
+            <h4 style="font-size:11.5px; margin-bottom:2px;">Dataset Tugas Ilmiah Riil</h4>
+            <p style="font-size:10.5px; margin:0;">Menguji berkas <code>dataset_100cloudlet.csv</code> s.d <code>500cloudlet.csv</code> (1.400 - 60.780 MI).</p>
+          </div>
+        </div>
+
+        <div class="code-viewer-container">
+          <div class="code-header-bar">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#38bdf8; font-weight:700;">
+              🐍 program_aoa_vs_random.py &bull; build_datacenter_vms()
+            </span>
+            <button class="btn-sm" onclick="openFullCodeModal()" style="background:#1e293b; color:#38bdf8; border-color:#334155; padding:2px 8px; font-size:9px;">
+              📄 Buka Kode Utuh (349 Baris)
+            </button>
+          </div>
+          <div class="code-scroll-area" style="max-height: 145px;">
+            <pre><code><span class="syn-com"># Inisialisasi 10 VM Heterogen di 3 Datacenter Sesuai Spesifikasi Minggu 3</span>
+<span class="syn-kw">def</span> <span class="syn-fn">build_datacenter_vms</span>() -&gt; List[VM]:
+    vms: List[VM] = []
+    <span class="syn-com"># Surabaya: 2x Large (3.000 MIPS x 2 = 6.000 MIPS) + 1x Medium (3.600 MIPS)</span>
+    vms.append(VM(<span class="syn-num">0</span>, <span class="syn-str">"DC_Surabaya"</span>, <span class="syn-num">0</span>, <span class="syn-str">"Large"</span>,  <span class="syn-num">3000.0</span>, <span class="syn-num">2</span>, <span class="syn-num">8192</span>, <span class="syn-num">2500.0</span>))  <span class="syn-com"># VM 0: 6.000 MIPS</span>
+    vms.append(VM(<span class="syn-num">1</span>, <span class="syn-str">"DC_Surabaya"</span>, <span class="syn-num">0</span>, <span class="syn-str">"Large"</span>,  <span class="syn-num">3000.0</span>, <span class="syn-num">2</span>, <span class="syn-num">8192</span>, <span class="syn-num">2500.0</span>))  <span class="syn-com"># VM 1: 6.000 MIPS</span>
+    vms.append(VM(<span class="syn-num">2</span>, <span class="syn-str">"DC_Surabaya"</span>, <span class="syn-num">0</span>, <span class="syn-str">"Medium"</span>, <span class="syn-num">1800.0</span>, <span class="syn-num">2</span>, <span class="syn-num">4096</span>, <span class="syn-num">1000.0</span>))  <span class="syn-com"># VM 2: 3.600 MIPS</span>
+
+    <span class="syn-com"># Jakarta: 2x Medium (3.600 MIPS) + 1x Small (800 MIPS)</span>
+    vms.append(VM(<span class="syn-num">3</span>, <span class="syn-str">"DC_Jakarta"</span>,  <span class="syn-num">1</span>, <span class="syn-str">"Medium"</span>, <span class="syn-num">1800.0</span>, <span class="syn-num">2</span>, <span class="syn-num">4096</span>, <span class="syn-num">1000.0</span>))  <span class="syn-com"># VM 3: 3.600 MIPS</span>
+    vms.append(VM(<span class="syn-num">4</span>, <span class="syn-str">"DC_Jakarta"</span>,  <span class="syn-num">1</span>, <span class="syn-str">"Medium"</span>, <span class="syn-num">1800.0</span>, <span class="syn-num">2</span>, <span class="syn-num">4096</span>, <span class="syn-num">1000.0</span>))  <span class="syn-com"># VM 4: 3.600 MIPS</span>
+    vms.append(VM(<span class="syn-num">5</span>, <span class="syn-str">"DC_Jakarta"</span>,  <span class="syn-num">1</span>, <span class="syn-str">"Small"</span>,   <span class="syn-num">800.0</span>, <span class="syn-num">1</span>, <span class="syn-num">2048</span>,  <span class="syn-num">500.0</span>))  <span class="syn-com"># VM 5:   800 MIPS</span>
+
+    <span class="syn-com"># Yogyakarta: 4x Small (800 MIPS)</span>
+    <span class="syn-kw">for</span> i <span class="syn-kw">in</span> range(<span class="syn-num">6</span>, <span class="syn-num">10</span>):
+        vms.append(VM(i, <span class="syn-str">"DC_Yogyakarta"</span>, <span class="syn-num">2</span>, <span class="syn-str">"Small"</span>, <span class="syn-num">800.0</span>, <span class="syn-num">1</span>, <span class="syn-num">2048</span>, <span class="syn-num">500.0</span>)) <span class="syn-com"># VM 6..9: 4x 800 MIPS</span>
+    <span class="syn-kw">return</span> vms</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 2: Inefisiensi Random Scheduling -->
+      <div class="slide" data-3d-mode="topology">
+        <span class="slide-tag">BAGIAN 01 &bull; PROBLEM STATEMENT</span>
+        <h2 style="font-size:20px; margin-bottom:4px;">Kilas Balik: Inefisiensi Fatal Random Scheduling (Minggu 3)</h2>
+        <p style="font-size:12px; margin-bottom:6px;">Pada evaluasi tugas Minggu 3, Random Scheduling digunakan sebagai baseline awal namun terbukti memiliki kelemahan kritis:</p>
+
+        <div class="grid-2" style="margin-bottom: 6px;">
+          <div class="card" style="border-left: 3px solid #ef4444; padding:8px 10px;">
+            <h4 style="color: #b91c1c; font-size:11.5px; margin-bottom:2px;">1. Alokasi Buta Kapasitas</h4>
+            <p style="font-size:10.5px; margin:0;">Tugas raksasa (40k-60k MI) kerap terlempar ke VM terkecil (800 MIPS), memicu bottleneck parah.</p>
+          </div>
+          <div class="card" style="border-left: 3px solid #ef4444; padding:8px 10px;">
+            <h4 style="color: #b91c1c; font-size:11.5px; margin-bottom:2px;">2. Pemborosan Sumber Daya</h4>
+            <p style="font-size:10.5px; margin:0;">VM besar Surabaya (6.000 MIPS) terbiarkan menganggur (IDLE 14%), memperpanjang Makespan dan biaya sewa.</p>
+          </div>
+        </div>
+
+        <div class="code-viewer-container">
+          <div class="code-header-bar">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#ef4444; font-weight:700;">
+              🐍 program_aoa_vs_random.py &bull; schedule_random()
+            </span>
+            <button class="btn-sm" onclick="openFullCodeModal()" style="background:#1e293b; color:#38bdf8; border-color:#334155; padding:2px 8px; font-size:9px;">
+              📄 Buka Kode Utuh
+            </button>
+          </div>
+          <div class="code-scroll-area" style="max-height: 145px;">
+            <pre><code><span class="syn-kw">def</span> <span class="syn-fn">schedule_random</span>(cloudlets: List[Cloudlet], vms: List[VM], seed: <span class="syn-kw">int</span>) -&gt; List[<span class="syn-kw">int</span>]:
+    <span class="syn-str">"""1. Random Scheduling (Baseline Minggu 3)"""</span>
+    rnd = random.Random(seed)
+    <span class="syn-com"># Memilih VM [0..9] secara acak seragam tanpa melihat beban maupun MIPS</span>
+    <span class="syn-kw">return</span> [rnd.randint(<span class="syn-num">0</span>, len(vms) - <span class="syn-num">1</span>) <span class="syn-kw">for</span> _ <span class="syn-kw">in</span> cloudlets]
+
+<span class="syn-com"># Analisis Dampak Inefisiensi pada Dataset 100 Cloudlets:</span>
+<span class="syn-com"># - VM 8 (Yogya 800 MIPS) menerima beban 60.780 MI -&gt; Bottleneck eksekusi 75.9 detik!</span>
+<span class="syn-com"># - VM 0 (Surabaya 6.000 MIPS) hanya kebagian beban ringan -&gt; IDLE terbuang 14.8% waktu</span>
+<span class="syn-com"># - Makespan membengkak ke 444.29s dan Indeks Ketimpangan Beban (LBI) melonjak ke 2.20</span></code></pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 3: Arsitektur 3 Datacenter & Latensi Riil -->
+      <div class="slide" data-3d-mode="topology">
+        <span class="slide-tag">BAGIAN 02 &bull; TOPOLOGI REAL-WORLD</span>
+        <h2 style="font-size:20px; margin-bottom:4px;">Arsitektur 3 Datacenter &amp; Jaringan Geografis Riil</h2>
+        <p style="font-size:12px; margin-bottom:6px;">Infrastruktur cloud riil terdistribusi antarkota dengan latensi jaringan dan bandwidth I/O:</p>
+
+        <div class="code-viewer-container">
+          <div class="code-header-bar">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#38bdf8; font-weight:700;">
+              🐍 program_aoa_vs_random.py &bull; NETWORK_LATENCY &amp; tx_time
+            </span>
+            <button class="btn-sm" onclick="openFullCodeModal()" style="background:#1e293b; color:#38bdf8; border-color:#334155; padding:2px 8px; font-size:9px;">
+              📄 Buka Kode Utuh
+            </button>
+          </div>
+          <div class="code-scroll-area" style="max-height: 155px;">
+            <pre><code><span class="syn-com"># Matriks Latensi Jaringan Fisik Antarkota Real-World (dalam detik)</span>
+NETWORK_LATENCY = {
+    (<span class="syn-str">"DC_Surabaya"</span>, <span class="syn-str">"DC_Surabaya"</span>):   <span class="syn-num">0.001</span>,  <span class="syn-com"># Intra-DC 1.0 ms</span>
+    (<span class="syn-str">"DC_Surabaya"</span>, <span class="syn-str">"DC_Yogyakarta"</span>): <span class="syn-num">0.008</span>,  <span class="syn-com"># Surabaya - Yogya 8.0 ms</span>
+    (<span class="syn-str">"DC_Surabaya"</span>, <span class="syn-str">"DC_Jakarta"</span>):    <span class="syn-num">0.015</span>,  <span class="syn-com"># Surabaya - Jakarta 15.0 ms</span>
+    (<span class="syn-str">"DC_Jakarta"</span>,  <span class="syn-str">"DC_Yogyakarta"</span>): <span class="syn-num">0.010</span>,  <span class="syn-com"># Jakarta - Yogya 10.0 ms</span>
+}
+
+<span class="syn-com"># Simulasi Waktu Transfer File I/O + Latensi Jaringan Fisik di Setiap VM</span>
+<span class="syn-kw">for</span> task <span class="syn-kw">in</span> tasks:
+    lat = NETWORK_LATENCY.get((<span class="syn-str">"DC_Surabaya"</span>, vm.dc_name), <span class="syn-num">0.01</span>)
+    <span class="syn-com"># Waktu Transfer I/O = (Ukuran File Input / Bandwidth) + Latensi Ping</span>
+    tx_time = (task.input_size_mb / (vm.bw_mbps / <span class="syn-num">8.0</span>)) + lat
+    start_time = max(current_clock, tx_time)
+    exec_time = vm.execution_time(task.length_mi)
+    finish_time = start_time + exec_time
+    current_clock = finish_time</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 4: Matematika AOA yang Baru -->
+      <div class="slide" data-3d-mode="aoa-explore">
+        <span class="slide-tag">BAGIAN 03 &bull; MATEMATIKA AOA YANG BARU</span>
+        <h2 style="font-size:20px; margin-bottom:4px;">Mengapa Memilih AOA? Keunggulan 4 Operator Aritmatika</h2>
+        <p style="font-size:12px; margin-bottom:6px;">AOA (Abualigah et al., 2021) mengoptimalkan alokasi dengan dua fase matematis yang adaptif:</p>
+
+        <div class="code-viewer-container">
+          <div class="code-header-bar">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#10b981; font-weight:700;">
+              🐍 program_aoa_vs_random.py &bull; AOAScheduler.optimize()
+            </span>
+            <button class="btn-sm" onclick="openFullCodeModal()" style="background:#1e293b; color:#38bdf8; border-color:#334155; padding:2px 8px; font-size:9px;">
+              📄 Buka Kode Utuh
+            </button>
+          </div>
+          <div class="code-scroll-area" style="height: 240px; max-height: 250px;">
+            <pre><code><span class="syn-com"># 1. Math Optimizer Accelerated (MOA): Penentu transisi Eksplorasi -&gt; Eksploitasi</span>
+moa = <span class="syn-num">0.2</span> + t * ((<span class="syn-num">0.9</span> - <span class="syn-num">0.2</span>) / self.max_iter)
+
+<span class="syn-com"># 2. Math Optimizer Probability (MOP): Koefisien presisi penyesuaian posisi</span>
+mop = <span class="syn-num">1.0</span> - (math.pow(t, <span class="syn-num">1.0</span> / self.alpha) / math.pow(self.max_iter, <span class="syn-num">1.0</span> / self.alpha))
+
+<span class="syn-kw">for</span> i <span class="syn-kw">in</span> range(self.pop_size):
+    new_ind = list(population[i])
+    <span class="syn-kw">for</span> j <span class="syn-kw">in</span> range(self.num_tasks):
+        r1, r2, r3 = self.rnd.random(), self.rnd.random(), self.rnd.random()
+        perturb = (ub - lb) * self.mu_rate * (self.rnd.random() - <span class="syn-num">0.5</span>) * <span class="syn-num">2.0</span>
+
+        <span class="syn-kw">if</span> r1 &gt; moa:
+            <span class="syn-com"># FASE EKSPLORASI LUAS: Operator Pembagian (/) dan Perkalian (*)</span>
+            val = best_schedule[j] / (mop + <span class="syn-num">1e-5</span>) * (<span class="syn-num">1.0</span> + perturb * <span class="syn-num">0.1</span>) <span class="syn-kw">if</span> r2 &lt; <span class="syn-num">0.5</span>                   <span class="syn-kw">else</span> best_schedule[j] * mop * (<span class="syn-num">1.0</span> + perturb * <span class="syn-num">0.1</span>)
+        <span class="syn-kw">else</span>:
+            <span class="syn-com"># FASE EKSPLOITASI INTENSIF: Operator Pengurangan (-) dan Penambahan (+)</span>
+            val = best_schedule[j] - mop * perturb <span class="syn-kw">if</span> r3 &lt; <span class="syn-num">0.5</span>                   <span class="syn-kw">else</span> best_schedule[j] + mop * perturb
+
+        <span class="syn-com"># Continuous-to-Discrete Mapping: Bulatkan ke Indeks VM valid [0..9]</span>
+        new_ind[j] = max(<span class="syn-num">0</span>, min(<span class="syn-num">9</span>, int(round(val))))
+
+    <span class="syn-com"># Update Best Solution bila Makespan jadwal baru lebih singkat</span>
+    res = evaluate_schedule(new_ind, self.cloudlets, self.vms)
+    <span class="syn-kw">if</span> res.makespan &lt; best_fitness:
+        best_fitness = res.makespan
+        best_schedule = list(new_ind)</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 5: Evaluator Metrik & Dispatcher -->
+      <div class="slide" data-3d-mode="topology">
+        <span class="slide-tag">BAGIAN 04 &bull; DEPLOYMENT REAL-WORLD</span>
+        <h2 style="font-size:20px; margin-bottom:4px;">Bagaimana Program AOA Diterapkan &amp; Dievaluasi?</h2>
+        <p style="font-size:12px; margin-bottom:6px;">Di lingkungan produksi nyata, AOA bekerja di layer Cloud Controller Dispatcher untuk mengevaluasi fitness jadwal:</p>
+
+        <div class="code-viewer-container">
+          <div class="code-header-bar">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#38bdf8; font-weight:700;">
+              🐍 program_aoa_vs_random.py &bull; evaluate_schedule()
+            </span>
+            <button class="btn-sm" onclick="openFullCodeModal()" style="background:#1e293b; color:#38bdf8; border-color:#334155; padding:2px 8px; font-size:9px;">
+              📄 Buka Kode Utuh
+            </button>
+          </div>
+          <div class="code-scroll-area" style="max-height: 155px;">
+            <pre><code><span class="syn-kw">def</span> <span class="syn-fn">evaluate_schedule</span>(schedule: List[<span class="syn-kw">int</span>], cloudlets: List[Cloudlet], vms: List[VM]) -&gt; EvalResult:
+    <span class="syn-com"># 1. Kelompokkan tugas ke VM masing-masing sesuai indeks jadwal</span>
+    vm_tasks = {vm.id: [] <span class="syn-kw">for</span> vm <span class="syn-kw">in</span> vms}
+    <span class="syn-kw">for</span> task_idx, vm_id <span class="syn-kw">in</span> enumerate(schedule):
+        vm_tasks[vm_id].append(cloudlets[task_idx])
+
+    <span class="syn-com"># 2. Makespan = Waktu penyelesaian VM paling lambat (T_max)</span>
+    makespan = max(vm_finish_times.values())
+    throughput = len(cloudlets) / makespan  <span class="syn-com"># Tugas selesai per detik</span>
+    
+    <span class="syn-com"># 3. Load Balancing Index (LBI) = (Beban Maks - Beban Min) / Rata-rata Beban</span>
+    avg_busy = sum(vm_busy_times.values()) / len(vms)
+    lbi = (max(vm_busy_times.values()) - min(vm_busy_times.values())) / avg_busy
+    
+    <span class="syn-com"># 4. Total Biaya Sewa ($) = Komputasi CPU ($0.03/s) + Sewa Server + Transfer I/O</span>
+    total_cost = total_proc_cost + (makespan * <span class="syn-num">0.03</span> * len(vms) * <span class="syn-num">0.1</span>) + total_tx_cost
+    <span class="syn-kw">return</span> EvalResult(makespan, throughput, avg_util, lbi, total_cost)</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 6: Loop Benchmark 10 Runs & Parser Dataset CSV -->
+      <div class="slide" data-3d-mode="aoa-exploit">
+        <span class="slide-tag">BAGIAN 05 &bull; VALIDASI RIIL 10 RUNS</span>
+        <h2 style="font-size:20px; margin-bottom:4px;">Metodologi Pengujian: Loop 10 Runs &amp; Dataset CSV</h2>
+        <p style="font-size:12px; margin-bottom:6px;">Program menguji berkas CSV nyata (100 s.d. 500 tugas) dengan 10 kali pengulangan independen untuk keabsahan statistik:</p>
+
+        <div class="code-viewer-container">
+          <div class="code-header-bar">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#fbbf24; font-weight:700;">
+              🐍 program_aoa_vs_random.py &bull; load_dataset_csv() &amp; main()
+            </span>
+            <button class="btn-sm" onclick="openFullCodeModal()" style="background:#1e293b; color:#38bdf8; border-color:#334155; padding:2px 8px; font-size:9px;">
+              📄 Buka Kode Utuh
+            </button>
+          </div>
+          <div class="code-scroll-area" style="max-height: 145px;">
+            <pre><code><span class="syn-kw">def</span> <span class="syn-fn">load_dataset_csv</span>(filepath: str) -&gt; List[Cloudlet]:
+    <span class="syn-kw">with</span> open(filepath, mode=<span class="syn-str">"r"</span>, encoding=<span class="syn-str">"utf-8"</span>) <span class="syn-kw">as</span> f:
+        reader = csv.DictReader(f)
+        <span class="syn-kw">return</span> [Cloudlet(int(r[<span class="syn-str">"CloudletId"</span>]), float(r[<span class="syn-str">"Length_MI"</span>]), ...) <span class="syn-kw">for</span> r <span class="syn-kw">in</span> reader]
+
+<span class="syn-com"># Loop 10 Independent Runs per Skenario (100 s.d. 500 Tugas)</span>
+<span class="syn-kw">for</span> seed <span class="syn-kw">in</span> range(<span class="syn-num">10</span>):
+    sched_rnd = schedule_random(cloudlets, vms, seed)
+    res_rnd = evaluate_schedule(sched_rnd, cloudlets, vms)
+    
+    aoa = AOAScheduler(cloudlets, vms, pop_size=<span class="syn-num">30</span>, max_iter=<span class="syn-num">50</span>, seed=seed)
+    sched_aoa, res_aoa = aoa.optimize()
+    <span class="syn-com"># AOA konsisten mengungguli Random di setiap seed tanpa anomali</span></code></pre>
+          </div>
+        </div>
+
+        <!-- Live Trigger Buttons -->
+        <div style="display:flex; gap:6px; margin-top:6px; flex-wrap:wrap;">
+          <button class="btn-nav" style="background:#fef2f2; border-color:#fca5a5; color:#991b1b; padding:4px 10px; font-size:11px;" onclick="runDemoAlgo('random')">
+            ⚠️ Uji Coba Random
+          </button>
+          <button class="btn-nav" style="background:#ecfdf5; border-color:#86efac; color:#166534; padding:4px 10px; font-size:11px;" onclick="runDemoAlgo('aoa')">
+            ✨ Uji Coba AOA
+          </button>
+          <button class="btn-nav" style="background:#f0f9ff; border-color:#7dd3fc; color:#075985; padding:4px 10px; font-size:11px;" onclick="openFullCodeModal()">
+            📄 Buka Source Code Utuh
+          </button>
+        </div>
+      </div>
+
+      <!-- Slide 7: Hasil Komparasi Benchmark Riil -->
+      <div class="slide" data-3d-mode="aoa-exploit">
+        <span class="slide-tag">BAGIAN 06 &bull; VALIDASI DUA LINGKUNGAN</span>
+        <h2 style="font-size:20px; margin-bottom:4px;">Hasil Ujicoba Empiris: Simulator CloudSim &amp; Real-World</h2>
+        <p style="font-size:12px; margin-bottom:6px;">Pengujian 10 independent runs per skenario membuktikan AOA unggul konsisten di kedua lingkungan:</p>
+
+        <h4 style="font-size: 11.5px; color: var(--coffee-950); margin-top: 6px; margin-bottom: 3px;">
+          🅰️ Hasil pada Simulator Standar Industri CloudSim 7.0.1 (Tugas 2, 4):
+        </h4>
+        <table>
+          <thead>
+            <tr>
+              <th>Tasks</th>
+              <th>Makespan Random</th>
+              <th>Makespan AOA</th>
+              <th>Perbaikan (%)</th>
+              <th>Throughput</th>
+              <th>Utilisasi</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>100</strong></td>
+              <td>464.47 ± 82.5 s</td>
+              <td class="text-sky">203.88 ± 28.0 s</td>
+              <td class="text-sky"><strong>-56.1%</strong></td>
+              <td class="text-sky">0.50 t/s (+127%)</td>
+              <td>49.51%</td>
+            </tr>
+            <tr>
+              <td><strong>200</strong></td>
+              <td>915.34 ± 103.4 s</td>
+              <td class="text-sky">626.68 ± 69.8 s</td>
+              <td class="text-sky"><strong>-31.5%</strong></td>
+              <td class="text-sky">0.32 t/s (+45%)</td>
+              <td>50.63%</td>
+            </tr>
+            <tr>
+              <td><strong>300</strong></td>
+              <td>1271.93 ± 121.1 s</td>
+              <td class="text-sky">908.69 ± 43.7 s</td>
+              <td class="text-sky"><strong>-28.6%</strong></td>
+              <td class="text-sky">0.33 t/s (+38%)</td>
+              <td>54.23%</td>
+            </tr>
+            <tr>
+              <td><strong>400</strong></td>
+              <td>1436.33 ± 135.9 s</td>
+              <td class="text-sky">1237.98 ± 47.0 s</td>
+              <td class="text-sky"><strong>-13.8%</strong></td>
+              <td class="text-sky">0.32 t/s (+14%)</td>
+              <td>54.32%</td>
+            </tr>
+            <tr>
+              <td><strong>500</strong></td>
+              <td>2000.79 ± 164.0 s</td>
+              <td class="text-sky">1645.40 ± 43.3 s</td>
+              <td class="text-sky"><strong>-17.8% (Hemat 355s)</strong></td>
+              <td class="text-sky">0.30 t/s (+20%)</td>
+              <td>56.10%</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h4 style="font-size: 11.5px; color: var(--coffee-950); margin-top: 8px; margin-bottom: 3px;">
+          🅱️ Hasil pada Real-World Dispatcher dengan Latensi Geografis (Tugas 5, 6):
+        </h4>
+        <table>
+          <thead>
+            <tr>
+              <th>Tasks</th>
+              <th>Makespan Random</th>
+              <th>Makespan AOA</th>
+              <th>Perbaikan (%)</th>
+              <th>LBI (Imbalance)</th>
+              <th>Penghematan Biaya ($)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>100</strong></td>
+              <td>444.29 s</td>
+              <td class="text-sky">206.99 s</td>
+              <td class="text-sky"><strong>-53.4%</strong></td>
+              <td>2.20 &rarr; <span class="text-sky">1.96</span></td>
+              <td class="text-sky">Hemat $34.49 (37.1%)</td>
+            </tr>
+            <tr>
+              <td><strong>300</strong></td>
+              <td>1177.30 s</td>
+              <td class="text-sky">931.37 s</td>
+              <td class="text-sky"><strong>-20.9%</strong></td>
+              <td>1.91 &rarr; <span class="text-sky">1.59</span></td>
+              <td class="text-sky">Hemat $23.66 (8.6%)</td>
+            </tr>
+            <tr>
+              <td><strong>500</strong></td>
+              <td>1917.29 s</td>
+              <td class="text-sky">1682.69 s</td>
+              <td class="text-sky"><strong>-12.2%</strong></td>
+              <td>1.74 &rarr; <span class="text-sky">1.59</span></td>
+              <td class="text-sky">Hemat $22.06 (4.7%)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Slide 8: Kesimpulan & Live Demo Ready -->
+      <div class="slide" data-3d-mode="topology">
+        <span class="slide-tag">BAGIAN 07 &bull; KESIMPULAN &amp; Q&amp;A</span>
+        <h2 style="font-size:20px; margin-bottom:4px;">Kesimpulan Akademik &amp; Sesi Tanya Jawab</h2>
+        
+        <ul style="padding-left: 18px; margin-top: 8px; font-size: 12.5px; line-height: 1.65;">
+          <li><strong>Random Scheduling Terbukti Tidak Layak:</strong> Menimbulkan antrean macet di VM kecil dan membiarkan VM besar menganggur.</li>
+          <li><strong>AOA yang Baru Terbukti Unggul Mutlak:</strong> Berhasil menyeimbangkan beban komputasi dan memangkas waktu proses hingga <strong>53.4%</strong>.</li>
+          <li><strong>Stabilitas Teruji:</strong> Standar deviasi yang rendah di 10 pengujian membuktikan AOA konvergen secara stabil dan bukan hasil kebetulan.</li>
+          <li><strong>Dua Implementasi Tersedia:</strong> Program Python Real-World (<code>program_aoa_vs_random.py</code>) dan Java CloudSim 7.0.1 (<code>AOASchedulingSim.java</code>) siap dieksekusi langsung.</li>
+        </ul>
+
+        <div class="card" style="margin-top: 10px; background: #e0f2fe; border-color: #bae6fd; padding:10px 12px;">
+          <h4 style="color: #0369a1; font-size:12px; margin-bottom:3px;">🖥️ Pilihan Perintah Menjalankan Program:</h4>
+          <p style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #0c4a6e; font-weight: 700; line-height: 1.6; margin:0;">
+            1. Python Real-World: <code>python program_aoa_vs_random.py</code><br>
+            2. Java CloudSim 7.0.1: <code>mvn compile exec:java</code><br>
+            3. Menu Interaktif: Klik ganda <code>run.bat</code>
+          </p>
+        </div>
+      </div>
+      </div> <!-- End .slides-wrapper -->
+
+      <!-- Bagian 2: Animasi 3D Three.js Stage (Kanan, Bebas Halangan 100%) -->
+      <div class="stage-wrapper">
+        
+        <!-- Top HUD on 3D Stage -->
+        <div class="stage-overlay-top">
+          <div class="stage-pill">
+            <span style="width: 8px; height: 8px; border-radius: 9999px; background: #0284c7; display: inline-block;"></span>
+            <span id="stageTitle">Topologi 3 Datacenter (Minggu 3)</span>
+          </div>
+
+          <div class="stage-controls">
+            <button class="btn-mode active" id="btnModeTopology" onclick="set3DMode('topology')">Topologi DC</button>
+            <button class="btn-mode" id="btnModeAOAExplore" onclick="set3DMode('aoa-explore')">AOA Eksplorasi (÷, ×)</button>
+            <button class="btn-mode" id="btnModeAOAExploit" onclick="set3DMode('aoa-exploit')">AOA Eksploitasi (-, +)</button>
+          </div>
+        </div>
+
+        <!-- Three.js Canvas Mount Point -->
+        <div id="threeCanvas"></div>
+
+        <!-- Bottom HUD on 3D Stage -->
+        <div class="stage-overlay-bottom">
+          <div class="telemetry-tag" id="stageTelemetry">
+            Surabaya (6.000 MIPS) &bull; Jakarta (3.600 MIPS) &bull; Yogyakarta (800 MIPS)
+          </div>
+          <div class="telemetry-tag" style="font-size: 10px;">
+            Orbit: Klik Kiri + Geser | Zoom: Scroll
+          </div>
+        </div>
+
+      </div> <!-- End .stage-wrapper -->
+
+    </div> <!-- End .top-row -->
+
+    <!-- Bagian 3: Controller Simulator Dashboard (Tersusun Rapi di Bawah Penjelasan & Animasi) -->
+    <div class="sim-dashboard" id="simConsolePanel">
+      
+      <!-- Header Row: Title, Mode Indicator & Live Simulation Clock -->
+      <div class="sim-header-row">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span class="pulse-dot" id="simStatusDot"></span>
+          <span style="font-weight: 800; font-size: 11px; color: var(--coffee-950); text-transform: uppercase; letter-spacing: 0.5px;">
+            🎮 Konsol Simulasi Penjadwalan: Random vs AOA
+          </span>
+          <span id="simActiveTag" class="badge-top" style="font-size: 9px; padding: 1px 7px;">AOA (Teroptimasi)</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; color: #0284c7;" id="liveClockDisplay">
+            ⏱️ Waktu Eksekusi: <span id="clockValue">0.00s</span>
+          </div>
+          <button class="btn-sm" onclick="triggerBenchmarkModal()" style="background: #f5f3ff; color: #6d28d9; border-color: #ddd6fe;">
+            ⚡ Buka Tabel Lengkap (100-500)
+          </button>
+        </div>
+      </div>
+
+      <!-- Main Cockpit Grid: 3 Columns (Controls, KPIs, Datacenter Meters) -->
+      <div class="sim-cockpit-grid">
+        
+        <!-- Col 1: Form Selector & Action Buttons -->
+        <div class="sim-ctrl-box">
+          <div class="sim-selectors-row">
+            <div class="ctrl-group">
+              <label>Pilih Algoritma</label>
+              <select id="algoSelect" onchange="onAlgoChange()">
+                <option value="aoa">✨ AOA (Algoritma Baru)</option>
+                <option value="random">⚠️ Random (Baseline Minggu 3)</option>
+              </select>
+            </div>
+            <div class="ctrl-group">
+              <label>Dataset Tugas</label>
+              <select id="datasetSelect" onchange="onDatasetChange()">
+                <option value="100">100 Cloudlets</option>
+                <option value="200">200 Cloudlets</option>
+                <option value="300">300 Cloudlets</option>
+                <option value="400">400 Cloudlets</option>
+                <option value="500">500 Cloudlets</option>
+              </select>
+            </div>
+            <div class="ctrl-group">
+              <label>Lingkungan</label>
+              <select id="envSelect" onchange="onEnvChange()">
+                <option value="real-world">🌐 Real-World (Python)</option>
+                <option value="cloudsim">☕ CloudSim 7.0.1 (Java)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="ctrl-actions">
+            <button class="btn-run" id="btnRunSim" onclick="triggerRunSimulation()">
+              <span>▶ Jalankan Alokasi</span>
+            </button>
+            <button class="btn-reset" onclick="reset3DSimulation()" title="Reset Antrean">
+              <span>↺ Reset</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Col 2: Live KPI Tiles -->
+        <div class="kpi-grid">
+          <div class="kpi-card" id="kpiMakespanCard">
+            <div class="kpi-label">Makespan Selesai</div>
+            <div class="kpi-val" id="kpiMakespan">206.99 s</div>
+            <div class="kpi-sub text-green" id="kpiMakespanDelta">-53.4% Lebih Cepat</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Ketimpangan (LBI)</div>
+            <div class="kpi-val" id="kpiLBI">1.96</div>
+            <div class="kpi-sub text-green" id="kpiLBIBadge">Seimbang</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Throughput Sistem</div>
+            <div class="kpi-val" id="kpiThroughput">0.48 t/s</div>
+            <div class="kpi-sub text-sky" id="kpiThroughputSub">+108% Cepat</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Estimasi Biaya</div>
+            <div class="kpi-val" id="kpiCost">$58.48</div>
+            <div class="kpi-sub text-green" id="kpiCostDelta">Hemat $34.49</div>
+          </div>
+        </div>
+
+        <!-- Col 3: 3 Datacenter Real-Time Processing Bars -->
+        <div class="dc-meters-box">
+          <div class="dc-meter-item">
+            <div class="dc-meter-info">
+              <span><strong>Surabaya</strong> (Host 0 &bull; 6.000 MIPS)</span>
+              <span id="dcSbyLoadText" class="text-sky font-mono">54.2% (Optimal Heavy)</span>
+            </div>
+            <div class="meter-track">
+              <div class="meter-fill fill-sky" id="dcSbyBar" style="width: 54.2%;"></div>
+            </div>
+          </div>
+
+          <div class="dc-meter-item">
+            <div class="dc-meter-info">
+              <span><strong>Jakarta</strong> (Host 1 &bull; 3.600 MIPS)</span>
+              <span id="dcJktLoadText" class="text-purple font-mono">52.8% (Optimal Med)</span>
+            </div>
+            <div class="meter-track">
+              <div class="meter-fill fill-purple" id="dcJktBar" style="width: 52.8%;"></div>
+            </div>
+          </div>
+
+          <div class="dc-meter-item">
+            <div class="dc-meter-info">
+              <span><strong>Yogyakarta</strong> (Host 2 &bull; 800 MIPS)</span>
+              <span id="dcYogLoadText" class="text-green font-mono">55.1% (Optimal Light)</span>
+            </div>
+            <div class="meter-track">
+              <div class="meter-fill fill-green" id="dcYogBar" style="width: 55.1%;"></div>
+            </div>
+          </div>
+        </div>
+
+      </div> <!-- End .sim-cockpit-grid -->
+
+      <!-- Bottom Status Banner -->
+      <div class="sim-status-banner" id="simStatusBanner">
+        <span id="simStatusIcon">✅</span>
+        <span id="simStatusText">
+          <strong>AOA Berhasil:</strong> Tugas terberat dialokasikan presisi ke Surabaya (6.000 MIPS). Beban 3 DC seimbang merata dan Makespan terpangkas 53.4%!
+        </span>
+      </div>
+
+    </div> <!-- End .sim-dashboard -->
+
+  </main> <!-- End .presentation-container -->
+
+  <!-- Bottom Navigation Footer Bar -->
+  <footer>
+    <div>
+      <button class="btn-nav" id="prevBtn" onclick="prevSlide()">&larr; Sebelumnya</button>
+      <button class="btn-nav" id="nextBtn" onclick="nextSlide()">Berikutnya &rarr;</button>
+    </div>
+
+    <div class="progress-bar-container">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <div class="slide-counter" id="counter">Slide 1 / 8</div>
+  </footer>
+
+  <!-- MODAL COMPLETE 100-500 CLOUDLETS BENCHMARK RESULTS -->
+  <div class="modal-overlay" id="benchmarkModal" onclick="closeBenchmarkModal(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--border); padding-bottom: 12px; margin-bottom: 16px;">
+        <div>
+          <span class="slide-tag" style="margin-bottom: 2px;">HASIL LENGKAP BENCHMARK &bull; TUGAS 4 &amp; 6</span>
+          <h3 style="font-size: 18px; font-weight: 800; color: var(--coffee-950);">
+            ⚡ Komparasi Empiris: Random Scheduling vs AOA yang Baru
+          </h3>
+        </div>
+        <button class="btn-sm" onclick="closeBenchmarkModal(null)" style="font-size: 14px; padding: 4px 10px;">✕ Tutup</button>
+      </div>
+
+      <div style="display: flex; gap: 8px; margin-bottom: 14px;">
+        <button class="btn-mode active" id="tabBtnRealWorld" onclick="switchModalTab('real-world')">🌐 Real-World Network (Python)</button>
+        <button class="btn-mode" id="tabBtnCloudSim" onclick="switchModalTab('cloudsim')">☕ Simulator CloudSim 7.0.1 (Java)</button>
+      </div>
+
+      <!-- Tab Content: Real World -->
+      <div id="tabContentRealWorld">
+        <p style="font-size: 12px; color: var(--coffee-700); margin-bottom: 8px;">
+          Hasil eksekusi riil dari berkas <code>program_aoa_vs_random.py</code> dengan 10 independent runs per skenario (memperhitungkan latensi fisik Sby-Jkt 15ms, Sby-Yog 8ms, bandwidth, dan tarif komputasi):
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th>Tasks</th>
+              <th>Makespan Random</th>
+              <th>Makespan AOA</th>
+              <th>Perbaikan (%)</th>
+              <th>LBI Random &rarr; AOA</th>
+              <th>Biaya Random</th>
+              <th>Biaya AOA</th>
+              <th>Penghematan ($)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>100</strong></td>
+              <td>444.29 s</td>
+              <td class="text-sky">206.99 s</td>
+              <td class="text-sky"><strong>-53.4%</strong></td>
+              <td>2.20 &rarr; <strong class="text-green">1.96</strong></td>
+              <td>$92.97</td>
+              <td class="text-green">$58.48</td>
+              <td class="text-green"><strong>Hemat $34.49 (37.1%)</strong></td>
+            </tr>
+            <tr>
+              <td><strong>200</strong></td>
+              <td>939.25 s</td>
+              <td class="text-sky">634.92 s</td>
+              <td class="text-sky"><strong>-32.4%</strong></td>
+              <td>2.09 &rarr; <strong class="text-green">1.64</strong></td>
+              <td>$198.09</td>
+              <td class="text-green">$167.48</td>
+              <td class="text-green"><strong>Hemat $30.61 (15.5%)</strong></td>
+            </tr>
+            <tr>
+              <td><strong>300</strong></td>
+              <td>1177.30 s</td>
+              <td class="text-sky">931.37 s</td>
+              <td class="text-sky"><strong>-20.9%</strong></td>
+              <td>1.91 &rarr; <strong class="text-green">1.59</strong></td>
+              <td>$274.11</td>
+              <td class="text-green">$250.45</td>
+              <td class="text-green"><strong>Hemat $23.66 (8.6%)</strong></td>
+            </tr>
+            <tr>
+              <td><strong>400</strong></td>
+              <td>1468.63 s</td>
+              <td class="text-sky">1202.80 s</td>
+              <td class="text-sky"><strong>-18.1%</strong></td>
+              <td>1.83 &rarr; <strong class="text-green">1.58</strong></td>
+              <td>$353.54</td>
+              <td class="text-green">$326.90</td>
+              <td class="text-green"><strong>Hemat $26.64 (7.5%)</strong></td>
+            </tr>
+            <tr>
+              <td><strong>500</strong></td>
+              <td>1917.29 s</td>
+              <td class="text-sky">1682.69 s</td>
+              <td class="text-sky"><strong>-12.2%</strong></td>
+              <td>1.74 &rarr; <strong class="text-green">1.59</strong></td>
+              <td>$467.26</td>
+              <td class="text-green">$445.20</td>
+              <td class="text-green"><strong>Hemat $22.06 (4.7%)</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Tab Content: CloudSim -->
+      <div id="tabContentCloudSim" style="display: none;">
+        <p style="font-size: 12px; color: var(--coffee-700); margin-bottom: 8px;">
+          Hasil eksekusi simulator resmi CloudSim 7.0.1 (Java 21) dari berkas <code>AOASchedulingSim.java</code> (Tugas 2, 3, 4):
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th>Tasks</th>
+              <th>Makespan Random</th>
+              <th>Makespan AOA</th>
+              <th>Perbaikan (%)</th>
+              <th>Throughput Random</th>
+              <th>Throughput AOA</th>
+              <th>Utilisasi Random &rarr; AOA</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>100</strong></td>
+              <td>464.47 ± 82.5 s</td>
+              <td class="text-sky">203.88 ± 28.0 s</td>
+              <td class="text-sky"><strong>-56.1%</strong></td>
+              <td>0.22 t/s</td>
+              <td class="text-green">0.50 t/s (+127%)</td>
+              <td>23.5% &rarr; <strong class="text-green">49.5%</strong></td>
+            </tr>
+            <tr>
+              <td><strong>200</strong></td>
+              <td>915.34 ± 103.4 s</td>
+              <td class="text-sky">626.68 ± 69.8 s</td>
+              <td class="text-sky"><strong>-31.5%</strong></td>
+              <td>0.22 t/s</td>
+              <td class="text-green">0.32 t/s (+45%)</td>
+              <td>35.4% &rarr; <strong class="text-green">50.6%</strong></td>
+            </tr>
+            <tr>
+              <td><strong>300</strong></td>
+              <td>1271.93 ± 121.1 s</td>
+              <td class="text-sky">908.69 ± 43.7 s</td>
+              <td class="text-sky"><strong>-28.6%</strong></td>
+              <td>0.24 t/s</td>
+              <td class="text-green">0.33 t/s (+38%)</td>
+              <td>38.9% &rarr; <strong class="text-green">54.2%</strong></td>
+            </tr>
+            <tr>
+              <td><strong>400</strong></td>
+              <td>1436.33 ± 135.9 s</td>
+              <td class="text-sky">1237.98 ± 47.0 s</td>
+              <td class="text-sky"><strong>-13.8%</strong></td>
+              <td>0.28 t/s</td>
+              <td class="text-green">0.32 t/s (+14%)</td>
+              <td>47.1% &rarr; <strong class="text-green">54.3%</strong></td>
+            </tr>
+            <tr>
+              <td><strong>500</strong></td>
+              <td>2000.79 ± 164.0 s</td>
+              <td class="text-sky">1645.40 ± 43.3 s</td>
+              <td class="text-sky"><strong>-17.8% (Hemat 355s)</strong></td>
+              <td>0.25 t/s</td>
+              <td class="text-green">0.30 t/s (+20%)</td>
+              <td>46.2% &rarr; <strong class="text-green">56.1%</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="margin-top: 16px; display: flex; justify-content: flex-end; gap: 8px;">
+        <button class="btn-run" onclick="triggerRunSimulation(); closeBenchmarkModal(null);">
+          <span>▶ Uji di Kanvas 3D Sekarang</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL FULL PYTHON SOURCE CODE VIEWER (349 LINES) -->
+  <div class="modal-overlay" id="fullCodeModal" onclick="closeFullCodeModal(event)">
+    <div class="modal-content" style="max-width: 900px; max-height: 85vh; display: flex; flex-direction: column;">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
+        <div>
+          <span class="slide-tag" style="margin-bottom: 2px;">KODE LENGKAP PROGRAM RIIL &bull; 349 BARIS</span>
+          <h3 style="font-size: 16px; margin: 0; color: var(--coffee-950);">
+            🐍 <code>program_aoa_vs_random.py</code>
+          </h3>
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <button class="btn-sm" id="copyCodeBtn" onclick="copyPythonCode()" style="background:#e0f2fe; color:#0369a1; border-color:#bae6fd;">
+            📋 Salin Seluruh Kode
+          </button>
+          <button class="modal-close-btn" onclick="closeFullCodeModal()">&times;</button>
+        </div>
+      </div>
+
+      <div style="flex: 1; overflow-y: auto; margin-top: 12px; background: #0b1120; border-radius: 8px; border: 1px solid #1e293b; padding: 12px 16px;">
+        <pre style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 11.5px; line-height: 1.5; color: #e2e8f0; white-space: pre-wrap;"><code id="fullPythonCodeBlock"><span style="color:#64748b;user-select:none;">  1 | </span>#!/usr/bin/env python3
+<span style="color:#64748b;user-select:none;">  2 | </span># -*- coding: utf-8 -*-
+<span style="color:#64748b;user-select:none;">  3 | </span>"""
+<span style="color:#64748b;user-select:none;">  4 | </span>================================================================================
+<span style="color:#64748b;user-select:none;">  5 | </span>PROGRAM PENJADWALAN KOMPUTASI AWAN REAL-WORLD:
+<span style="color:#64748b;user-select:none;">  6 | </span>BASELINE RANDOM SCHEDULING (MINGGU 3) VS. ARITHMETIC OPTIMIZATION ALGORITHM (AOA)
+<span style="color:#64748b;user-select:none;">  7 | </span>================================================================================
+<span style="color:#64748b;user-select:none;">  8 | </span>Mata Kuliah : Strategi Optimasi Komputasi Awan
+<span style="color:#64748b;user-select:none;">  9 | </span>Kelompok    : 1
+<span style="color:#64748b;user-select:none;"> 10 | </span>Dataset     : dataset_100cloudlet.csv s.d. dataset_500cloudlet.csv (Minggu 3)
+<span style="color:#64748b;user-select:none;"> 11 | </span>Infrastruktur: 3 Datacenter (Surabaya, Jakarta, Yogyakarta) | 10 VM Heterogen
+<span style="color:#64748b;user-select:none;"> 12 | </span>================================================================================
+<span style="color:#64748b;user-select:none;"> 13 | </span>"""
+<span style="color:#64748b;user-select:none;"> 14 | </span>
+<span style="color:#64748b;user-select:none;"> 15 | </span>import os
+<span style="color:#64748b;user-select:none;"> 16 | </span>import csv
+<span style="color:#64748b;user-select:none;"> 17 | </span>import math
+<span style="color:#64748b;user-select:none;"> 18 | </span>import time
+<span style="color:#64748b;user-select:none;"> 19 | </span>import random
+<span style="color:#64748b;user-select:none;"> 20 | </span>from dataclasses import dataclass
+<span style="color:#64748b;user-select:none;"> 21 | </span>from typing import List, Dict, Tuple, Optional
+<span style="color:#64748b;user-select:none;"> 22 | </span>
+<span style="color:#64748b;user-select:none;"> 23 | </span># ==============================================================================
+<span style="color:#64748b;user-select:none;"> 24 | </span># 1. SPESIFIKASI INFRASTRUKTUR DATACENTER &amp; 10 VM HETEROGEN (MINGGU 3)
+<span style="color:#64748b;user-select:none;"> 25 | </span># ==============================================================================
+<span style="color:#64748b;user-select:none;"> 26 | </span>
+<span style="color:#64748b;user-select:none;"> 27 | </span>@dataclass
+<span style="color:#64748b;user-select:none;"> 28 | </span>class VM:
+<span style="color:#64748b;user-select:none;"> 29 | </span>    id: int
+<span style="color:#64748b;user-select:none;"> 30 | </span>    dc_name: str
+<span style="color:#64748b;user-select:none;"> 31 | </span>    host_id: int
+<span style="color:#64748b;user-select:none;"> 32 | </span>    vm_type: str
+<span style="color:#64748b;user-select:none;"> 33 | </span>    mips: float
+<span style="color:#64748b;user-select:none;"> 34 | </span>    pes: int
+<span style="color:#64748b;user-select:none;"> 35 | </span>    ram_mb: int
+<span style="color:#64748b;user-select:none;"> 36 | </span>    bw_mbps: float
+<span style="color:#64748b;user-select:none;"> 37 | </span>
+<span style="color:#64748b;user-select:none;"> 38 | </span>    @property
+<span style="color:#64748b;user-select:none;"> 39 | </span>    def total_mips(self) -&gt; float:
+<span style="color:#64748b;user-select:none;"> 40 | </span>        return self.mips * self.pes
+<span style="color:#64748b;user-select:none;"> 41 | </span>
+<span style="color:#64748b;user-select:none;"> 42 | </span>    def execution_time(self, task_length_mi: float) -&gt; float:
+<span style="color:#64748b;user-select:none;"> 43 | </span>        return task_length_mi / self.total_mips
+<span style="color:#64748b;user-select:none;"> 44 | </span>
+<span style="color:#64748b;user-select:none;"> 45 | </span>
+<span style="color:#64748b;user-select:none;"> 46 | </span>def build_datacenter_vms() -&gt; List[VM]:
+<span style="color:#64748b;user-select:none;"> 47 | </span>    """Membangun 10 VM Heterogen terbagi di 3 Datacenter sesuai tugas Minggu 3"""
+<span style="color:#64748b;user-select:none;"> 48 | </span>    vms = []
+<span style="color:#64748b;user-select:none;"> 49 | </span>    # DC Surabaya (Host 0) - Total Komputasi Terbesar
+<span style="color:#64748b;user-select:none;"> 50 | </span>    vms.append(VM(0, "DC_Surabaya", 0, "Large",  3000.0, 2, 8192, 2500.0))  # 6.000 MIPS
+<span style="color:#64748b;user-select:none;"> 51 | </span>    vms.append(VM(1, "DC_Surabaya", 0, "Large",  3000.0, 2, 8192, 2500.0))  # 6.000 MIPS
+<span style="color:#64748b;user-select:none;"> 52 | </span>    vms.append(VM(2, "DC_Surabaya", 0, "Medium", 1800.0, 2, 4096, 1000.0))  # 3.600 MIPS
+<span style="color:#64748b;user-select:none;"> 53 | </span>
+<span style="color:#64748b;user-select:none;"> 54 | </span>    # DC Jakarta (Host 1) - Komputasi Menengah
+<span style="color:#64748b;user-select:none;"> 55 | </span>    vms.append(VM(3, "DC_Jakarta",  1, "Medium", 1800.0, 2, 4096, 1000.0))  # 3.600 MIPS
+<span style="color:#64748b;user-select:none;"> 56 | </span>    vms.append(VM(4, "DC_Jakarta",  1, "Medium", 1800.0, 2, 4096, 1000.0))  # 3.600 MIPS
+<span style="color:#64748b;user-select:none;"> 57 | </span>    vms.append(VM(5, "DC_Jakarta",  1, "Small",   800.0, 1, 2048,  500.0))  #   800 MIPS
+<span style="color:#64748b;user-select:none;"> 58 | </span>
+<span style="color:#64748b;user-select:none;"> 59 | </span>    # DC Yogyakarta (Host 2) - Komputasi Ringan
+<span style="color:#64748b;user-select:none;"> 60 | </span>    vms.append(VM(6, "DC_Yogyakarta", 2, "Small", 800.0, 1, 2048, 500.0))  #   800 MIPS
+<span style="color:#64748b;user-select:none;"> 61 | </span>    vms.append(VM(7, "DC_Yogyakarta", 2, "Small", 800.0, 1, 2048, 500.0))  #   800 MIPS
+<span style="color:#64748b;user-select:none;"> 62 | </span>    vms.append(VM(8, "DC_Yogyakarta", 2, "Small", 800.0, 1, 2048, 500.0))  #   800 MIPS
+<span style="color:#64748b;user-select:none;"> 63 | </span>    vms.append(VM(9, "DC_Yogyakarta", 2, "Small", 800.0, 1, 2048, 500.0))  #   800 MIPS
+<span style="color:#64748b;user-select:none;"> 64 | </span>    return vms
+<span style="color:#64748b;user-select:none;"> 65 | </span>
+<span style="color:#64748b;user-select:none;"> 66 | </span>
+<span style="color:#64748b;user-select:none;"> 67 | </span># Matriks Latensi Fisik Jaringan Antarkota Real-World (dalam detik)
+<span style="color:#64748b;user-select:none;"> 68 | </span>NETWORK_LATENCY = {
+<span style="color:#64748b;user-select:none;"> 69 | </span>    ("DC_Surabaya", "DC_Surabaya"):   0.001,  # Intra-DC 1.0 ms
+<span style="color:#64748b;user-select:none;"> 70 | </span>    ("DC_Surabaya", "DC_Yogyakarta"): 0.008,  # Surabaya - Yogya 8.0 ms
+<span style="color:#64748b;user-select:none;"> 71 | </span>    ("DC_Surabaya", "DC_Jakarta"):    0.015,  # Surabaya - Jakarta 15.0 ms
+<span style="color:#64748b;user-select:none;"> 72 | </span>    ("DC_Jakarta",  "DC_Yogyakarta"): 0.010,  # Jakarta - Yogya 10.0 ms
+<span style="color:#64748b;user-select:none;"> 73 | </span>}
+<span style="color:#64748b;user-select:none;"> 74 | </span>
+<span style="color:#64748b;user-select:none;"> 75 | </span>
+<span style="color:#64748b;user-select:none;"> 76 | </span># ==============================================================================
+<span style="color:#64748b;user-select:none;"> 77 | </span># 2. DATA MODEL &amp; CSV PARSER UNTUK DATASET MINGGU 3
+<span style="color:#64748b;user-select:none;"> 78 | </span># ==============================================================================
+<span style="color:#64748b;user-select:none;"> 79 | </span>
+<span style="color:#64748b;user-select:none;"> 80 | </span>@dataclass
+<span style="color:#64748b;user-select:none;"> 81 | </span>class Cloudlet:
+<span style="color:#64748b;user-select:none;"> 82 | </span>    id: int
+<span style="color:#64748b;user-select:none;"> 83 | </span>    length_mi: float
+<span style="color:#64748b;user-select:none;"> 84 | </span>    input_size_mb: float
+<span style="color:#64748b;user-select:none;"> 85 | </span>    output_size_mb: float
+<span style="color:#64748b;user-select:none;"> 86 | </span>    pes: int = 1
+<span style="color:#64748b;user-select:none;"> 87 | </span>
+<span style="color:#64748b;user-select:none;"> 88 | </span>
+<span style="color:#64748b;user-select:none;"> 89 | </span>def load_dataset_csv(filepath: str) -&gt; List[Cloudlet]:
+<span style="color:#64748b;user-select:none;"> 90 | </span>    """Membaca berkas CSV dataset tugas Minggu 3"""
+<span style="color:#64748b;user-select:none;"> 91 | </span>    cloudlets = []
+<span style="color:#64748b;user-select:none;"> 92 | </span>    # Cek alternatif path jika file berada di folder datasets/
+<span style="color:#64748b;user-select:none;"> 93 | </span>    if not os.path.exists(filepath):
+<span style="color:#64748b;user-select:none;"> 94 | </span>        alt = os.path.join("datasets", os.path.basename(filepath))
+<span style="color:#64748b;user-select:none;"> 95 | </span>        if os.path.exists(alt):
+<span style="color:#64748b;user-select:none;"> 96 | </span>            filepath = alt
+<span style="color:#64748b;user-select:none;"> 97 | </span>
+<span style="color:#64748b;user-select:none;"> 98 | </span>    with open(filepath, mode="r", encoding="utf-8") as f:
+<span style="color:#64748b;user-select:none;"> 99 | </span>        reader = csv.DictReader(f)
+<span style="color:#64748b;user-select:none;">100 | </span>        for row in reader:
+<span style="color:#64748b;user-select:none;">101 | </span>            cid = int(row["CloudletId"])
+<span style="color:#64748b;user-select:none;">102 | </span>            length = float(row["Length_MI"])
+<span style="color:#64748b;user-select:none;">103 | </span>            inp = float(row["InputSize_MB"])
+<span style="color:#64748b;user-select:none;">104 | </span>            out = float(row["OutputSize_MB"])
+<span style="color:#64748b;user-select:none;">105 | </span>            pes = int(row.get("PEs", 1))
+<span style="color:#64748b;user-select:none;">106 | </span>            cloudlets.append(Cloudlet(cid, length, inp, out, pes))
+<span style="color:#64748b;user-select:none;">107 | </span>    return cloudlets
+<span style="color:#64748b;user-select:none;">108 | </span>
+<span style="color:#64748b;user-select:none;">109 | </span>
+<span style="color:#64748b;user-select:none;">110 | </span># ==============================================================================
+<span style="color:#64748b;user-select:none;">111 | </span># 3. DISPATCHER &amp; EVALUATOR METRIK CLOUD
+<span style="color:#64748b;user-select:none;">112 | </span># ==============================================================================
+<span style="color:#64748b;user-select:none;">113 | </span>
+<span style="color:#64748b;user-select:none;">114 | </span>@dataclass
+<span style="color:#64748b;user-select:none;">115 | </span>class EvalResult:
+<span style="color:#64748b;user-select:none;">116 | </span>    makespan: float
+<span style="color:#64748b;user-select:none;">117 | </span>    throughput: float
+<span style="color:#64748b;user-select:none;">118 | </span>    avg_utilization: float
+<span style="color:#64748b;user-select:none;">119 | </span>    load_balancing_index: float  # LBI
+<span style="color:#64748b;user-select:none;">120 | </span>    total_cost: float
+<span style="color:#64748b;user-select:none;">121 | </span>
+<span style="color:#64748b;user-select:none;">122 | </span>
+<span style="color:#64748b;user-select:none;">123 | </span>def evaluate_schedule(schedule: List[int], cloudlets: List[Cloudlet], vms: List[VM]) -&gt; EvalResult:
+<span style="color:#64748b;user-select:none;">124 | </span>    num_vms = len(vms)
+<span style="color:#64748b;user-select:none;">125 | </span>    vm_dict = {vm.id: vm for vm in vms}
+<span style="color:#64748b;user-select:none;">126 | </span>
+<span style="color:#64748b;user-select:none;">127 | </span>    vm_tasks: Dict[int, List[Cloudlet]] = {vm.id: [] for vm in vms}
+<span style="color:#64748b;user-select:none;">128 | </span>    for task_idx, vm_id in enumerate(schedule):
+<span style="color:#64748b;user-select:none;">129 | </span>        vm_tasks[vm_id].append(cloudlets[task_idx])
+<span style="color:#64748b;user-select:none;">130 | </span>
+<span style="color:#64748b;user-select:none;">131 | </span>    vm_finish_times = {vm.id: 0.0 for vm in vms}
+<span style="color:#64748b;user-select:none;">132 | </span>    vm_busy_times = {vm.id: 0.0 for vm in vms}
+<span style="color:#64748b;user-select:none;">133 | </span>    total_proc_cost = 0.0
+<span style="color:#64748b;user-select:none;">134 | </span>    total_tx_cost = 0.0
+<span style="color:#64748b;user-select:none;">135 | </span>
+<span style="color:#64748b;user-select:none;">136 | </span>    for vm_id, tasks in vm_tasks.items():
+<span style="color:#64748b;user-select:none;">137 | </span>        vm = vm_dict[vm_id]
+<span style="color:#64748b;user-select:none;">138 | </span>        current_clock = 0.0
+<span style="color:#64748b;user-select:none;">139 | </span>
+<span style="color:#64748b;user-select:none;">140 | </span>        for task in tasks:
+<span style="color:#64748b;user-select:none;">141 | </span>            # Latensi antarkota + waktu transfer file
+<span style="color:#64748b;user-select:none;">142 | </span>            lat = NETWORK_LATENCY.get(("DC_Surabaya", vm.dc_name), 0.01)
+<span style="color:#64748b;user-select:none;">143 | </span>            tx_time = (task.input_size_mb / (vm.bw_mbps / 8.0)) + lat
+<span style="color:#64748b;user-select:none;">144 | </span>
+<span style="color:#64748b;user-select:none;">145 | </span>            start_time = max(current_clock, tx_time)
+<span style="color:#64748b;user-select:none;">146 | </span>            exec_time = vm.execution_time(task.length_mi)
+<span style="color:#64748b;user-select:none;">147 | </span>            finish_time = start_time + exec_time
+<span style="color:#64748b;user-select:none;">148 | </span>
+<span style="color:#64748b;user-select:none;">149 | </span>            current_clock = finish_time
+<span style="color:#64748b;user-select:none;">150 | </span>            vm_busy_times[vm_id] += exec_time
+<span style="color:#64748b;user-select:none;">151 | </span>
+<span style="color:#64748b;user-select:none;">152 | </span>            total_proc_cost += exec_time * 0.03
+<span style="color:#64748b;user-select:none;">153 | </span>            total_tx_cost += (task.input_size_mb + task.output_size_mb) * 0.001
+<span style="color:#64748b;user-select:none;">154 | </span>
+<span style="color:#64748b;user-select:none;">155 | </span>        vm_finish_times[vm_id] = current_clock
+<span style="color:#64748b;user-select:none;">156 | </span>
+<span style="color:#64748b;user-select:none;">157 | </span>    makespan = max(vm_finish_times.values()) if vm_finish_times else 0.0
+<span style="color:#64748b;user-select:none;">158 | </span>    throughput = len(cloudlets) / makespan if makespan &gt; 0 else 0.0
+<span style="color:#64748b;user-select:none;">159 | </span>    avg_util = (sum(vm_busy_times.values()) / (num_vms * makespan) * 100.0) if makespan &gt; 0 else 0.0
+<span style="color:#64748b;user-select:none;">160 | </span>
+<span style="color:#64748b;user-select:none;">161 | </span>    avg_busy = sum(vm_busy_times.values()) / num_vms if num_vms &gt; 0 else 1.0
+<span style="color:#64748b;user-select:none;">162 | </span>    max_busy = max(vm_busy_times.values()) if vm_busy_times else 0.0
+<span style="color:#64748b;user-select:none;">163 | </span>    min_busy = min(vm_busy_times.values()) if vm_busy_times else 0.0
+<span style="color:#64748b;user-select:none;">164 | </span>    lbi = (max_busy - min_busy) / avg_busy if avg_busy &gt; 0 else 0.0
+<span style="color:#64748b;user-select:none;">165 | </span>
+<span style="color:#64748b;user-select:none;">166 | </span>    total_cost = total_proc_cost + (makespan * 0.03 * num_vms * 0.1) + total_tx_cost
+<span style="color:#64748b;user-select:none;">167 | </span>
+<span style="color:#64748b;user-select:none;">168 | </span>    return EvalResult(makespan, throughput, avg_util, lbi, total_cost)
+<span style="color:#64748b;user-select:none;">169 | </span>
+<span style="color:#64748b;user-select:none;">170 | </span>
+<span style="color:#64748b;user-select:none;">171 | </span># ==============================================================================
+<span style="color:#64748b;user-select:none;">172 | </span># 4. ALGORITMA PENJADWALAN
+<span style="color:#64748b;user-select:none;">173 | </span># ==============================================================================
+<span style="color:#64748b;user-select:none;">174 | </span>
+<span style="color:#64748b;user-select:none;">175 | </span>def schedule_random(cloudlets: List[Cloudlet], vms: List[VM], seed: int) -&gt; List[int]:
+<span style="color:#64748b;user-select:none;">176 | </span>    """1. Random Scheduling (Baseline Minggu 3)"""
+<span style="color:#64748b;user-select:none;">177 | </span>    rnd = random.Random(seed)
+<span style="color:#64748b;user-select:none;">178 | </span>    return [rnd.randint(0, len(vms) - 1) for _ in cloudlets]
+<span style="color:#64748b;user-select:none;">179 | </span>
+<span style="color:#64748b;user-select:none;">180 | </span>
+<span style="color:#64748b;user-select:none;">181 | </span>class AOAScheduler:
+<span style="color:#64748b;user-select:none;">182 | </span>    """2. Arithmetic Optimization Algorithm (AOA) - Abualigah et al. (2021)"""
+<span style="color:#64748b;user-select:none;">183 | </span>    def __init__(self, cloudlets: List[Cloudlet], vms: List[VM], pop_size: int = 30, max_iter: int = 50, seed: int = 42):
+<span style="color:#64748b;user-select:none;">184 | </span>        self.cloudlets = cloudlets
+<span style="color:#64748b;user-select:none;">185 | </span>        self.vms = vms
+<span style="color:#64748b;user-select:none;">186 | </span>        self.num_tasks = len(cloudlets)
+<span style="color:#64748b;user-select:none;">187 | </span>        self.num_vms = len(vms)
+<span style="color:#64748b;user-select:none;">188 | </span>        self.pop_size = pop_size
+<span style="color:#64748b;user-select:none;">189 | </span>        self.max_iter = max_iter
+<span style="color:#64748b;user-select:none;">190 | </span>        self.alpha = 5.0
+<span style="color:#64748b;user-select:none;">191 | </span>        self.mu_rate = 0.499
+<span style="color:#64748b;user-select:none;">192 | </span>        self.rnd = random.Random(seed)
+<span style="color:#64748b;user-select:none;">193 | </span>
+<span style="color:#64748b;user-select:none;">194 | </span>    def optimize(self) -&gt; Tuple[List[int], EvalResult]:
+<span style="color:#64748b;user-select:none;">195 | </span>        lb, ub = 0, self.num_vms - 1
+<span style="color:#64748b;user-select:none;">196 | </span>
+<span style="color:#64748b;user-select:none;">197 | </span>        # 1. Inisialisasi Populasi Agen [pop_size x num_tasks]
+<span style="color:#64748b;user-select:none;">198 | </span>        population = [[self.rnd.randint(lb, ub) for _ in range(self.num_tasks)] for _ in range(self.pop_size)]
+<span style="color:#64748b;user-select:none;">199 | </span>
+<span style="color:#64748b;user-select:none;">200 | </span>        best_schedule = population[0]
+<span style="color:#64748b;user-select:none;">201 | </span>        best_result = evaluate_schedule(best_schedule, self.cloudlets, self.vms)
+<span style="color:#64748b;user-select:none;">202 | </span>        best_fitness = best_result.makespan
+<span style="color:#64748b;user-select:none;">203 | </span>
+<span style="color:#64748b;user-select:none;">204 | </span>        for ind in population:
+<span style="color:#64748b;user-select:none;">205 | </span>            res = evaluate_schedule(ind, self.cloudlets, self.vms)
+<span style="color:#64748b;user-select:none;">206 | </span>            if res.makespan &lt; best_fitness:
+<span style="color:#64748b;user-select:none;">207 | </span>                best_fitness = res.makespan
+<span style="color:#64748b;user-select:none;">208 | </span>                best_schedule = list(ind)
+<span style="color:#64748b;user-select:none;">209 | </span>                best_result = res
+<span style="color:#64748b;user-select:none;">210 | </span>
+<span style="color:#64748b;user-select:none;">211 | </span>        # 2. Siklus Iterasi AOA
+<span style="color:#64748b;user-select:none;">212 | </span>        for t in range(1, self.max_iter + 1):
+<span style="color:#64748b;user-select:none;">213 | </span>            # Math Optimizer Accelerated (MOA)
+<span style="color:#64748b;user-select:none;">214 | </span>            moa = 0.2 + t * ((0.9 - 0.2) / self.max_iter)
+<span style="color:#64748b;user-select:none;">215 | </span>
+<span style="color:#64748b;user-select:none;">216 | </span>            # Math Optimizer Probability (MOP)
+<span style="color:#64748b;user-select:none;">217 | </span>            mop = 1.0 - (math.pow(t, 1.0 / self.alpha) / math.pow(self.max_iter, 1.0 / self.alpha))
+<span style="color:#64748b;user-select:none;">218 | </span>
+<span style="color:#64748b;user-select:none;">219 | </span>            for i in range(self.pop_size):
+<span style="color:#64748b;user-select:none;">220 | </span>                new_ind = list(population[i])
+<span style="color:#64748b;user-select:none;">221 | </span>
+<span style="color:#64748b;user-select:none;">222 | </span>                for j in range(self.num_tasks):
+<span style="color:#64748b;user-select:none;">223 | </span>                    r1, r2, r3 = self.rnd.random(), self.rnd.random(), self.rnd.random()
+<span style="color:#64748b;user-select:none;">224 | </span>                    perturb = (ub - lb) * self.mu_rate * (self.rnd.random() - 0.5) * 2.0
+<span style="color:#64748b;user-select:none;">225 | </span>
+<span style="color:#64748b;user-select:none;">226 | </span>                    if r1 &gt; moa:
+<span style="color:#64748b;user-select:none;">227 | </span>                        # Fase Eksplorasi: Pembagian (/) dan Perkalian (*)
+<span style="color:#64748b;user-select:none;">228 | </span>                        if r2 &lt; 0.5:
+<span style="color:#64748b;user-select:none;">229 | </span>                            val = best_schedule[j] / (mop + 1e-5) * (1.0 + perturb * 0.1)
+<span style="color:#64748b;user-select:none;">230 | </span>                        else:
+<span style="color:#64748b;user-select:none;">231 | </span>                            val = best_schedule[j] * mop * (1.0 + perturb * 0.1)
+<span style="color:#64748b;user-select:none;">232 | </span>                    else:
+<span style="color:#64748b;user-select:none;">233 | </span>                        # Fase Eksploitasi: Pengurangan (-) dan Penambahan (+)
+<span style="color:#64748b;user-select:none;">234 | </span>                        if r3 &lt; 0.5:
+<span style="color:#64748b;user-select:none;">235 | </span>                            val = best_schedule[j] - mop * perturb
+<span style="color:#64748b;user-select:none;">236 | </span>                        else:
+<span style="color:#64748b;user-select:none;">237 | </span>                            val = best_schedule[j] + mop * perturb
+<span style="color:#64748b;user-select:none;">238 | </span>
+<span style="color:#64748b;user-select:none;">239 | </span>                    vm_idx = int(round(val))
+<span style="color:#64748b;user-select:none;">240 | </span>                    vm_idx = max(lb, min(ub, vm_idx))
+<span style="color:#64748b;user-select:none;">241 | </span>                    new_ind[j] = vm_idx
+<span style="color:#64748b;user-select:none;">242 | </span>
+<span style="color:#64748b;user-select:none;">243 | </span>                res = evaluate_schedule(new_ind, self.cloudlets, self.vms)
+<span style="color:#64748b;user-select:none;">244 | </span>                if res.makespan &lt; best_fitness:
+<span style="color:#64748b;user-select:none;">245 | </span>                    best_fitness = res.makespan
+<span style="color:#64748b;user-select:none;">246 | </span>                    best_schedule = list(new_ind)
+<span style="color:#64748b;user-select:none;">247 | </span>                    best_result = res
+<span style="color:#64748b;user-select:none;">248 | </span>
+<span style="color:#64748b;user-select:none;">249 | </span>                population[i] = new_ind
+<span style="color:#64748b;user-select:none;">250 | </span>
+<span style="color:#64748b;user-select:none;">251 | </span>        return best_schedule, best_result
+<span style="color:#64748b;user-select:none;">252 | </span>
+<span style="color:#64748b;user-select:none;">253 | </span>
+<span style="color:#64748b;user-select:none;">254 | </span># ==============================================================================
+<span style="color:#64748b;user-select:none;">255 | </span># 5. FUNGSI UTAMA &amp; EKSEKUSI DATASET MINGGU 3
+<span style="color:#64748b;user-select:none;">256 | </span># ==============================================================================
+<span style="color:#64748b;user-select:none;">257 | </span>
+<span style="color:#64748b;user-select:none;">258 | </span>def main():
+<span style="color:#64748b;user-select:none;">259 | </span>    print("=" * 80)
+<span style="color:#64748b;user-select:none;">260 | </span>    print("   PROGRAM PENJADWALAN CLOUD: RANDOM SCHEDULING VS AOA YANG BARU")
+<span style="color:#64748b;user-select:none;">261 | </span>    print("   Infrastruktur: 3 Datacenter (Surabaya, Jakarta, Yogya) | 10 VM Heterogen")
+<span style="color:#64748b;user-select:none;">262 | </span>    print("   Dataset: Menguji dataset_100cloudlet.csv s.d. dataset_500cloudlet.csv")
+<span style="color:#64748b;user-select:none;">263 | </span>    print("=" * 80)
+<span style="color:#64748b;user-select:none;">264 | </span>
+<span style="color:#64748b;user-select:none;">265 | </span>    vms = build_datacenter_vms()
+<span style="color:#64748b;user-select:none;">266 | </span>    scenarios = [100, 200, 300, 400, 500]
+<span style="color:#64748b;user-select:none;">267 | </span>    runs = 10
+<span style="color:#64748b;user-select:none;">268 | </span>
+<span style="color:#64748b;user-select:none;">269 | </span>    summary_rows = []
+<span style="color:#64748b;user-select:none;">270 | </span>
+<span style="color:#64748b;user-select:none;">271 | </span>    for n in scenarios:
+<span style="color:#64748b;user-select:none;">272 | </span>        csv_file = f"dataset_{n}cloudlet.csv"
+<span style="color:#64748b;user-select:none;">273 | </span>        if not os.path.exists(csv_file) and not os.path.exists(os.path.join("datasets", csv_file)):
+<span style="color:#64748b;user-select:none;">274 | </span>            print(f"[WARN] File {csv_file} tidak ditemukan. Melewati skenario {n}.")
+<span style="color:#64748b;user-select:none;">275 | </span>            continue
+<span style="color:#64748b;user-select:none;">276 | </span>
+<span style="color:#64748b;user-select:none;">277 | </span>        cloudlets = load_dataset_csv(csv_file)
+<span style="color:#64748b;user-select:none;">278 | </span>        print(f"\n&gt;&gt;&gt; Memproses Skenario: {n} Cloudlets ({len(cloudlets)} tugas terbaca dari {csv_file})")
+<span style="color:#64748b;user-select:none;">279 | </span>
+<span style="color:#64748b;user-select:none;">280 | </span>        # 1. Eksekusi Random Scheduling (10 runs)
+<span style="color:#64748b;user-select:none;">281 | </span>        rnd_makespans, rnd_throughputs, rnd_utils, rnd_lbis, rnd_costs = [], [], [], [], []
+<span style="color:#64748b;user-select:none;">282 | </span>        t0 = time.time()
+<span style="color:#64748b;user-select:none;">283 | </span>        for r in range(1, runs + 1):
+<span style="color:#64748b;user-select:none;">284 | </span>            sched = schedule_random(cloudlets, vms, seed=r)
+<span style="color:#64748b;user-select:none;">285 | </span>            res = evaluate_schedule(sched, cloudlets, vms)
+<span style="color:#64748b;user-select:none;">286 | </span>            rnd_makespans.append(res.makespan)
+<span style="color:#64748b;user-select:none;">287 | </span>            rnd_throughputs.append(res.throughput)
+<span style="color:#64748b;user-select:none;">288 | </span>            rnd_utils.append(res.avg_utilization)
+<span style="color:#64748b;user-select:none;">289 | </span>            rnd_lbis.append(res.load_balancing_index)
+<span style="color:#64748b;user-select:none;">290 | </span>            rnd_costs.append(res.total_cost)
+<span style="color:#64748b;user-select:none;">291 | </span>        dur_rnd = time.time() - t0
+<span style="color:#64748b;user-select:none;">292 | </span>        print(f"    [RANDOM] 10 Runs selesai dalam {dur_rnd:.2f}s | Avg Makespan: {sum(rnd_makespans)/runs:.2f}s | Avg LBI: {sum(rnd_lbis)/runs:.2f}")
+<span style="color:#64748b;user-select:none;">293 | </span>
+<span style="color:#64748b;user-select:none;">294 | </span>        # 2. Eksekusi AOA yang Baru (10 runs)
+<span style="color:#64748b;user-select:none;">295 | </span>        aoa_makespans, aoa_throughputs, aoa_utils, aoa_lbis, aoa_costs = [], [], [], [], []
+<span style="color:#64748b;user-select:none;">296 | </span>        t0 = time.time()
+<span style="color:#64748b;user-select:none;">297 | </span>        for r in range(1, runs + 1):
+<span style="color:#64748b;user-select:none;">298 | </span>            aoa = AOAScheduler(cloudlets, vms, pop_size=30, max_iter=50, seed=r)
+<span style="color:#64748b;user-select:none;">299 | </span>            best_sched, res = aoa.optimize()
+<span style="color:#64748b;user-select:none;">300 | </span>            aoa_makespans.append(res.makespan)
+<span style="color:#64748b;user-select:none;">301 | </span>            aoa_throughputs.append(res.throughput)
+<span style="color:#64748b;user-select:none;">302 | </span>            aoa_utils.append(res.avg_utilization)
+<span style="color:#64748b;user-select:none;">303 | </span>            aoa_lbis.append(res.load_balancing_index)
+<span style="color:#64748b;user-select:none;">304 | </span>            aoa_costs.append(res.total_cost)
+<span style="color:#64748b;user-select:none;">305 | </span>        dur_aoa = time.time() - t0
+<span style="color:#64748b;user-select:none;">306 | </span>        print(f"    [AOA]    10 Runs selesai dalam {dur_aoa:.2f}s | Avg Makespan: {sum(aoa_makespans)/runs:.2f}s | Avg LBI: {sum(aoa_lbis)/runs:.2f}")
+<span style="color:#64748b;user-select:none;">307 | </span>
+<span style="color:#64748b;user-select:none;">308 | </span>        # Hitung Persentase Perbaikan
+<span style="color:#64748b;user-select:none;">309 | </span>        mean_rnd_ms = sum(rnd_makespans) / runs
+<span style="color:#64748b;user-select:none;">310 | </span>        mean_aoa_ms = sum(aoa_makespans) / runs
+<span style="color:#64748b;user-select:none;">311 | </span>        impr_ms = ((mean_rnd_ms - mean_aoa_ms) / mean_rnd_ms) * 100.0
+<span style="color:#64748b;user-select:none;">312 | </span>
+<span style="color:#64748b;user-select:none;">313 | </span>        summary_rows.append({
+<span style="color:#64748b;user-select:none;">314 | </span>            "Skenario": n,
+<span style="color:#64748b;user-select:none;">315 | </span>            "Rnd_Makespan": f"{mean_rnd_ms:.2f}s",
+<span style="color:#64748b;user-select:none;">316 | </span>            "AOA_Makespan": f"{mean_aoa_ms:.2f}s",
+<span style="color:#64748b;user-select:none;">317 | </span>            "Peningkatan_Makespan": f"-{impr_ms:.1f}%",
+<span style="color:#64748b;user-select:none;">318 | </span>            "Rnd_Throughput": f"{sum(rnd_throughputs)/runs:.2f} t/s",
+<span style="color:#64748b;user-select:none;">319 | </span>            "AOA_Throughput": f"{sum(aoa_throughputs)/runs:.2f} t/s",
+<span style="color:#64748b;user-select:none;">320 | </span>            "Rnd_LBI": f"{sum(rnd_lbis)/runs:.2f}",
+<span style="color:#64748b;user-select:none;">321 | </span>            "AOA_LBI": f"{sum(aoa_lbis)/runs:.2f}",
+<span style="color:#64748b;user-select:none;">322 | </span>            "Rnd_Cost": f"${sum(rnd_costs)/runs:.2f}",
+<span style="color:#64748b;user-select:none;">323 | </span>            "AOA_Cost": f"${sum(aoa_costs)/runs:.2f}",
+<span style="color:#64748b;user-select:none;">324 | </span>        })
+<span style="color:#64748b;user-select:none;">325 | </span>
+<span style="color:#64748b;user-select:none;">326 | </span>    # Cetak Tabel Perbandingan Akhir
+<span style="color:#64748b;user-select:none;">327 | </span>    print("\n" + "=" * 90)
+<span style="color:#64748b;user-select:none;">328 | </span>    print("                    TABEL KOMPARASI AKHIR HASIL EKSEKUSI DATASET")
+<span style="color:#64748b;user-select:none;">329 | </span>    print("=" * 90)
+<span style="color:#64748b;user-select:none;">330 | </span>    header = f"{'Tasks':&lt;8} | {'Makespan Random':&lt;16} | {'Makespan AOA':&lt;16} | {'Perbaikan (%)':&lt;14} | {'LBI AOA':&lt;8} | {'Hemat Biaya'}"
+<span style="color:#64748b;user-select:none;">331 | </span>    print(header)
+<span style="color:#64748b;user-select:none;">332 | </span>    print("-" * 90)
+<span style="color:#64748b;user-select:none;">333 | </span>    for r in summary_rows:
+<span style="color:#64748b;user-select:none;">334 | </span>        print(f"{r['Skenario']:&lt;8} | {r['Rnd_Makespan']:&lt;16} | {r['AOA_Makespan']:&lt;16} | {r['Peningkatan_Makespan']:&lt;14} | {r['AOA_LBI']:&lt;8} | {r['AOA_Cost']}")
+<span style="color:#64748b;user-select:none;">335 | </span>    print("=" * 90)
+<span style="color:#64748b;user-select:none;">336 | </span>
+<span style="color:#64748b;user-select:none;">337 | </span>    # Simpan ke CSV
+<span style="color:#64748b;user-select:none;">338 | </span>    out_csv = "hasil_program_aoa_vs_random.csv"
+<span style="color:#64748b;user-select:none;">339 | </span>    with open(out_csv, mode="w", newline="", encoding="utf-8") as f:
+<span style="color:#64748b;user-select:none;">340 | </span>        writer = csv.DictWriter(f, fieldnames=list(summary_rows[0].keys()))
+<span style="color:#64748b;user-select:none;">341 | </span>        writer.writeheader()
+<span style="color:#64748b;user-select:none;">342 | </span>        writer.writerows(summary_rows)
+<span style="color:#64748b;user-select:none;">343 | </span>    print(f"\n[OK] Ringkasan komparasi berhasil disimpan ke berkas: {out_csv}")
+<span style="color:#64748b;user-select:none;">344 | </span>
+<span style="color:#64748b;user-select:none;">345 | </span>
+<span style="color:#64748b;user-select:none;">346 | </span>if __name__ == "__main__":
+<span style="color:#64748b;user-select:none;">347 | </span>    main()
+<span style="color:#64748b;user-select:none;">348 | </span>
+<span style="color:#64748b;user-select:none;">349 | </span></code></pre>
+      </div>
+
+      <div style="margin-top: 12px; display: flex; justify-content: space-between; align-items: center;">
+        <span style="font-size: 11px; color: var(--coffee-600); font-family: 'JetBrains Mono', monospace;">
+          Status: Teruji 100% Valid pada Dataset Minggu 3 (100 - 500 Cloudlets)
+        </span>
+        <button class="btn-run" onclick="closeFullCodeModal()">
+          <span>✓ Tutup Tampilan Kode</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modular JavaScript Architecture -->
+  <script src="js/data.js"></script>
+  <script src="js/scene3d.js"></script>
+  <script src="js/simulation.js"></script>
+  <script src="js/presentation.js"></script>
+</body>
+</html>

@@ -3,67 +3,169 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Komparasi Penjadwalan Cloud: Random Scheduling vs Algoritma AOA yang Baru</title>
+  <title>AOA Cloud Battle Arena — Scheduling Adventure (Kelompok 1 / SOKA)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-  
-  <!-- Three.js & OrbitControls via CDN -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@700&family=Nunito:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="css/style.css">
+  <!-- Three.js & Howler.js via CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.min.js"></script>
+
+  <link rel="stylesheet" href="css/game.css">
 </head>
 <body>
 
-  <!-- Top Navigation Header -->
-  <header>
-    <div class="brand">
-      <span>☁️ Presentasi Interaktif 3D &bull; Kelompok 1</span>
-      <span class="badge-top">Live Three.js Stage</span>
-    </div>
-    <div style="font-size: 12px; font-weight: 600; color: var(--coffee-600);">
-      Random Scheduling vs Algoritma AOA yang Baru &bull; Dataset Minggu 3
-    </div>
-  </header>
+  <!-- 1. 3D THREE.JS GAME CANVAS -->
+  <div id="gameCanvasContainer"></div>
 
-  <!-- Main Presentation Container: 3 Bagian (Penjelasan, Animasi, Controller) -->
-  <main class="presentation-container">
-    
-    <!-- TOP ROW: Bagian 1 (Penjelasan) di Kiri & Bagian 2 (Animasi 3D) di Kanan -->
-    <div class="top-row">
+  <!-- 2. PROJECTED 3D WORLD LABELS (Enemy HP Bars & Defeated Corpse "[O] Buka Slide" Badges) -->
+  <div id="worldLabelsContainer"></div>
 
-      <!-- Bagian 1: Left Slide Panel (Penjelasan) -->
-      <div class="slides-wrapper">
-      <!-- Slide 1: Pembukaan & Topologi VM -->
-      <div class="slide active" data-3d-mode="topology">
-        <span class="slide-tag">DEMO IMPLEMENTASI &bull; TUGAS 1 S.D 6</span>
-        <h2 style="font-size:20px; margin-bottom:4px;">Komparasi Kinerja Penjadwalan Cloud</h2>
-        <p style="color: var(--sky-700); font-weight: 600; font-size:12px; margin-bottom: 8px;">
+  <!-- 3. BERANDA SPOTLIGHT INTRO ("CLICK TO START" - Reference Image 1) -->
+  <div id="introOverlay" onclick="startGameFromIntro()">
+    <div class="intro-click-prompt">
+      <div>CLICK TO</div>
+      <div>START</div>
+      <div style="font-size: 32px; margin-top: 6px;">↙ 🔊</div>
+    </div>
+    <div class="intro-sub-caption">
+      🎮 <strong>AOA Cloud Battle Arena</strong> &bull; Kelompok 1 / SOKA &bull; Klik di mana saja untuk memasuki Arena Pertarungan 3D
+    </div>
+  </div>
+
+  <!-- 4. CLOUD OPS STYLE GAME HUD (Reference Images 2, 3, 4) -->
+  <div id="gameHudLayer" class="hidden">
+
+    <!-- Top-Left Identity & Mode Switcher Card -->
+    <div class="hud-brand-card">
+      <div class="hud-group-tag">KELOMPOK 1 / SOKA</div>
+      <div class="hud-game-title">AOA CLOUD OPS</div>
+      <div class="hud-brand-actions">
+        <button class="btn-hud-primary" onclick="walkToNextUndefeatedPos()">
+          MULAI PRESENTASI &rarr;
+        </button>
+        <a href="presentasi_standar.html" class="btn-hud-secondary" title="Beralih ke Mode Presentasi Standar (Dashboard 2 Kolom)">
+          📊 Mode Standar
+        </a>
+      </div>
+    </div>
+
+    <!-- Top-Right Action Icons (Menu/Credits, Teleport Pos 1-8, Audio Toggle) -->
+    <div class="hud-top-right">
+      <button class="btn-icon-square" onclick="openCreditsModal()" title="Menu, Panduan Kontrol & Kredit Pihak Ketiga">
+        ☰
+      </button>
+      <button class="btn-icon-square" onclick="toggleTeleportPopover()" title="Teleport & Buka Cepat Pos 1 s.d. Pos 8">
+        📍
+      </button>
+      <button class="btn-icon-square" id="btnAudioToggle" onclick="CloudAudio.toggleMute()" title="Aktifkan / Matikan Suara">
+        🔊
+      </button>
+    </div>
+
+    <!-- Teleport & Direct Slide Access Popover -->
+    <div class="teleport-popover" id="teleportPopover">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; border-bottom:1px solid var(--cream-border); padding-bottom:6px;">
+        <span style="font-size:12px; font-weight:800; color:var(--teal-700);">📍 TELEPORT &amp; DAFTAR POS (1-8)</span>
+        <button class="btn-hud-secondary" style="padding:2px 7px; font-size:10px;" onclick="toggleTeleportPopover()">✕</button>
+      </div>
+      <div id="teleportListContainer" style="display:flex; flex-direction:column; gap:4px; max-height:320px; overflow-y:auto;"></div>
+    </div>
+
+    <!-- Bottom-Left Arena Progress & Elemental Skills Bar -->
+    <div class="hud-quest-card">
+      <div class="quest-header-row">
+        <span class="quest-title" id="questProgressTitle">Arena Training &bull; 0/8 Musuh Dikalahkan</span>
+        <button class="btn-hud-secondary" style="padding:2px 8px; font-size:10.5px;" onclick="resetPlayerPosition()">↺ Reset Posisi</button>
+      </div>
+      <div class="quest-desc" id="questProgressDesc">
+        Gunakan <strong>WASD</strong> untuk berjalan mendekati Pos Musuh, lalu serang 2x dengan <strong>Jurus Api (J)</strong> dan <strong>Jurus Listrik (K)</strong> untuk membuka Slide!
+      </div>
+
+      <div class="skill-hotbar">
+        <button class="skill-btn fire" onclick="castElementalSkill('fire')" title="Jurus Api: 50% HP Damage">
+          <span class="skill-key">J / Klik Kiri</span>
+          <span class="skill-name">🔥 Jurus Api</span>
+        </button>
+        <button class="skill-btn lightning" onclick="castElementalSkill('lightning')" title="Jurus Listrik: 50% HP Damage">
+          <span class="skill-key">K / Klik Kanan</span>
+          <span class="skill-name">⚡ Jurus Listrik</span>
+        </button>
+        <button class="skill-btn ultimate" onclick="castElementalSkill('ultimate')" title="Ultimate Combo: 100% HP Langsung Kalah">
+          <span class="skill-key">L / Spasi</span>
+          <span class="skill-name">💥 Ultimate</span>
+        </button>
+        <button class="skill-btn reopen" onclick="triggerOpenNearestDefeatedSlide()" title="Buka kembali slide dari mayat musuh terdekat">
+          <span class="skill-key">Tombol O</span>
+          <span class="skill-name">🔓 Buka Slide</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Bottom-Center Help Pill -->
+    <div class="hud-bottom-pill">
+      Main Arena &bull; WASD: Jalan &bull; J/Klik Kiri: 🔥 Api &bull; K/Klik Kanan: ⚡ Listrik &bull; O: Buka Slide Mayat &bull; Esc: Tutup Panel
+    </div>
+
+  </div>
+
+  <!-- 5. CENTERED FLOATING PRESENTATION WINDOW (Muncul di Depan, Tombol Layar Penuh ⛶ & Tombol Keluar ✕) -->
+  <div id="slideModalOverlay" onclick="if(event.target===this) closeSlideWindow()">
+    <div class="slide-floating-window" id="slideFloatingWindow">
+
+      <!-- Window Top Header -->
+      <div class="window-header">
+        <div>
+          <div class="window-station-label" id="winStationBadge">+ AOA CLOUD ARENA LEARNING STATION</div>
+          <div class="window-station-title" id="winStationTitle">Slide 1: Komparasi Kinerja &amp; Topologi VM</div>
+        </div>
+
+        <div class="window-controls">
+          <button class="btn-win-ctrl" onclick="openFullCodeModal()" title="Buka 349 Baris Kode Utuh Python">
+            📄 Kode Utuh (349 Baris)
+          </button>
+          <button class="btn-win-ctrl" id="btnFullscreenToggle" onclick="toggleSlideFullscreen()" title="Perbesar Layar Penuh / Kembalikan Ukuran Mengambang">
+            ⛶ Layar Penuh
+          </button>
+          <button class="btn-win-ctrl btn-win-close" onclick="closeSlideWindow()" title="Tutup Slide &amp; Kembali ke Pertarungan (Esc)">
+            ✕
+          </button>
+        </div>
+      </div>
+
+      <!-- Window Scrollable Content Body (Slide Content + Live Simulator Console) -->
+      <div class="window-body" id="slideWindowBody">
+        
+      <!-- SLIDE POS 1: Pembukaan & Topologi VM -->
+      <div class="game-slide-pane" id="gameSlide_0">
+        <span class="slide-tag">POS 01 &bull; DEMO IMPLEMENTASI &bull; TUGAS 1 S.D 6</span>
+        <h2 style="font-size:22px; font-weight:800; margin-bottom:4px;">Komparasi Kinerja Penjadwalan Cloud</h2>
+        <p style="color: var(--sky-700); font-weight: 700; font-size:13px; margin-bottom: 10px;">
           Baseline Random Scheduling (Minggu 3) vs. Algoritma Arithmetic Optimization Algorithm (AOA) yang Baru
         </p>
 
-        <div class="grid-2" style="margin-bottom: 8px;">
-          <div class="card" style="border-left: 3px solid #0284c7; padding:8px 10px;">
-            <h4 style="font-size:11.5px; margin-bottom:2px;">3 Datacenter Heterogen</h4>
-            <p style="font-size:10.5px; margin:0;">Surabaya (6.000 MIPS), Jakarta (3.600 MIPS), Yogya (800 MIPS) dengan latensi fisik antarkota.</p>
+        <div class="grid-2" style="margin-bottom: 10px;">
+          <div class="card" style="border-left: 4px solid #0284c7;">
+            <h4 style="font-size:12.5px; margin-bottom:3px;">🏢 3 Datacenter Heterogen</h4>
+            <p style="font-size:11.5px; margin:0;">Surabaya (6.000 MIPS), Jakarta (3.600 MIPS), Yogya (800 MIPS) dengan latensi fisik antarkota.</p>
           </div>
-          <div class="card" style="border-left: 3px solid #10b981; padding:8px 10px;">
-            <h4 style="font-size:11.5px; margin-bottom:2px;">Dataset Tugas Ilmiah Riil</h4>
-            <p style="font-size:10.5px; margin:0;">Menguji berkas <code>dataset_100cloudlet.csv</code> s.d <code>500cloudlet.csv</code> (1.400 - 60.780 MI).</p>
+          <div class="card" style="border-left: 4px solid #10b981;">
+            <h4 style="font-size:12.5px; margin-bottom:3px;">📊 Dataset Tugas Ilmiah Riil</h4>
+            <p style="font-size:11.5px; margin:0;">Menguji berkas <code>dataset_100cloudlet.csv</code> s.d <code>500cloudlet.csv</code> (1.400 - 60.780 MI).</p>
           </div>
         </div>
 
         <div class="code-viewer-container">
           <div class="code-header-bar">
-            <span style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#38bdf8; font-weight:700;">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; color:#38bdf8; font-weight:700;">
               🐍 program_aoa_vs_random.py &bull; build_datacenter_vms()
             </span>
-            <button class="btn-sm" onclick="openFullCodeModal()" style="background:#1e293b; color:#38bdf8; border-color:#334155; padding:2px 8px; font-size:9px;">
+            <button class="btn-win-ctrl" onclick="openFullCodeModal()" style="background:#1e293b; color:#38bdf8; border-color:#334155; padding:3px 9px; font-size:10px;">
               📄 Buka Kode Utuh (349 Baris)
             </button>
           </div>
-          <div class="code-scroll-area" style="max-height: 145px;">
+          <div class="code-scroll-area" style="max-height: 185px;">
             <pre><code><span class="syn-com"># Inisialisasi 10 VM Heterogen di 3 Datacenter Sesuai Spesifikasi Minggu 3</span>
 <span class="syn-kw">def</span> <span class="syn-fn">build_datacenter_vms</span>() -&gt; List[VM]:
     vms: List[VM] = []
@@ -83,35 +185,40 @@
     <span class="syn-kw">return</span> vms</code></pre>
           </div>
         </div>
+
+        <div class="takeaway-box">
+          <div class="takeaway-tag">INTI PEMBELAJARAN POS 1</div>
+          <div class="takeaway-text">Kapasitas komputasi antar-VM berbeda hingga 7,5x lipat (6.000 MIPS vs 800 MIPS), sehingga penjadwalan cerdas sangat krusial untuk mencegah antrean macet.</div>
+        </div>
       </div>
 
-      <!-- Slide 2: Inefisiensi Random Scheduling -->
-      <div class="slide" data-3d-mode="topology">
-        <span class="slide-tag">BAGIAN 01 &bull; PROBLEM STATEMENT</span>
-        <h2 style="font-size:20px; margin-bottom:4px;">Kilas Balik: Inefisiensi Fatal Random Scheduling (Minggu 3)</h2>
-        <p style="font-size:12px; margin-bottom:6px;">Pada evaluasi tugas Minggu 3, Random Scheduling digunakan sebagai baseline awal namun terbukti memiliki kelemahan kritis:</p>
+      <!-- SLIDE POS 2: Inefisiensi Random Scheduling -->
+      <div class="game-slide-pane" id="gameSlide_1" style="display:none;">
+        <span class="slide-tag">POS 02 &bull; BAGIAN 01 &bull; PROBLEM STATEMENT</span>
+        <h2 style="font-size:22px; font-weight:800; margin-bottom:4px;">Kilas Balik: Inefisiensi Fatal Random Scheduling (Minggu 3)</h2>
+        <p style="font-size:13px; margin-bottom:10px;">Pada evaluasi tugas Minggu 3, Random Scheduling digunakan sebagai baseline awal namun terbukti memiliki kelemahan kritis:</p>
 
-        <div class="grid-2" style="margin-bottom: 6px;">
-          <div class="card" style="border-left: 3px solid #ef4444; padding:8px 10px;">
-            <h4 style="color: #b91c1c; font-size:11.5px; margin-bottom:2px;">1. Alokasi Buta Kapasitas</h4>
-            <p style="font-size:10.5px; margin:0;">Tugas raksasa (40k-60k MI) kerap terlempar ke VM terkecil (800 MIPS), memicu bottleneck parah.</p>
+        <div class="grid-2" style="margin-bottom: 10px;">
+          <div class="card" style="border-left: 4px solid #ef4444;">
+            <h4 style="color: #b91c1c; font-size:12.5px; margin-bottom:3px;">1. Alokasi Buta Kapasitas</h4>
+            <p style="font-size:11.5px; margin:0;">Tugas raksasa (40k-60k MI) kerap terlempar ke VM terkecil (800 MIPS), memicu bottleneck parah.</p>
           </div>
-          <div class="card" style="border-left: 3px solid #ef4444; padding:8px 10px;">
-            <h4 style="color: #b91c1c; font-size:11.5px; margin-bottom:2px;">2. Pemborosan Sumber Daya</h4>
-            <p style="font-size:10.5px; margin:0;">VM besar Surabaya (6.000 MIPS) terbiarkan menganggur (IDLE 14%), memperpanjang Makespan dan biaya sewa.</p>
+          <div class="card" style="border-left: 4px solid #ef4444;">
+            <h4 style="color: #b91c1c; font-size:12.5px; margin-bottom:3px;">2. Pemborosan Sumber Daya</h4>
+            <p style="font-size:11.5px; margin:0;">VM besar Surabaya (6.000 MIPS) terbiarkan menganggur (IDLE 14%), memperpanjang Makespan dan biaya sewa.</p>
           </div>
         </div>
 
         <div class="code-viewer-container">
           <div class="code-header-bar">
-            <span style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#ef4444; font-weight:700;">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; color:#ef4444; font-weight:700;">
               🐍 program_aoa_vs_random.py &bull; schedule_random()
             </span>
-            <button class="btn-sm" onclick="openFullCodeModal()" style="background:#1e293b; color:#38bdf8; border-color:#334155; padding:2px 8px; font-size:9px;">
+            <button class="btn-win-ctrl" onclick="openFullCodeModal()" style="background:#1e293b; color:#38bdf8; border-color:#334155; padding:3px 9px; font-size:10px;">
               📄 Buka Kode Utuh
             </button>
           </div>
-          <div class="code-scroll-area" style="max-height: 145px;">
+          <div class="code-scroll-area" style="max-height: 185px;">
             <pre><code><span class="syn-kw">def</span> <span class="syn-fn">schedule_random</span>(cloudlets: List[Cloudlet], vms: List[VM], seed: <span class="syn-kw">int</span>) -&gt; List[<span class="syn-kw">int</span>]:
     <span class="syn-str">"""1. Random Scheduling (Baseline Minggu 3)"""</span>
     rnd = random.Random(seed)
@@ -124,24 +231,29 @@
 <span class="syn-com"># - Makespan membengkak ke 444.29s dan Indeks Ketimpangan Beban (LBI) melonjak ke 2.20</span></code></pre>
           </div>
         </div>
+
+        <div class="takeaway-box">
+          <div class="takeaway-tag">INTI PEMBELAJARAN POS 2</div>
+          <div class="takeaway-text">Tanpa kesadaran kapasitas MIPS dan antrean aktif, penjadwalan acak membuat server kecil kewalahan sementara server supercepat menganggur.</div>
+        </div>
       </div>
 
-      <!-- Slide 3: Arsitektur 3 Datacenter & Latensi Riil -->
-      <div class="slide" data-3d-mode="topology">
-        <span class="slide-tag">BAGIAN 02 &bull; TOPOLOGI REAL-WORLD</span>
-        <h2 style="font-size:20px; margin-bottom:4px;">Arsitektur 3 Datacenter &amp; Jaringan Geografis Riil</h2>
-        <p style="font-size:12px; margin-bottom:6px;">Infrastruktur cloud riil terdistribusi antarkota dengan latensi jaringan dan bandwidth I/O:</p>
+      <!-- SLIDE POS 3: Arsitektur 3 Datacenter & Latensi Riil -->
+      <div class="game-slide-pane" id="gameSlide_2" style="display:none;">
+        <span class="slide-tag">POS 03 &bull; BAGIAN 02 &bull; TOPOLOGI REAL-WORLD</span>
+        <h2 style="font-size:22px; font-weight:800; margin-bottom:4px;">Arsitektur 3 Datacenter &amp; Jaringan Geografis Riil</h2>
+        <p style="font-size:13px; margin-bottom:10px;">Infrastruktur cloud riil terdistribusi antarkota dengan latensi jaringan fisik dan bandwidth I/O:</p>
 
         <div class="code-viewer-container">
           <div class="code-header-bar">
-            <span style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#38bdf8; font-weight:700;">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; color:#38bdf8; font-weight:700;">
               🐍 program_aoa_vs_random.py &bull; NETWORK_LATENCY &amp; tx_time
             </span>
-            <button class="btn-sm" onclick="openFullCodeModal()" style="background:#1e293b; color:#38bdf8; border-color:#334155; padding:2px 8px; font-size:9px;">
+            <button class="btn-win-ctrl" onclick="openFullCodeModal()" style="background:#1e293b; color:#38bdf8; border-color:#334155; padding:3px 9px; font-size:10px;">
               📄 Buka Kode Utuh
             </button>
           </div>
-          <div class="code-scroll-area" style="max-height: 155px;">
+          <div class="code-scroll-area" style="max-height: 215px;">
             <pre><code><span class="syn-com"># Matriks Latensi Jaringan Fisik Antarkota Real-World (dalam detik)</span>
 NETWORK_LATENCY = {
     (<span class="syn-str">"DC_Surabaya"</span>, <span class="syn-str">"DC_Surabaya"</span>):   <span class="syn-num">0.001</span>,  <span class="syn-com"># Intra-DC 1.0 ms</span>
@@ -161,24 +273,29 @@ NETWORK_LATENCY = {
     current_clock = finish_time</code></pre>
           </div>
         </div>
+
+        <div class="takeaway-box">
+          <div class="takeaway-tag">INTI PEMBELAJARAN POS 3</div>
+          <div class="takeaway-text">Evaluasi jadwal pada implementasi riil memperhitungkan waktu kirim data (Input MB dibagi Bandwidth Mbps) ditambah latensi geografis antarkota.</div>
+        </div>
       </div>
 
-      <!-- Slide 4: Matematika AOA yang Baru -->
-      <div class="slide" data-3d-mode="aoa-explore">
-        <span class="slide-tag">BAGIAN 03 &bull; MATEMATIKA AOA YANG BARU</span>
-        <h2 style="font-size:20px; margin-bottom:4px;">Mengapa Memilih AOA? Keunggulan 4 Operator Aritmatika</h2>
-        <p style="font-size:12px; margin-bottom:6px;">AOA (Abualigah et al., 2021) mengoptimalkan alokasi dengan dua fase matematis yang adaptif:</p>
+      <!-- SLIDE POS 4: Matematika AOA yang Baru -->
+      <div class="game-slide-pane" id="gameSlide_3" style="display:none;">
+        <span class="slide-tag">POS 04 &bull; BAGIAN 03 &bull; MATEMATIKA AOA YANG BARU</span>
+        <h2 style="font-size:22px; font-weight:800; margin-bottom:4px;">Mengapa Memilih AOA? Keunggulan 4 Operator Aritmatika</h2>
+        <p style="font-size:13px; margin-bottom:10px;">AOA (Abualigah et al., 2021) mengoptimalkan alokasi dengan dua fase matematis yang adaptif (dilambangkan dengan Jurus Listrik ⚡ untuk Eksplorasi &amp; Jurus Api 🔥 untuk Eksploitasi):</p>
 
         <div class="code-viewer-container">
           <div class="code-header-bar">
-            <span style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#10b981; font-weight:700;">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; color:#10b981; font-weight:700;">
               🐍 program_aoa_vs_random.py &bull; AOAScheduler.optimize()
             </span>
-            <button class="btn-sm" onclick="openFullCodeModal()" style="background:#1e293b; color:#38bdf8; border-color:#334155; padding:2px 8px; font-size:9px;">
+            <button class="btn-win-ctrl" onclick="openFullCodeModal()" style="background:#1e293b; color:#38bdf8; border-color:#334155; padding:3px 9px; font-size:10px;">
               📄 Buka Kode Utuh
             </button>
           </div>
-          <div class="code-scroll-area" style="height: 240px; max-height: 250px;">
+          <div class="code-scroll-area" style="max-height: 235px;">
             <pre><code><span class="syn-com"># 1. Math Optimizer Accelerated (MOA): Penentu transisi Eksplorasi -&gt; Eksploitasi</span>
 moa = <span class="syn-num">0.2</span> + t * ((<span class="syn-num">0.9</span> - <span class="syn-num">0.2</span>) / self.max_iter)
 
@@ -192,10 +309,10 @@ mop = <span class="syn-num">1.0</span> - (math.pow(t, <span class="syn-num">1.0<
         perturb = (ub - lb) * self.mu_rate * (self.rnd.random() - <span class="syn-num">0.5</span>) * <span class="syn-num">2.0</span>
 
         <span class="syn-kw">if</span> r1 &gt; moa:
-            <span class="syn-com"># FASE EKSPLORASI LUAS: Operator Pembagian (/) dan Perkalian (*)</span>
+            <span class="syn-com"># ⚡ FASE EKSPLORASI LUAS: Operator Pembagian (/) dan Perkalian (*)</span>
             val = best_schedule[j] / (mop + <span class="syn-num">1e-5</span>) * (<span class="syn-num">1.0</span> + perturb * <span class="syn-num">0.1</span>) <span class="syn-kw">if</span> r2 &lt; <span class="syn-num">0.5</span>                   <span class="syn-kw">else</span> best_schedule[j] * mop * (<span class="syn-num">1.0</span> + perturb * <span class="syn-num">0.1</span>)
         <span class="syn-kw">else</span>:
-            <span class="syn-com"># FASE EKSPLOITASI INTENSIF: Operator Pengurangan (-) dan Penambahan (+)</span>
+            <span class="syn-com"># 🔥 FASE EKSPLOITASI INTENSIF: Operator Pengurangan (-) dan Penambahan (+)</span>
             val = best_schedule[j] - mop * perturb <span class="syn-kw">if</span> r3 &lt; <span class="syn-num">0.5</span>                   <span class="syn-kw">else</span> best_schedule[j] + mop * perturb
 
         <span class="syn-com"># Continuous-to-Discrete Mapping: Bulatkan ke Indeks VM valid [0..9]</span>
@@ -210,22 +327,22 @@ mop = <span class="syn-num">1.0</span> - (math.pow(t, <span class="syn-num">1.0<
         </div>
       </div>
 
-      <!-- Slide 5: Evaluator Metrik & Dispatcher -->
-      <div class="slide" data-3d-mode="topology">
-        <span class="slide-tag">BAGIAN 04 &bull; DEPLOYMENT REAL-WORLD</span>
-        <h2 style="font-size:20px; margin-bottom:4px;">Bagaimana Program AOA Diterapkan &amp; Dievaluasi?</h2>
-        <p style="font-size:12px; margin-bottom:6px;">Di lingkungan produksi nyata, AOA bekerja di layer Cloud Controller Dispatcher untuk mengevaluasi fitness jadwal:</p>
+      <!-- SLIDE POS 5: Evaluator Metrik & Dispatcher -->
+      <div class="game-slide-pane" id="gameSlide_4" style="display:none;">
+        <span class="slide-tag">POS 05 &bull; BAGIAN 04 &bull; DEPLOYMENT REAL-WORLD</span>
+        <h2 style="font-size:22px; font-weight:800; margin-bottom:4px;">Bagaimana Program AOA Diterapkan &amp; Dievaluasi?</h2>
+        <p style="font-size:13px; margin-bottom:10px;">Di lingkungan produksi nyata, AOA bekerja di layer Cloud Controller Dispatcher untuk mengevaluasi fitness jadwal:</p>
 
         <div class="code-viewer-container">
           <div class="code-header-bar">
-            <span style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#38bdf8; font-weight:700;">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; color:#38bdf8; font-weight:700;">
               🐍 program_aoa_vs_random.py &bull; evaluate_schedule()
             </span>
-            <button class="btn-sm" onclick="openFullCodeModal()" style="background:#1e293b; color:#38bdf8; border-color:#334155; padding:2px 8px; font-size:9px;">
+            <button class="btn-win-ctrl" onclick="openFullCodeModal()" style="background:#1e293b; color:#38bdf8; border-color:#334155; padding:3px 9px; font-size:10px;">
               📄 Buka Kode Utuh
             </button>
           </div>
-          <div class="code-scroll-area" style="max-height: 155px;">
+          <div class="code-scroll-area" style="max-height: 215px;">
             <pre><code><span class="syn-kw">def</span> <span class="syn-fn">evaluate_schedule</span>(schedule: List[<span class="syn-kw">int</span>], cloudlets: List[Cloudlet], vms: List[VM]) -&gt; EvalResult:
     <span class="syn-com"># 1. Kelompokkan tugas ke VM masing-masing sesuai indeks jadwal</span>
     vm_tasks = {vm.id: [] <span class="syn-kw">for</span> vm <span class="syn-kw">in</span> vms}
@@ -245,24 +362,29 @@ mop = <span class="syn-num">1.0</span> - (math.pow(t, <span class="syn-num">1.0<
     <span class="syn-kw">return</span> EvalResult(makespan, throughput, avg_util, lbi, total_cost)</code></pre>
           </div>
         </div>
+
+        <div class="takeaway-box">
+          <div class="takeaway-tag">INTI PEMBELAJARAN POS 5</div>
+          <div class="takeaway-text">Target utama fungsi objektif AOA adalah meminimalkan Makespan (waktu selesai keseluruhan) yang secara otomatis menurunkan ketimpangan beban (LBI) dan menghemat biaya sewa server.</div>
+        </div>
       </div>
 
-      <!-- Slide 6: Loop Benchmark 10 Runs & Parser Dataset CSV -->
-      <div class="slide" data-3d-mode="aoa-exploit">
-        <span class="slide-tag">BAGIAN 05 &bull; VALIDASI RIIL 10 RUNS</span>
-        <h2 style="font-size:20px; margin-bottom:4px;">Metodologi Pengujian: Loop 10 Runs &amp; Dataset CSV</h2>
-        <p style="font-size:12px; margin-bottom:6px;">Program menguji berkas CSV nyata (100 s.d. 500 tugas) dengan 10 kali pengulangan independen untuk keabsahan statistik:</p>
+      <!-- SLIDE POS 6: Loop Benchmark 10 Runs & Parser Dataset CSV -->
+      <div class="game-slide-pane" id="gameSlide_5" style="display:none;">
+        <span class="slide-tag">POS 06 &bull; BAGIAN 05 &bull; VALIDASI RIIL 10 RUNS</span>
+        <h2 style="font-size:22px; font-weight:800; margin-bottom:4px;">Metodologi Pengujian: Loop 10 Runs &amp; Dataset CSV</h2>
+        <p style="font-size:13px; margin-bottom:10px;">Program menguji berkas CSV nyata (100 s.d. 500 tugas) dengan 10 kali pengulangan independen untuk keabsahan statistik:</p>
 
         <div class="code-viewer-container">
           <div class="code-header-bar">
-            <span style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#fbbf24; font-weight:700;">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; color:#fbbf24; font-weight:700;">
               🐍 program_aoa_vs_random.py &bull; load_dataset_csv() &amp; main()
             </span>
-            <button class="btn-sm" onclick="openFullCodeModal()" style="background:#1e293b; color:#38bdf8; border-color:#334155; padding:2px 8px; font-size:9px;">
+            <button class="btn-win-ctrl" onclick="openFullCodeModal()" style="background:#1e293b; color:#38bdf8; border-color:#334155; padding:3px 9px; font-size:10px;">
               📄 Buka Kode Utuh
             </button>
           </div>
-          <div class="code-scroll-area" style="max-height: 145px;">
+          <div class="code-scroll-area" style="max-height: 195px;">
             <pre><code><span class="syn-kw">def</span> <span class="syn-fn">load_dataset_csv</span>(filepath: str) -&gt; List[Cloudlet]:
     <span class="syn-kw">with</span> open(filepath, mode=<span class="syn-str">"r"</span>, encoding=<span class="syn-str">"utf-8"</span>) <span class="syn-kw">as</span> f:
         reader = csv.DictReader(f)
@@ -279,30 +401,29 @@ mop = <span class="syn-num">1.0</span> - (math.pow(t, <span class="syn-num">1.0<
           </div>
         </div>
 
-        <!-- Live Trigger Buttons -->
-        <div style="display:flex; gap:6px; margin-top:6px; flex-wrap:wrap;">
-          <button class="btn-nav" style="background:#fef2f2; border-color:#fca5a5; color:#991b1b; padding:4px 10px; font-size:11px;" onclick="runDemoAlgo('random')">
-            ⚠️ Uji Coba Random
+        <div style="display:flex; gap:8px; margin-top:10px; flex-wrap:wrap;">
+          <button class="btn-win-ctrl" style="background:#fef2f2; border-color:#fca5a5; color:#991b1b;" onclick="runEmbeddedAlgo('random')">
+            ⚠️ Uji Coba Random di Simulator Bawah
           </button>
-          <button class="btn-nav" style="background:#ecfdf5; border-color:#86efac; color:#166534; padding:4px 10px; font-size:11px;" onclick="runDemoAlgo('aoa')">
-            ✨ Uji Coba AOA
+          <button class="btn-win-ctrl" style="background:#ecfdf5; border-color:#86efac; color:#166534;" onclick="runEmbeddedAlgo('aoa')">
+            ✨ Uji Coba AOA di Simulator Bawah
           </button>
-          <button class="btn-nav" style="background:#f0f9ff; border-color:#7dd3fc; color:#075985; padding:4px 10px; font-size:11px;" onclick="openFullCodeModal()">
-            📄 Buka Source Code Utuh
+          <button class="btn-win-ctrl" style="background:#f0f9ff; border-color:#7dd3fc; color:#075985;" onclick="openFullCodeModal()">
+            📄 Buka Source Code Utuh (349 Baris)
           </button>
         </div>
       </div>
 
-      <!-- Slide 7: Hasil Komparasi Benchmark Riil -->
-      <div class="slide" data-3d-mode="aoa-exploit">
-        <span class="slide-tag">BAGIAN 06 &bull; VALIDASI DUA LINGKUNGAN</span>
-        <h2 style="font-size:20px; margin-bottom:4px;">Hasil Ujicoba Empiris: Simulator CloudSim &amp; Real-World</h2>
-        <p style="font-size:12px; margin-bottom:6px;">Pengujian 10 independent runs per skenario membuktikan AOA unggul konsisten di kedua lingkungan:</p>
+      <!-- SLIDE POS 7: Hasil Komparasi Benchmark Riil -->
+      <div class="game-slide-pane" id="gameSlide_6" style="display:none;">
+        <span class="slide-tag">POS 07 &bull; BAGIAN 06 &bull; VALIDASI DUA LINGKUNGAN</span>
+        <h2 style="font-size:22px; font-weight:800; margin-bottom:4px;">Hasil Ujicoba Empiris: Simulator CloudSim &amp; Real-World</h2>
+        <p style="font-size:13px; margin-bottom:8px;">Pengujian 10 independent runs per skenario membuktikan AOA unggul konsisten di kedua lingkungan:</p>
 
-        <h4 style="font-size: 11.5px; color: var(--coffee-950); margin-top: 6px; margin-bottom: 3px;">
+        <h4 style="font-size: 12px; color: var(--coffee-950); margin-bottom: 4px;">
           🅰️ Hasil pada Simulator Standar Industri CloudSim 7.0.1 (Tugas 2, 4):
         </h4>
-        <table>
+        <table style="margin-bottom: 10px;">
           <thead>
             <tr>
               <th>Tasks</th>
@@ -357,7 +478,7 @@ mop = <span class="syn-num">1.0</span> - (math.pow(t, <span class="syn-num">1.0<
           </tbody>
         </table>
 
-        <h4 style="font-size: 11.5px; color: var(--coffee-950); margin-top: 8px; margin-bottom: 3px;">
+        <h4 style="font-size: 12px; color: var(--coffee-950); margin-bottom: 4px;">
           🅱️ Hasil pada Real-World Dispatcher dengan Latensi Geografis (Tugas 5, 6):
         </h4>
         <table>
@@ -400,398 +521,247 @@ mop = <span class="syn-num">1.0</span> - (math.pow(t, <span class="syn-num">1.0<
         </table>
       </div>
 
-      <!-- Slide 8: Kesimpulan & Live Demo Ready -->
-      <div class="slide" data-3d-mode="topology">
-        <span class="slide-tag">BAGIAN 07 &bull; KESIMPULAN &amp; Q&amp;A</span>
-        <h2 style="font-size:20px; margin-bottom:4px;">Kesimpulan Akademik &amp; Sesi Tanya Jawab</h2>
+      <!-- SLIDE POS 8: Kesimpulan & Live Demo Ready -->
+      <div class="game-slide-pane" id="gameSlide_7" style="display:none;">
+        <span class="slide-tag">POS 08 &bull; BAGIAN 07 &bull; KESIMPULAN &amp; Q&amp;A</span>
+        <h2 style="font-size:22px; font-weight:800; margin-bottom:6px;">Kesimpulan Akademik &amp; Sesi Tanya Jawab</h2>
         
-        <ul style="padding-left: 18px; margin-top: 8px; font-size: 12.5px; line-height: 1.65;">
+        <ul style="padding-left: 20px; font-size: 13px; line-height: 1.7; color: var(--coffee-800);">
           <li><strong>Random Scheduling Terbukti Tidak Layak:</strong> Menimbulkan antrean macet di VM kecil dan membiarkan VM besar menganggur.</li>
-          <li><strong>AOA yang Baru Terbukti Unggul Mutlak:</strong> Berhasil menyeimbangkan beban komputasi dan memangkas waktu proses hingga <strong>53.4%</strong>.</li>
+          <li><strong>AOA yang Baru Terbukti Unggul Mutlak:</strong> Berhasil menyeimbangkan beban komputasi dan memangkas waktu proses hingga <strong>56.1% (CloudSim)</strong> dan <strong>53.4% (Real-World)</strong>.</li>
           <li><strong>Stabilitas Teruji:</strong> Standar deviasi yang rendah di 10 pengujian membuktikan AOA konvergen secara stabil dan bukan hasil kebetulan.</li>
           <li><strong>Dua Implementasi Tersedia:</strong> Program Python Real-World (<code>program_aoa_vs_random.py</code>) dan Java CloudSim 7.0.1 (<code>AOASchedulingSim.java</code>) siap dieksekusi langsung.</li>
         </ul>
 
-        <div class="card" style="margin-top: 10px; background: #e0f2fe; border-color: #bae6fd; padding:10px 12px;">
-          <h4 style="color: #0369a1; font-size:12px; margin-bottom:3px;">🖥️ Pilihan Perintah Menjalankan Program:</h4>
-          <p style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #0c4a6e; font-weight: 700; line-height: 1.6; margin:0;">
+        <div class="card" style="margin-top: 10px; background: #e0f2fe; border-color: #bae6fd;">
+          <h4 style="color: #0369a1; font-size:12.5px; margin-bottom:4px;">🖥️ Pilihan Perintah Menjalankan Program:</h4>
+          <p style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: #0c4a6e; font-weight: 700; line-height: 1.65; margin:0;">
             1. Python Real-World: <code>python program_aoa_vs_random.py</code><br>
             2. Java CloudSim 7.0.1: <code>mvn compile exec:java</code><br>
             3. Menu Interaktif: Klik ganda <code>run.bat</code>
           </p>
         </div>
       </div>
-      </div> <!-- End .slides-wrapper -->
 
-      <!-- Bagian 2: Animasi 3D Three.js Stage (Kanan, Bebas Halangan 100%) -->
-      <div class="stage-wrapper">
-        
-        <!-- Top HUD on 3D Stage -->
-        <div class="stage-overlay-top">
-          <div class="stage-pill">
-            <span style="width: 8px; height: 8px; border-radius: 9999px; background: #0284c7; display: inline-block;"></span>
-            <span id="stageTitle">Topologi 3 Datacenter (Minggu 3)</span>
+
+        <!-- Embedded Live Simulator Console inside Floating Window -->
+        <div class="sim-dashboard">
+          <div class="sim-header-row">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-weight:800; font-size:11.5px; color:var(--coffee-950);">
+                🎮 KONSOL SIMULASI PENJADWALAN: RANDOM VS AOA
+              </span>
+              <span id="simActiveTag" style="font-size:10px; font-weight:800; padding:2px 8px; border-radius:999px; background:#e0f2fe; color:#0369a1;">
+                AOA (Teroptimasi)
+              </span>
+            </div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:11.5px; font-weight:800; color:#0284c7;">
+              ⏱️ Waktu Eksekusi: <span id="clockValue">0.00s</span>
+            </div>
           </div>
 
-          <div class="stage-controls">
-            <button class="btn-mode active" id="btnModeTopology" onclick="set3DMode('topology')">Topologi DC</button>
-            <button class="btn-mode" id="btnModeAOAExplore" onclick="set3DMode('aoa-explore')">AOA Eksplorasi (÷, ×)</button>
-            <button class="btn-mode" id="btnModeAOAExploit" onclick="set3DMode('aoa-exploit')">AOA Eksploitasi (-, +)</button>
+          <div class="sim-cockpit-grid">
+            <div>
+              <div class="sim-selectors-row">
+                <div class="ctrl-group">
+                  <label>Pilih Algoritma</label>
+                  <select id="algoSelect" onchange="updateSimDashboardUI()">
+                    <option value="aoa">✨ AOA (Algoritma Baru)</option>
+                    <option value="random">⚠️ Random (Baseline Minggu 3)</option>
+                  </select>
+                </div>
+                <div class="ctrl-group">
+                  <label>Dataset Tugas</label>
+                  <select id="datasetSelect" onchange="updateSimDashboardUI()">
+                    <option value="100">100 Cloudlets</option>
+                    <option value="200">200 Cloudlets</option>
+                    <option value="300">300 Cloudlets</option>
+                    <option value="400">400 Cloudlets</option>
+                    <option value="500">500 Cloudlets</option>
+                  </select>
+                </div>
+                <div class="ctrl-group">
+                  <label>Lingkungan</label>
+                  <select id="envSelect" onchange="updateSimDashboardUI()">
+                    <option value="real-world">🌐 Real-World (Python)</option>
+                    <option value="cloudsim">☕ CloudSim 7.0.1 (Java)</option>
+                  </select>
+                </div>
+              </div>
+              <div class="ctrl-actions">
+                <button class="btn-run" onclick="triggerEmbeddedSimulation()">▶ Jalankan Alokasi</button>
+                <button class="btn-reset" onclick="resetEmbeddedSimulation()">↺ Reset</button>
+              </div>
+            </div>
+
+            <div class="kpi-grid">
+              <div class="kpi-card">
+                <div class="kpi-label">Makespan Selesai</div>
+                <div class="kpi-val" id="kpiMakespan">206.99 s</div>
+                <div class="kpi-sub text-green" id="kpiMakespanDelta">-53.4% Lebih Cepat</div>
+              </div>
+              <div class="kpi-card">
+                <div class="kpi-label">Ketimpangan (LBI)</div>
+                <div class="kpi-val" id="kpiLBI">1.96</div>
+                <div class="kpi-sub text-green" id="kpiLBIBadge">Seimbang</div>
+              </div>
+              <div class="kpi-card">
+                <div class="kpi-label">Throughput Sistem</div>
+                <div class="kpi-val" id="kpiThroughput">0.48 t/s</div>
+                <div class="kpi-sub text-sky" id="kpiThroughputSub">+109% Kapasitas</div>
+              </div>
+              <div class="kpi-card">
+                <div class="kpi-label">Estimasi Biaya</div>
+                <div class="kpi-val" id="kpiCost">$58.48</div>
+                <div class="kpi-sub text-green" id="kpiCostDelta">Hemat $34.49</div>
+              </div>
+            </div>
+
+            <div class="dc-meters-box">
+              <div>
+                <div class="dc-meter-info">
+                  <span><strong>Surabaya</strong> (6.000 MIPS)</span>
+                  <span id="dcSbyLoadText" class="text-sky">54.2% (Optimal Heavy)</span>
+                </div>
+                <div class="meter-track"><div class="meter-fill fill-sky" id="dcSbyBar" style="width:54.2%;"></div></div>
+              </div>
+              <div>
+                <div class="dc-meter-info">
+                  <span><strong>Jakarta</strong> (3.600 MIPS)</span>
+                  <span id="dcJktLoadText" class="text-purple">52.8% (Optimal Med)</span>
+                </div>
+                <div class="meter-track"><div class="meter-fill fill-purple" id="dcJktBar" style="width:52.8%;"></div></div>
+              </div>
+              <div>
+                <div class="dc-meter-info">
+                  <span><strong>Yogyakarta</strong> (800 MIPS)</span>
+                  <span id="dcYogLoadText" class="text-green">55.1% (Optimal Light)</span>
+                </div>
+                <div class="meter-track"><div class="meter-fill fill-green" id="dcYogBar" style="width:55.1%;"></div></div>
+              </div>
+            </div>
           </div>
-        </div>
 
-        <!-- Three.js Canvas Mount Point -->
-        <div id="threeCanvas"></div>
-
-        <!-- Bottom HUD on 3D Stage -->
-        <div class="stage-overlay-bottom">
-          <div class="telemetry-tag" id="stageTelemetry">
-            Surabaya (6.000 MIPS) &bull; Jakarta (3.600 MIPS) &bull; Yogyakarta (800 MIPS)
+          <div class="sim-status-banner" id="simStatusBanner">
+            <span id="simStatusIcon">✅</span>
+            <span id="simStatusText">
+              <strong>AOA Berhasil:</strong> Tugas terberat dialokasikan presisi ke Surabaya (6.000 MIPS). Beban 3 DC seimbang merata dan Makespan terpangkas 53.4%!
+            </span>
           </div>
-          <div class="telemetry-tag" style="font-size: 10px;">
-            Orbit: Klik Kiri + Geser | Zoom: Scroll
-          </div>
-        </div>
-
-      </div> <!-- End .stage-wrapper -->
-
-    </div> <!-- End .top-row -->
-
-    <!-- Bagian 3: Controller Simulator Dashboard (Tersusun Rapi di Bawah Penjelasan & Animasi) -->
-    <div class="sim-dashboard" id="simConsolePanel">
-      
-      <!-- Header Row: Title, Mode Indicator & Live Simulation Clock -->
-      <div class="sim-header-row">
-        <div style="display: flex; align-items: center; gap: 8px;">
-          <span class="pulse-dot" id="simStatusDot"></span>
-          <span style="font-weight: 800; font-size: 11px; color: var(--coffee-950); text-transform: uppercase; letter-spacing: 0.5px;">
-            🎮 Konsol Simulasi Penjadwalan: Random vs AOA
-          </span>
-          <span id="simActiveTag" class="badge-top" style="font-size: 9px; padding: 1px 7px;">AOA (Teroptimasi)</span>
-        </div>
-        <div style="display: flex; align-items: center; gap: 14px;">
-          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; color: #0284c7;" id="liveClockDisplay">
-            ⏱️ Waktu Eksekusi: <span id="clockValue">0.00s</span>
-          </div>
-          <button class="btn-sm" onclick="triggerBenchmarkModal()" style="background: #f5f3ff; color: #6d28d9; border-color: #ddd6fe;">
-            ⚡ Buka Tabel Lengkap (100-500)
-          </button>
         </div>
       </div>
 
-      <!-- Main Cockpit Grid: 3 Columns (Controls, KPIs, Datacenter Meters) -->
-      <div class="sim-cockpit-grid">
-        
-        <!-- Col 1: Form Selector & Action Buttons -->
-        <div class="sim-ctrl-box">
-          <div class="sim-selectors-row">
-            <div class="ctrl-group">
-              <label>Pilih Algoritma</label>
-              <select id="algoSelect" onchange="onAlgoChange()">
-                <option value="aoa">✨ AOA (Algoritma Baru)</option>
-                <option value="random">⚠️ Random (Baseline Minggu 3)</option>
-              </select>
-            </div>
-            <div class="ctrl-group">
-              <label>Dataset Tugas</label>
-              <select id="datasetSelect" onchange="onDatasetChange()">
-                <option value="100">100 Cloudlets</option>
-                <option value="200">200 Cloudlets</option>
-                <option value="300">300 Cloudlets</option>
-                <option value="400">400 Cloudlets</option>
-                <option value="500">500 Cloudlets</option>
-              </select>
-            </div>
-            <div class="ctrl-group">
-              <label>Lingkungan</label>
-              <select id="envSelect" onchange="onEnvChange()">
-                <option value="real-world">🌐 Real-World (Python)</option>
-                <option value="cloudsim">☕ CloudSim 7.0.1 (Java)</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="ctrl-actions">
-            <button class="btn-run" id="btnRunSim" onclick="triggerRunSimulation()">
-              <span>▶ Jalankan Alokasi</span>
-            </button>
-            <button class="btn-reset" onclick="reset3DSimulation()" title="Reset Antrean">
-              <span>↺ Reset</span>
-            </button>
-          </div>
+      <!-- Window Bottom Footer -->
+      <div class="window-footer">
+        <div style="display:flex; gap:8px;">
+          <button class="btn-win-ctrl" onclick="stepSlideInWindow(-1)">&larr; Slide Sebelumnya</button>
+          <button class="btn-win-ctrl" onclick="stepSlideInWindow(1)">Slide Berikutnya &rarr;</button>
         </div>
 
-        <!-- Col 2: Live KPI Tiles -->
-        <div class="kpi-grid">
-          <div class="kpi-card" id="kpiMakespanCard">
-            <div class="kpi-label">Makespan Selesai</div>
-            <div class="kpi-val" id="kpiMakespan">206.99 s</div>
-            <div class="kpi-sub text-green" id="kpiMakespanDelta">-53.4% Lebih Cepat</div>
-          </div>
-          <div class="kpi-card">
-            <div class="kpi-label">Ketimpangan (LBI)</div>
-            <div class="kpi-val" id="kpiLBI">1.96</div>
-            <div class="kpi-sub text-green" id="kpiLBIBadge">Seimbang</div>
-          </div>
-          <div class="kpi-card">
-            <div class="kpi-label">Throughput Sistem</div>
-            <div class="kpi-val" id="kpiThroughput">0.48 t/s</div>
-            <div class="kpi-sub text-sky" id="kpiThroughputSub">+108% Cepat</div>
-          </div>
-          <div class="kpi-card">
-            <div class="kpi-label">Estimasi Biaya</div>
-            <div class="kpi-val" id="kpiCost">$58.48</div>
-            <div class="kpi-sub text-green" id="kpiCostDelta">Hemat $34.49</div>
-          </div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:800; color:var(--coffee-600);" id="winFooterCounter">
+          Slide Pos 1 / 8
         </div>
 
-        <!-- Col 3: 3 Datacenter Real-Time Processing Bars -->
-        <div class="dc-meters-box">
-          <div class="dc-meter-item">
-            <div class="dc-meter-info">
-              <span><strong>Surabaya</strong> (Host 0 &bull; 6.000 MIPS)</span>
-              <span id="dcSbyLoadText" class="text-sky font-mono">54.2% (Optimal Heavy)</span>
-            </div>
-            <div class="meter-track">
-              <div class="meter-fill fill-sky" id="dcSbyBar" style="width: 54.2%;"></div>
-            </div>
-          </div>
-
-          <div class="dc-meter-item">
-            <div class="dc-meter-info">
-              <span><strong>Jakarta</strong> (Host 1 &bull; 3.600 MIPS)</span>
-              <span id="dcJktLoadText" class="text-purple font-mono">52.8% (Optimal Med)</span>
-            </div>
-            <div class="meter-track">
-              <div class="meter-fill fill-purple" id="dcJktBar" style="width: 52.8%;"></div>
-            </div>
-          </div>
-
-          <div class="dc-meter-item">
-            <div class="dc-meter-info">
-              <span><strong>Yogyakarta</strong> (Host 2 &bull; 800 MIPS)</span>
-              <span id="dcYogLoadText" class="text-green font-mono">55.1% (Optimal Light)</span>
-            </div>
-            <div class="meter-track">
-              <div class="meter-fill fill-green" id="dcYogBar" style="width: 55.1%;"></div>
-            </div>
-          </div>
-        </div>
-
-      </div> <!-- End .sim-cockpit-grid -->
-
-      <!-- Bottom Status Banner -->
-      <div class="sim-status-banner" id="simStatusBanner">
-        <span id="simStatusIcon">✅</span>
-        <span id="simStatusText">
-          <strong>AOA Berhasil:</strong> Tugas terberat dialokasikan presisi ke Surabaya (6.000 MIPS). Beban 3 DC seimbang merata dan Makespan terpangkas 53.4%!
-        </span>
-      </div>
-
-    </div> <!-- End .sim-dashboard -->
-
-  </main> <!-- End .presentation-container -->
-
-  <!-- Bottom Navigation Footer Bar -->
-  <footer>
-    <div>
-      <button class="btn-nav" id="prevBtn" onclick="prevSlide()">&larr; Sebelumnya</button>
-      <button class="btn-nav" id="nextBtn" onclick="nextSlide()">Berikutnya &rarr;</button>
-    </div>
-
-    <div class="progress-bar-container">
-      <div class="progress-bar" id="progressBar"></div>
-    </div>
-
-    <div class="slide-counter" id="counter">Slide 1 / 8</div>
-  </footer>
-
-  <!-- MODAL COMPLETE 100-500 CLOUDLETS BENCHMARK RESULTS -->
-  <div class="modal-overlay" id="benchmarkModal" onclick="closeBenchmarkModal(event)">
-    <div class="modal-content" onclick="event.stopPropagation()">
-      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--border); padding-bottom: 12px; margin-bottom: 16px;">
-        <div>
-          <span class="slide-tag" style="margin-bottom: 2px;">HASIL LENGKAP BENCHMARK &bull; TUGAS 4 &amp; 6</span>
-          <h3 style="font-size: 18px; font-weight: 800; color: var(--coffee-950);">
-            ⚡ Komparasi Empiris: Random Scheduling vs AOA yang Baru
-          </h3>
-        </div>
-        <button class="btn-sm" onclick="closeBenchmarkModal(null)" style="font-size: 14px; padding: 4px 10px;">✕ Tutup</button>
-      </div>
-
-      <div style="display: flex; gap: 8px; margin-bottom: 14px;">
-        <button class="btn-mode active" id="tabBtnRealWorld" onclick="switchModalTab('real-world')">🌐 Real-World Network (Python)</button>
-        <button class="btn-mode" id="tabBtnCloudSim" onclick="switchModalTab('cloudsim')">☕ Simulator CloudSim 7.0.1 (Java)</button>
-      </div>
-
-      <!-- Tab Content: Real World -->
-      <div id="tabContentRealWorld">
-        <p style="font-size: 12px; color: var(--coffee-700); margin-bottom: 8px;">
-          Hasil eksekusi riil dari berkas <code>program_aoa_vs_random.py</code> dengan 10 independent runs per skenario (memperhitungkan latensi fisik Sby-Jkt 15ms, Sby-Yog 8ms, bandwidth, dan tarif komputasi):
-        </p>
-        <table>
-          <thead>
-            <tr>
-              <th>Tasks</th>
-              <th>Makespan Random</th>
-              <th>Makespan AOA</th>
-              <th>Perbaikan (%)</th>
-              <th>LBI Random &rarr; AOA</th>
-              <th>Biaya Random</th>
-              <th>Biaya AOA</th>
-              <th>Penghematan ($)</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>100</strong></td>
-              <td>444.29 s</td>
-              <td class="text-sky">206.99 s</td>
-              <td class="text-sky"><strong>-53.4%</strong></td>
-              <td>2.20 &rarr; <strong class="text-green">1.96</strong></td>
-              <td>$92.97</td>
-              <td class="text-green">$58.48</td>
-              <td class="text-green"><strong>Hemat $34.49 (37.1%)</strong></td>
-            </tr>
-            <tr>
-              <td><strong>200</strong></td>
-              <td>939.25 s</td>
-              <td class="text-sky">634.92 s</td>
-              <td class="text-sky"><strong>-32.4%</strong></td>
-              <td>2.09 &rarr; <strong class="text-green">1.64</strong></td>
-              <td>$198.09</td>
-              <td class="text-green">$167.48</td>
-              <td class="text-green"><strong>Hemat $30.61 (15.5%)</strong></td>
-            </tr>
-            <tr>
-              <td><strong>300</strong></td>
-              <td>1177.30 s</td>
-              <td class="text-sky">931.37 s</td>
-              <td class="text-sky"><strong>-20.9%</strong></td>
-              <td>1.91 &rarr; <strong class="text-green">1.59</strong></td>
-              <td>$274.11</td>
-              <td class="text-green">$250.45</td>
-              <td class="text-green"><strong>Hemat $23.66 (8.6%)</strong></td>
-            </tr>
-            <tr>
-              <td><strong>400</strong></td>
-              <td>1468.63 s</td>
-              <td class="text-sky">1202.80 s</td>
-              <td class="text-sky"><strong>-18.1%</strong></td>
-              <td>1.83 &rarr; <strong class="text-green">1.58</strong></td>
-              <td>$353.54</td>
-              <td class="text-green">$326.90</td>
-              <td class="text-green"><strong>Hemat $26.64 (7.5%)</strong></td>
-            </tr>
-            <tr>
-              <td><strong>500</strong></td>
-              <td>1917.29 s</td>
-              <td class="text-sky">1682.69 s</td>
-              <td class="text-sky"><strong>-12.2%</strong></td>
-              <td>1.74 &rarr; <strong class="text-green">1.59</strong></td>
-              <td>$467.26</td>
-              <td class="text-green">$445.20</td>
-              <td class="text-green"><strong>Hemat $22.06 (4.7%)</strong></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Tab Content: CloudSim -->
-      <div id="tabContentCloudSim" style="display: none;">
-        <p style="font-size: 12px; color: var(--coffee-700); margin-bottom: 8px;">
-          Hasil eksekusi simulator resmi CloudSim 7.0.1 (Java 21) dari berkas <code>AOASchedulingSim.java</code> (Tugas 2, 3, 4):
-        </p>
-        <table>
-          <thead>
-            <tr>
-              <th>Tasks</th>
-              <th>Makespan Random</th>
-              <th>Makespan AOA</th>
-              <th>Perbaikan (%)</th>
-              <th>Throughput Random</th>
-              <th>Throughput AOA</th>
-              <th>Utilisasi Random &rarr; AOA</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>100</strong></td>
-              <td>464.47 ± 82.5 s</td>
-              <td class="text-sky">203.88 ± 28.0 s</td>
-              <td class="text-sky"><strong>-56.1%</strong></td>
-              <td>0.22 t/s</td>
-              <td class="text-green">0.50 t/s (+127%)</td>
-              <td>23.5% &rarr; <strong class="text-green">49.5%</strong></td>
-            </tr>
-            <tr>
-              <td><strong>200</strong></td>
-              <td>915.34 ± 103.4 s</td>
-              <td class="text-sky">626.68 ± 69.8 s</td>
-              <td class="text-sky"><strong>-31.5%</strong></td>
-              <td>0.22 t/s</td>
-              <td class="text-green">0.32 t/s (+45%)</td>
-              <td>35.4% &rarr; <strong class="text-green">50.6%</strong></td>
-            </tr>
-            <tr>
-              <td><strong>300</strong></td>
-              <td>1271.93 ± 121.1 s</td>
-              <td class="text-sky">908.69 ± 43.7 s</td>
-              <td class="text-sky"><strong>-28.6%</strong></td>
-              <td>0.24 t/s</td>
-              <td class="text-green">0.33 t/s (+38%)</td>
-              <td>38.9% &rarr; <strong class="text-green">54.2%</strong></td>
-            </tr>
-            <tr>
-              <td><strong>400</strong></td>
-              <td>1436.33 ± 135.9 s</td>
-              <td class="text-sky">1237.98 ± 47.0 s</td>
-              <td class="text-sky"><strong>-13.8%</strong></td>
-              <td>0.28 t/s</td>
-              <td class="text-green">0.32 t/s (+14%)</td>
-              <td>47.1% &rarr; <strong class="text-green">54.3%</strong></td>
-            </tr>
-            <tr>
-              <td><strong>500</strong></td>
-              <td>2000.79 ± 164.0 s</td>
-              <td class="text-sky">1645.40 ± 43.3 s</td>
-              <td class="text-sky"><strong>-17.8% (Hemat 355s)</strong></td>
-              <td>0.25 t/s</td>
-              <td class="text-green">0.30 t/s (+20%)</td>
-              <td>46.2% &rarr; <strong class="text-green">56.1%</strong></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div style="margin-top: 16px; display: flex; justify-content: flex-end; gap: 8px;">
-        <button class="btn-run" onclick="triggerRunSimulation(); closeBenchmarkModal(null);">
-          <span>▶ Uji di Kanvas 3D Sekarang</span>
+        <button class="btn-hud-primary" onclick="closeAndWalkNext()">
+          ⚔️ Tutup &amp; Lanjut ke Lawan Berikutnya &rarr;
         </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 6. SPLIT-SCREEN MENU & CREDITS MODAL (Replica of Reference Image 6) -->
+  <div id="creditsModalOverlay" onclick="if(event.target===this) closeCreditsModal()">
+    <div class="credits-modal-wrapper">
+      <div class="credits-top-tabs">
+        <button class="tab-sq-btn tab-item active" onclick="switchCreditsTab('info', this)" title="Tentang &amp; Kredit">🏠</button>
+        <button class="tab-sq-btn tab-item" onclick="switchCreditsTab('controls', this)" title="Panduan Kontrol &amp; Jurus">🎮</button>
+        <button class="tab-sq-btn tab-item" onclick="switchCreditsTab('team', this)" title="Anggota Kelompok 1">🏆</button>
+        <button class="tab-sq-btn close" onclick="closeCreditsModal()" title="Tutup Menu (Esc)">✕</button>
+      </div>
+
+      <div class="credits-split-card">
+        <!-- Left Graphic Artwork (3 Datacenter Towers like Image 6) -->
+        <div class="credits-left-art">
+          <div style="display:flex; justify-content:center; align-items:flex-end; gap:18px; height:220px; padding-top:20px;">
+            <div style="width:68px; height:125px; background:#fbf6ea; border:4px solid #6b5b4d; border-radius:12px; padding:10px;">
+              <div style="height:18px; background:#3d7a80; border-radius:4px;"></div>
+            </div>
+            <div style="width:68px; height:155px; background:#fbf6ea; border:4px solid #6b5b4d; border-radius:12px; padding:10px;">
+              <div style="height:18px; background:#3d7a80; border-radius:4px;"></div>
+            </div>
+            <div style="width:68px; height:185px; background:#fbf6ea; border:4px solid #6b5b4d; border-radius:12px; padding:10px;">
+              <div style="height:18px; background:#3d7a80; border-radius:4px;"></div>
+            </div>
+          </div>
+
+          <div>
+            <div style="font-size:34px; font-weight:800; color:#2b232d; letter-spacing:1px; line-height:1.05;">CLOUD OPS</div>
+            <div style="font-size:15px; font-weight:600; color:#4a3f46; letter-spacing:0.6px; margin-top:4px;">AOA BATTLE ARENA ADVENTURE</div>
+            <div style="font-size:13px; font-weight:800; color:#6e5f53; margin-top:12px;">KELOMPOK 1 / SOKA &bull; ITS</div>
+          </div>
+        </div>
+
+        <!-- Right Dark Information Panel -->
+        <div class="credits-right-info">
+          <div id="creditsTab_info" class="credits-tab-pane">
+            <p>
+              Adaptasi edukatif terinspirasi dari <strong>Folio 2025 karya Bruno Simon</strong> &amp; <strong>Cloud Ops</strong>, menggunakan fondasi Three.js, karakter <em>Cyber-Mage</em>, jurus elemen Api &amp; Listrik, fisika pegas, dan sistem interaksi pos latihan.
+            </p>
+            <h4>KONTRIBUSI KELOMPOK 1</h4>
+            <p>
+              Arena Pertarungan 3D AOA vs Random Scheduling, 8 Pos Robot Dummy dengan fitur buka ulang slide dari mayat musuh (<code>[O]</code>), integrasi program Python 349 baris, simulator CloudSim 7.0.1, dan pengujian 100–500 Cloudlets.
+            </p>
+            <h4>KREDIT PIHAK KETIGA</h4>
+            <p>
+              Three.js &amp; TSL-style Procedural Shaders, Rapier/Spring Dynamics, Howler.js; inspirasi musik Kounine; font Amatic SC, Nunito, dan JetBrains Mono (SIL OFL), serta efek suara sintetis Cloud Ops. Pemberitahuan aset dan lisensi lengkap tersedia pada <a href="THIRD_PARTY_NOTICES.md" target="_blank">THIRD_PARTY_NOTICES.md</a>.
+            </p>
+          </div>
+
+          <div id="creditsTab_controls" class="credits-tab-pane" style="display:none;">
+            <h4>PANDUAN KONTROL &amp; JURUS ELEMEN</h4>
+            <ul style="padding-left:18px; line-height:1.8;">
+              <li><strong>W, A, S, D / Panah:</strong> Menggerakkan karakter Pendekar Siber di arena.</li>
+              <li><strong>Tombol J / Klik Kiri:</strong> 🔥 <em>Jurus Api (Pyro Multiplication Blast)</em> — Mengurangi 50% HP musuh.</li>
+              <li><strong>Tombol K / Klik Kanan:</strong> ⚡ <em>Jurus Listrik (Thunder Division Strike)</em> — Mengurangi 50% HP musuh.</li>
+              <li><strong>Tombol L / Spasi:</strong> 💥 <em>Ultimate Elemental Overload</em> — Langsung mengalahkan musuh (100% HP).</li>
+              <li><strong>Tombol O / Klik Mayat:</strong> 🔓 Membuka kembali slide presentasi dari mayat musuh yang sudah dikalahkan.</li>
+              <li><strong>Tombol ⛶ / Esc:</strong> Memperbesar slide ke layar penuh atau menutup jendela slide.</li>
+            </ul>
+          </div>
+
+          <div id="creditsTab_team" class="credits-tab-pane" style="display:none;">
+            <h4>ANGGOTA KELOMPOK 1 (SOKA - ITS)</h4>
+            <ol style="padding-left:18px; line-height:1.85; font-weight:700;">
+              <li>M. Faqih Ridho — 5027241123</li>
+              <li>Dimas Satya A — 5027241032</li>
+              <li>Hanif Mawla Faizi — 5027241064</li>
+              <li>Muhammad Ardiansyah Tri Wibowo — 5027241091</li>
+              <li>Elgracito Iryanda Endia — 5027231057</li>
+              <li>Moch. Rizki Nasrullah — 5027241038</li>
+            </ol>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- MODAL FULL PYTHON SOURCE CODE VIEWER (349 LINES) -->
-  <div class="modal-overlay" id="fullCodeModal" onclick="closeFullCodeModal(event)">
-    <div class="modal-content" style="max-width: 900px; max-height: 85vh; display: flex; flex-direction: column;">
-      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
+  <!-- 7. FULL 349-LINE PYTHON SOURCE CODE MODAL -->
+  <div id="fullCodeModal" onclick="if(event.target===this) closeFullCodeModal()">
+    <div style="background:var(--cream-50); width:88vw; max-width:920px; height:84vh; border-radius:16px; border:2px solid var(--cream-border); display:flex; flex-direction:column; padding:18px 22px; box-shadow:0 25px 60px rgba(0,0,0,0.65);">
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1.5px solid var(--cream-border); padding-bottom:10px;">
         <div>
-          <span class="slide-tag" style="margin-bottom: 2px;">KODE LENGKAP PROGRAM RIIL &bull; 349 BARIS</span>
-          <h3 style="font-size: 16px; margin: 0; color: var(--coffee-950);">
-            🐍 <code>program_aoa_vs_random.py</code>
-          </h3>
+          <span class="slide-tag" style="margin-bottom:2px;">KODE LENGKAP PROGRAM RIIL &bull; 349 BARIS</span>
+          <h3 style="font-size:16px; margin:0;">🐍 <code>program_aoa_vs_random.py</code></h3>
         </div>
-        <div style="display: flex; gap: 8px; align-items: center;">
-          <button class="btn-sm" id="copyCodeBtn" onclick="copyPythonCode()" style="background:#e0f2fe; color:#0369a1; border-color:#bae6fd;">
-            📋 Salin Seluruh Kode
-          </button>
-          <button class="modal-close-btn" onclick="closeFullCodeModal()">&times;</button>
+        <div style="display:flex; gap:8px;">
+          <button class="btn-win-ctrl" id="copyCodeBtn" onclick="copyPythonCode()">📋 Salin Seluruh Kode</button>
+          <button class="btn-win-ctrl btn-win-close" onclick="closeFullCodeModal()">✕</button>
         </div>
       </div>
 
-      <div style="flex: 1; overflow-y: auto; margin-top: 12px; background: #0b1120; border-radius: 8px; border: 1px solid #1e293b; padding: 12px 16px;">
-        <pre style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 11.5px; line-height: 1.5; color: #e2e8f0; white-space: pre-wrap;"><code id="fullPythonCodeBlock"><span style="color:#64748b;user-select:none;">  1 | </span>#!/usr/bin/env python3
+      <div style="flex:1; overflow-y:auto; margin-top:12px; background:#0b1120; border-radius:10px; padding:14px 18px;">
+        <pre style="margin:0; font-family:'JetBrains Mono',monospace; font-size:11.5px; line-height:1.5; color:#e2e8f0; white-space:pre-wrap;"><code id="fullPythonCodeBlock"><span style="color:#64748b;user-select:none;">  1 | </span>#!/usr/bin/env python3
 <span style="color:#64748b;user-select:none;">  2 | </span># -*- coding: utf-8 -*-
 <span style="color:#64748b;user-select:none;">  3 | </span>"""
 <span style="color:#64748b;user-select:none;">  4 | </span>================================================================================
@@ -1141,22 +1111,13 @@ mop = <span class="syn-num">1.0</span> - (math.pow(t, <span class="syn-num">1.0<
 <span style="color:#64748b;user-select:none;">348 | </span>
 <span style="color:#64748b;user-select:none;">349 | </span></code></pre>
       </div>
-
-      <div style="margin-top: 12px; display: flex; justify-content: space-between; align-items: center;">
-        <span style="font-size: 11px; color: var(--coffee-600); font-family: 'JetBrains Mono', monospace;">
-          Status: Teruji 100% Valid pada Dataset Minggu 3 (100 - 500 Cloudlets)
-        </span>
-        <button class="btn-run" onclick="closeFullCodeModal()">
-          <span>✓ Tutup Tampilan Kode</span>
-        </button>
-      </div>
     </div>
   </div>
 
-  <!-- Modular JavaScript Architecture -->
+  <!-- Game Scripts -->
   <script src="js/data.js"></script>
-  <script src="js/scene3d.js"></script>
-  <script src="js/simulation.js"></script>
-  <script src="js/presentation.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/game-engine.js"></script>
+  <script src="js/game-ui.js"></script>
 </body>
 </html>
