@@ -19,15 +19,16 @@ let autoWalkTarget = null;
 let autoWalkCurveTargetT = null;
 const keysPressed = {};
 
-// 360-Degree Orbit Camera State
-let cameraYaw = 0;       // 0 = Kamera di belakang karakter menghadap -Z (360° penuh)
-let cameraPitch = 0.50;  // Sudut vertikal kamera
-let cameraDist = 17.5;   // Jarak zoom kamera dari karakter
+// 360-Degree Orbit Camera State (Bisa melihat sekeliling 360 derajat penuh)
+let cameraYaw = 0;       // 0 = Kamera di belakang karakter menghadap -Z (360° penuh tanpa batas)
+let cameraPitch = 0.28;  // Sudut pandang horizontal/horizon agar leluasa melihat sekeliling
+let cameraDist = 15.5;   // Jarak kamera dari karakter
 let isDraggingCamera = false;
 let dragMouseButton = -1;
 let dragStartPos = { x: 0, y: 0 };
 let lastMousePos = { x: 0, y: 0 };
 let totalDragDist = 0;
+let lastTouchPos = null;
 
 let hemiLight, dirLight, introSpotLight, introRingMesh;
 
@@ -125,11 +126,11 @@ function initGameEngine() {
   const container = document.getElementById('gameCanvasContainer');
   scene = new THREE.Scene();
   scene.background = new THREE.Color(0x130e26);
-  // Fog diatur agar Pos yang jauh di balik tikungan tertutup kabut atmosferik
-  scene.fog = new THREE.FogExp2(0x130e26, 0.0135);
+  // Fog lembut agar pemandangan sekeliling 360 derajat (gunung, pohon, tower, langit) terlihat indah
+  scene.fog = new THREE.FogExp2(0x130e26, 0.0052);
 
-  camera = new THREE.PerspectiveCamera(42, window.innerWidth / window.innerHeight, 0.5, 260);
-  camera.position.set(0, 13.5, 31.0);
+  camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.5, 450);
+  camera.position.set(0, 11.5, 31.0);
 
   renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
   renderer.setSize(window.innerWidth, window.innerHeight);
@@ -142,6 +143,7 @@ function initGameEngine() {
 
   setupLighting();
   buildWindingRoadAndScenery();
+  buildSurroundingPanorama360();
   buildDatacenterTowers();
   buildPlayerHero();
   buildAllEnemyStations();
@@ -636,6 +638,63 @@ function buildStartSanctuaryProps() {
   buildStylizedTree(5.2, 15.2, 0xd946ef, 2);
   buildRockFormation(-5.5, 19.5, 0.95, new THREE.MeshStandardMaterial({ color: 0x475569, roughness: 0.8 }), true);
   buildRockFormation(5.8, 19.2, 0.85, new THREE.MeshStandardMaterial({ color: 0x3b334a, roughness: 0.8 }), false);
+}
+
+// ============================================================================
+// 4B. 360° PANORAMIC SURROUNDINGS (MOUNTAINS, SKY STARS & CYBER MOON)
+//     Sehingga saat memutar kamera 360 derajat, sekeliling dunia tampak hidup!
+// ============================================================================
+function buildSurroundingPanorama360() {
+  const mtnMat1 = new THREE.MeshStandardMaterial({ color: 0x1e1636, roughness: 0.9, flatShading: true });
+  const mtnMat2 = new THREE.MeshStandardMaterial({ color: 0x2a1f4a, roughness: 0.85, flatShading: true });
+
+  // Lingkaran Pegunungan 360 Derajat mengelilingi seluruh lembah arena
+  const numPeaks = 32;
+  for (let i = 0; i < numPeaks; i++) {
+    const angle = (i / numPeaks) * Math.PI * 2;
+    const dist = 165 + (i % 3) * 18;
+    const cx = Math.cos(angle) * dist;
+    const cz = -110 + Math.sin(angle) * dist;
+    const radius = 24 + (i % 4) * 8;
+    const height = 32 + (i % 5) * 14;
+
+    const peak = createSculptedMesh(
+      new THREE.ConeGeometry(radius, height, 7),
+      0.16,
+      i % 2 === 0 ? mtnMat1 : mtnMat2
+    );
+    peak.position.set(cx, height * 0.42, cz);
+    peak.rotation.y = i * 0.7;
+    scene.add(peak);
+  }
+
+  // Kubah Bintang 360 Derajat di Langit Malam
+  const starGeo = new THREE.BufferGeometry();
+  const starPositions = [];
+  for (let s = 0; s < 420; s++) {
+    const theta = Math.random() * Math.PI * 2;
+    const phi = Math.random() * Math.PI * 0.44;
+    const r = 210 + Math.random() * 30;
+    starPositions.push(
+      Math.cos(theta) * Math.sin(phi) * r,
+      Math.cos(phi) * r + 12,
+      -110 + Math.sin(theta) * Math.sin(phi) * r
+    );
+  }
+  starGeo.setAttribute('position', new THREE.Float32BufferAttribute(starPositions, 3));
+  const stars = new THREE.Points(
+    starGeo,
+    new THREE.PointsMaterial({ color: 0xe0f2fe, size: 1.4, transparent: true, opacity: 0.85 })
+  );
+  scene.add(stars);
+
+  // Bulan Purnama Cyber-Ungu di Cakrawala
+  const moon = new THREE.Mesh(
+    new THREE.SphereGeometry(14, 24, 24),
+    new THREE.MeshBasicMaterial({ color: 0xf5d0fe })
+  );
+  moon.position.set(-95, 88, -260);
+  scene.add(moon);
 }
 
 function buildDatacenterTowers() {
@@ -2566,12 +2625,19 @@ function setupInputListeners() {
     keysPressed[e.code] = false;
   });
 
-  // 360-DEGREE CAMERA ORBIT (Drag Mouse untuk putar 360°; Klik Cepat untuk Serang; Scroll untuk Zoom)
+  // 360-DEGREE CAMERA ORBIT:
+  // 1) Geser 2 Jari di Touchpad (event 'wheel' deltaX / deltaY) -> Langsung memutar kamera 360° melihat sekeliling!
+  // 2) Klik & Geser Mouse (Drag) di mana saja -> Memutar kamera 360° melihat sekeliling!
+  // 3) Layar Sentuh (Touch Drag 1 atau 2 jari) -> Memutar kamera 360°!
+  // 4) Tombol Q / E -> Memutar kamera 360°!
   const canvasEl = document.getElementById('gameCanvasContainer');
 
-  canvasEl.addEventListener('mousedown', (e) => {
+  window.addEventListener('mousedown', (e) => {
     if (isIntroMode) return;
     if (document.getElementById('slideModalOverlay').classList.contains('active')) return;
+    if (e.target.closest('button, a, select, input, .hud-brand-card, .hud-quest-card, .hud-top-right, .teleport-popover, .slide-floating-window, .corpse-unlock-badge')) {
+      return;
+    }
     isDraggingCamera = true;
     dragMouseButton = e.button;
     dragStartPos = { x: e.clientX, y: e.clientY };
@@ -2587,11 +2653,11 @@ function setupInputListeners() {
     totalDragDist += Math.hypot(dx, dy);
 
     // Putar kamera 360 derajat penuh secara horizontal (cameraYaw) & vertikal (cameraPitch)
-    cameraYaw -= dx * 0.0075;
-    cameraPitch = Math.max(0.18, Math.min(1.18, cameraPitch + dy * 0.006));
+    cameraYaw -= dx * 0.0085;
+    cameraPitch = Math.max(0.05, Math.min(1.22, cameraPitch + dy * 0.006));
   });
 
-  window.addEventListener('mouseup', (e) => {
+  window.addEventListener('mouseup', () => {
     if (!isDraggingCamera) return;
     isDraggingCamera = false;
 
@@ -2609,12 +2675,54 @@ function setupInputListeners() {
     dragMouseButton = -1;
   });
 
-  canvasEl.addEventListener('wheel', (e) => {
+  // GESTURE 2 JARI DI TOUCHPAD LAPTOP (memicu event 'wheel' di browser)
+  window.addEventListener('wheel', (e) => {
     if (isIntroMode) return;
     if (document.getElementById('slideModalOverlay').classList.contains('active')) return;
+    if (e.target.closest('.teleport-popover, .slide-floating-window, #fullCodeModal, #creditsModal')) return;
+
     e.preventDefault();
-    cameraDist = Math.max(8.5, Math.min(28.0, cameraDist + e.deltaY * 0.012));
+
+    // Jika cubit 2 jari (Pinch-to-Zoom di touchpad mengirim e.ctrlKey === true) -> Zoom In/Out
+    if (e.ctrlKey) {
+      cameraDist = Math.max(8.0, Math.min(28.0, cameraDist + e.deltaY * 0.04));
+      return;
+    }
+
+    // Geser 2 Jari di Touchpad -> Putar Kamera 360 Derajat Melihat Sekeliling!
+    if (Math.abs(e.deltaX) > 0.5) {
+      cameraYaw -= e.deltaX * 0.014;
+      cameraPitch = Math.max(0.05, Math.min(1.22, cameraPitch + e.deltaY * 0.005));
+    } else {
+      // Jika touchpad mengirim deltaY saat geser 2 jari, tetap putar 360 derajat secara mulus!
+      cameraYaw -= e.deltaY * 0.012;
+    }
   }, { passive: false });
+
+  // DUKUNGAN TOUCH / MULTI-TOUCH (1 atau 2 Jari)
+  window.addEventListener('touchstart', (e) => {
+    if (isIntroMode) return;
+    if (document.getElementById('slideModalOverlay').classList.contains('active')) return;
+    if (e.touches.length > 0) {
+      lastTouchPos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    }
+  }, { passive: true });
+
+  window.addEventListener('touchmove', (e) => {
+    if (isIntroMode || !lastTouchPos) return;
+    if (document.getElementById('slideModalOverlay').classList.contains('active')) return;
+    if (e.touches.length > 0) {
+      const dx = e.touches[0].clientX - lastTouchPos.x;
+      const dy = e.touches[0].clientY - lastTouchPos.y;
+      lastTouchPos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      cameraYaw -= dx * 0.010;
+      cameraPitch = Math.max(0.05, Math.min(1.22, cameraPitch + dy * 0.006));
+    }
+  }, { passive: true });
+
+  window.addEventListener('touchend', () => {
+    lastTouchPos = null;
+  });
 
   canvasEl.addEventListener('contextmenu', (e) => e.preventDefault());
 }
@@ -2883,21 +2991,28 @@ function gameLoop() {
   playerGroup.position.copy(playerPos);
   playerGroup.rotation.y = playerRotY;
 
-  // 360-DEGREE ORBIT CAMERA CALCULATION AROUND PLAYER
+  // 360-DEGREE ORBIT CAMERA CALCULATION AROUND PLAYER (Bisa melihat sekeliling 360° penuh)
   if (isIntroMode) {
     const introCamPos = new THREE.Vector3(0, 11.2, 29.0);
     camera.position.lerp(introCamPos, dt * 4.8);
     camera.lookAt(new THREE.Vector3(0, 1.8, 17.5));
   } else {
     const horizDist = cameraDist * Math.cos(cameraPitch);
-    const vertHeight = cameraDist * Math.sin(cameraPitch) + 2.2;
+    const vertHeight = Math.max(1.4, cameraDist * Math.sin(cameraPitch) + 1.8);
     const camTargetPos = new THREE.Vector3(
       playerPos.x + Math.sin(cameraYaw) * horizDist,
       vertHeight,
       playerPos.z + Math.cos(cameraYaw) * horizDist
     );
-    camera.position.lerp(camTargetPos, dt * 8.0);
-    camera.lookAt(new THREE.Vector3(playerPos.x, 2.0, playerPos.z));
+    camera.position.lerp(camTargetPos, Math.min(1, dt * 14.0));
+
+    // Titik pandang menghadap ke cakrawala sekeliling melewati bahu/kepala karakter
+    const lookAheadTarget = new THREE.Vector3(
+      playerPos.x - Math.sin(cameraYaw) * 4.2,
+      2.35,
+      playerPos.z - Math.cos(cameraYaw) * 4.2
+    );
+    camera.lookAt(lookAheadTarget);
   }
 
   // Move directional light shadow frustum with player so shadows stay crisp along the whole trail
