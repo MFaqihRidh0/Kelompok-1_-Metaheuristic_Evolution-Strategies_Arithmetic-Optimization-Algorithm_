@@ -1247,126 +1247,216 @@ function buildUniqueMonsterMesh(st) {
   const animParts = { monsterType: st.monsterType };
 
   // -------------------------------------------------------------------------
-  // POS 1: 🐍 ULAR KOBRA ABYSSAL (Articulated Multi-Vertebra S-Curve Spine,
-  //        Sculpted Flared Cobra Hood, Hinged Jaw & Flickering Forked Tongue)
+  // POS 1: 🐍 ULAR KOBRA ABYSSAL (Tubuh & Leher S-Curve Utuh Mulus Tanpa Potongan
+  //        Bertumpuk, Tudung Kobra Lebar Menyatu, Kepala Ular Segitiga Pipih,
+  //        Mata Slit-Pupil, Taring Bisa Panjang & Lidah Merah Bercabang)
   // -------------------------------------------------------------------------
   if (st.monsterType === 'serpent') {
-    // Coiled tail base using smooth organic spline tube
+    const snakeGreenDark = new THREE.MeshStandardMaterial({ color: 0x065f46, roughness: 0.32, metalness: 0.15 });
+    const snakeGreenMid = new THREE.MeshStandardMaterial({ color: 0x10b981, roughness: 0.30, metalness: 0.12 });
+    const snakeBellyMat = new THREE.MeshStandardMaterial({ color: 0xfde68a, roughness: 0.42, metalness: 0.08 });
+    const snakeMouthMat = new THREE.MeshStandardMaterial({ color: 0x991b1b, roughness: 0.5 });
+    const snakeEyeMat = new THREE.MeshBasicMaterial({ color: 0xfacc15 });
+    const snakePupilMat = new THREE.MeshBasicMaterial({ color: 0x090d16 });
+    const snakeTongueMat = new THREE.MeshBasicMaterial({ color: 0xef4444 });
+
+    // 1. Gulungan Tubuh Bawah Ular yang Mulus & Menyatu (Seamless Coiled Serpent Base)
     const baseCoilPts = [];
-    for (let i = 0; i <= 28; i++) {
-      const t = i / 28;
-      const angle = t * Math.PI * 3.6;
-      const radius = 1.35 * (1 - t * 0.52);
-      baseCoilPts.push(new THREE.Vector3(Math.cos(angle) * radius, t * 0.95 + 0.14, Math.sin(angle) * radius));
+    for (let i = 0; i <= 32; i++) {
+      const t = i / 32;
+      const angle = t * Math.PI * 3.4;
+      const radius = 1.32 * (1 - t * 0.58);
+      baseCoilPts.push(new THREE.Vector3(Math.cos(angle) * radius, t * 0.82 + 0.14, Math.sin(angle) * radius));
     }
-    const baseCoilMesh = createOrganicTube(baseCoilPts, (u) => 0.32 * (1 - u * 0.22), 48, 14, primaryMat);
+    const baseCoilMesh = createOrganicTube(baseCoilPts, (u) => 0.33 * (1 - u * 0.18), 52, 16, snakeGreenDark);
     bodyGroup.add(baseCoilMesh);
 
-    // Articulated upper spine chain (10 joints rising in an S-curve so it slithers dynamically!)
-    animParts.serpentSpine = [];
-    let parentNode = bodyGroup;
-    const spineOffsets = [
-      [0, 0.95, 0],
-      [0, 0.24, -0.06],
-      [0, 0.24, -0.05],
-      [0, 0.24, 0.02],
-      [0, 0.24, 0.06],
-      [0, 0.22, 0.08],
-      [0, 0.20, 0.06],
-      [0, 0.18, 0.04]
+    // 2. Leher S-Curve Utuh & Tudung Kobra Menyatu Mulus (SATU kurva utuh, TIDAK bertumpuk-tumpuk!)
+    const upperNeckGroup = new THREE.Group();
+    upperNeckGroup.position.set(0, 0.82, 0);
+
+    const neckCurvePts = [
+      new THREE.Vector3(0, 0.0, 0.0),
+      new THREE.Vector3(0, 0.42, -0.18),
+      new THREE.Vector3(0, 0.92, -0.08),
+      new THREE.Vector3(0, 1.42, 0.14),
+      new THREE.Vector3(0, 1.72, 0.26)
     ];
+    // Batang leher utama yang mulus dari pangkal ke kepala
+    const smoothNeckMesh = createOrganicTube(
+      neckCurvePts,
+      (u) => 0.27 * (1 - u * 0.22),
+      28,
+      16,
+      snakeGreenMid
+    );
+    upperNeckGroup.add(smoothNeckMesh);
 
-    spineOffsets.forEach((off, idx) => {
-      const joint = new THREE.Group();
-      joint.position.set(off[0], off[1], off[2]);
+    // Jalur Sisik Perut Kuning-Krem Utuh (Continuous Ventral Belly Strip di bagian depan leher)
+    const bellyCurvePts = [
+      new THREE.Vector3(0, 0.05, 0.14),
+      new THREE.Vector3(0, 0.42, -0.02),
+      new THREE.Vector3(0, 0.92, 0.09),
+      new THREE.Vector3(0, 1.40, 0.29),
+      new THREE.Vector3(0, 1.66, 0.36)
+    ];
+    const smoothBellyMesh = createOrganicTube(
+      bellyCurvePts,
+      (u) => 0.18 * (1 - u * 0.22),
+      24,
+      12,
+      snakeBellyMat,
+      1.15,
+      0.42
+    );
+    upperNeckGroup.add(smoothBellyMesh);
 
-      const r = 0.26 * (1 - idx * 0.045);
-      const segPts = [new THREE.Vector3(0, -0.04, 0), new THREE.Vector3(0, 0.22, 0)];
-      const segMesh = createOrganicTube(segPts, () => r, 6, 12, idx % 2 === 0 ? primaryMat : secondaryMat);
-      joint.add(segMesh);
+    // Tudung Kobra Utuh Melebar Mulus di Kiri-Kanan Leher Atas (Seamless Flared King Cobra Hood)
+    const hoodSpinePts = [
+      new THREE.Vector3(0, 0.72, -0.12),
+      new THREE.Vector3(0, 1.15, 0.02),
+      new THREE.Vector3(0, 1.48, 0.14),
+      new THREE.Vector3(0, 1.70, 0.22)
+    ];
+    const cobraHoodMesh = createOrganicTube(
+      hoodSpinePts,
+      (u) => 0.34 * Math.sin(u * Math.PI),
+      22,
+      16,
+      snakeGreenDark,
+      2.65, // Melebar pipih ke samping kiri & kanan membentuk tudung kobra utuh yang mulus!
+      0.32
+    );
+    upperNeckGroup.add(cobraHoodMesh);
 
-      // Ventral belly scute
-      const scute = new THREE.Mesh(new THREE.CylinderGeometry(r * 0.82, r * 0.85, 0.18, 8), bellyMat);
-      scute.position.set(0, 0.09, r * 0.38);
-      scute.scale.set(0.85, 1, 0.45);
-      joint.add(scute);
+    // Corak Sepasang Mata Tudung Kobra Emas-Merah di Kiri & Kanan Tudung
+    [-1, 1].forEach(side => {
+      const hoodPattern = new THREE.Mesh(new THREE.SphereGeometry(0.14, 12, 12), snakeBellyMat);
+      hoodPattern.scale.set(1.15, 1.65, 0.25);
+      hoodPattern.position.set(side * 0.48, 1.32, 0.14);
+      hoodPattern.rotation.z = -side * 0.18;
+      upperNeckGroup.add(hoodPattern);
 
-      // Flared Sculpted Cobra Hood on upper neck segments (idx 4, 5, 6)
-      if (idx >= 4 && idx <= 6) {
-        const hoodSpan = idx === 5 ? 0.95 : 0.72;
-        const hoodPts = [
-          new THREE.Vector3(-hoodSpan, 0.08, -0.08),
-          new THREE.Vector3(-hoodSpan * 0.55, 0.12, 0.06),
-          new THREE.Vector3(0, 0.14, 0.10),
-          new THREE.Vector3(hoodSpan * 0.55, 0.12, 0.06),
-          new THREE.Vector3(hoodSpan, 0.08, -0.08)
-        ];
-        const hoodRib = createOrganicTube(hoodPts, (u) => 0.16 * Math.sin(u * Math.PI) + 0.05, 16, 10, primaryMat, 1.0, 1.8);
-        joint.add(hoodRib);
-
-        if (idx === 5) {
-          [-0.48, 0.48].forEach(hx => {
-            const hoodMark = new THREE.Mesh(new THREE.SphereGeometry(0.11, 10, 10), accentMat);
-            hoodMark.scale.set(1.2, 1.6, 0.35);
-            hoodMark.position.set(hx, 0.12, 0.12);
-            joint.add(hoodMark);
-          });
-        }
-      }
-
-      parentNode.add(joint);
-      parentNode = joint;
-      animParts.serpentSpine.push(joint);
+      const hoodCenterDot = new THREE.Mesh(new THREE.SphereGeometry(0.08, 10, 10), snakeTongueMat);
+      hoodCenterDot.scale.set(1.0, 1.4, 0.28);
+      hoodCenterDot.position.set(side * 0.48, 1.32, 0.16);
+      hoodCenterDot.rotation.z = -side * 0.18;
+      upperNeckGroup.add(hoodCenterDot);
     });
 
-    // Sculpted Viper Head & Hinged Lower Jaw attached to top neck joint
-    const headPivot = new THREE.Group();
-    headPivot.position.set(0, 0.22, 0.08);
+    // Barisan Sisik Berlian Punggung Ular (Dorsal Diamond Scales)
+    for (let s = 0; s < 9; s++) {
+      const su = (s + 0.5) / 9;
+      const scaleMesh = new THREE.Mesh(new THREE.OctahedronGeometry(0.08, 0), snakeBellyMat);
+      scaleMesh.scale.set(0.8, 1.2, 0.35);
+      scaleMesh.position.set(0, 0.18 + su * 1.35, -0.22 + Math.sin(su * Math.PI) * -0.12 + su * 0.30);
+      upperNeckGroup.add(scaleMesh);
+    }
 
-    const skullPts = [
-      new THREE.Vector3(0, 0, -0.18),
-      new THREE.Vector3(0, 0.08, 0.12),
-      new THREE.Vector3(0, 0.02, 0.48)
+    // 3. KEPALA ULAR KOBRA SEGITIGA PIPIH YANG TEGAS & PROPORSIONAL (Sleek Diamond Viper Head)
+    const headPivot = new THREE.Group();
+    headPivot.position.set(0, 1.74, 0.28);
+    headPivot.rotation.x = 0.12; // Menatap tajam ke arah pemain
+
+    // Tengkorak Atas Kepala Ular (Lebar di rahang belakang / kantung bisa, meruncing mulus ke moncong depan)
+    const viperSkullPts = [
+      new THREE.Vector3(0, 0.04, -0.24),
+      new THREE.Vector3(0, 0.07, 0.02),
+      new THREE.Vector3(0, 0.05, 0.34),
+      new THREE.Vector3(0, 0.01, 0.62)
     ];
-    const upperSkull = createOrganicTube(skullPts, (u) => 0.28 * (1 - u * 0.48), 10, 12, primaryMat, 1.35, 0.72);
+    const upperSkull = createOrganicTube(
+      viperSkullPts,
+      (u) => (u < 0.35 ? 0.24 + u * 0.42 : 0.39 * (1 - (u - 0.35) * 0.92)),
+      16,
+      14,
+      snakeGreenMid,
+      1.32, // Pipih lebar khas kepala ular kobra/viper asli
+      0.58
+    );
     headPivot.add(upperSkull);
 
-    // Glowing Viper Eyes & Brow Ridges
-    [-0.18, 0.18].forEach(ex => {
-      const eye = new THREE.Mesh(new THREE.SphereGeometry(0.065, 10, 10), accentMat);
-      eye.scale.set(0.8, 1.2, 1.3);
-      eye.position.set(ex, 0.11, 0.18);
-      headPivot.add(eye);
+    // Pelat Sisik Atas Kepala Ular (Cranial Crown Shield Scale)
+    const crownPlate = new THREE.Mesh(new THREE.SphereGeometry(0.26, 12, 10), snakeGreenDark);
+    crownPlate.scale.set(1.18, 0.32, 1.35);
+    crownPlate.position.set(0, 0.15, 0.12);
+    headPivot.add(crownPlate);
+
+    // 2 Lubang Hidung Ular di Ujung Moncong Depan
+    [-0.10, 0.10].forEach(nx => {
+      const nostril = new THREE.Mesh(new THREE.SphereGeometry(0.032, 8, 8), snakePupilMat);
+      nostril.position.set(nx, 0.06, 0.56);
+      headPivot.add(nostril);
     });
 
-    // Curved Venom Fangs
-    [-0.11, 0.11].forEach(fx => {
+    // Sepasang Mata Reptil Kuning Menyala dengan Pupil Vertikal Hitam & Sisik Alis Tajam
+    [-1, 1].forEach(side => {
+      // Sisik alis mata ular yang menonjol garang (Supraocular Scale)
+      const brow = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.045, 0.24), snakeGreenDark);
+      brow.position.set(side * 0.28, 0.15, 0.20);
+      brow.rotation.z = -side * 0.28;
+      brow.rotation.y = side * 0.25;
+      headPivot.add(brow);
+
+      // Bola mata kuning reptil
+      const eye = new THREE.Mesh(new THREE.SphereGeometry(0.078, 12, 12), snakeEyeMat);
+      eye.scale.set(0.85, 1.0, 1.15);
+      eye.position.set(side * 0.27, 0.09, 0.22);
+      headPivot.add(eye);
+
+      // Pupil celah vertikal hitam khas ular (Vertical Slit Pupil)
+      const slitPupil = new THREE.Mesh(new THREE.BoxGeometry(0.025, 0.11, 0.05), snakePupilMat);
+      slitPupil.position.set(side * 0.33, 0.09, 0.24);
+      slitPupil.rotation.y = side * 0.35;
+      headPivot.add(slitPupil);
+    });
+
+    // Langit-langit Mulut Merah & 2 Taring Bisa Putih Melengkung Tajam (Curved Venom Fangs)
+    const upperMouthRoof = new THREE.Mesh(new THREE.SphereGeometry(0.22, 10, 8), snakeMouthMat);
+    upperMouthRoof.scale.set(1.1, 0.22, 1.35);
+    upperMouthRoof.position.set(0, -0.02, 0.24);
+    headPivot.add(upperMouthRoof);
+
+    [-0.14, 0.14].forEach(fx => {
       const fangPts = [
-        new THREE.Vector3(fx, 0.02, 0.34),
-        new THREE.Vector3(fx, -0.12, 0.38),
-        new THREE.Vector3(fx, -0.22, 0.32)
+        new THREE.Vector3(fx, 0.01, 0.42),
+        new THREE.Vector3(fx, -0.14, 0.46),
+        new THREE.Vector3(fx, -0.28, 0.38)
       ];
-      const fang = createOrganicTube(fangPts, (u) => 0.038 * (1 - u * 0.85), 8, 8, boneMat);
+      const fang = createOrganicTube(fangPts, (u) => 0.046 * (1 - u * 0.88), 10, 8, boneMat);
       headPivot.add(fang);
     });
 
-    // Hinged Lower Jaw
+    // Rahang Bawah Ular Berengsel (Hinged Lower Jaw) + Rongga Mulut Merah + Lidah Merah Bercabang Dua
     const jawPivot = new THREE.Group();
-    jawPivot.position.set(0, -0.04, 0.02);
+    jawPivot.position.set(0, -0.04, -0.02);
+    jawPivot.rotation.x = 0.32;
+
     const jawPts = [
       new THREE.Vector3(0, 0, 0),
-      new THREE.Vector3(0, -0.06, 0.22),
-      new THREE.Vector3(0, -0.04, 0.44)
+      new THREE.Vector3(0, -0.05, 0.26),
+      new THREE.Vector3(0, -0.02, 0.54)
     ];
-    const lowerJaw = createOrganicTube(jawPts, (u) => 0.21 * (1 - u * 0.52), 8, 10, bellyMat, 1.2, 0.55);
+    const lowerJaw = createOrganicTube(jawPts, (u) => 0.26 * (1 - u * 0.48), 12, 12, snakeBellyMat, 1.18, 0.45);
     jawPivot.add(lowerJaw);
 
-    // Forked Tongue
+    const innerJawFloor = new THREE.Mesh(new THREE.SphereGeometry(0.18, 10, 8), snakeMouthMat);
+    innerJawFloor.scale.set(1.05, 0.22, 1.35);
+    innerJawFloor.position.set(0, 0.01, 0.26);
+    jawPivot.add(innerJawFloor);
+
+    // Lidah Ular Merah Bercabang Dua (Forked Snake Tongue)
     const tongueGroup = new THREE.Group();
-    tongueGroup.position.set(0, -0.02, 0.38);
-    [-0.06, 0.06].forEach(tx => {
-      const tPts = [new THREE.Vector3(0, 0, 0), new THREE.Vector3(tx * 0.5, -0.02, 0.22), new THREE.Vector3(tx * 1.4, -0.05, 0.42)];
-      tongueGroup.add(createOrganicTube(tPts, (u) => 0.022 * (1 - u * 0.7), 8, 6, accentMat));
+    tongueGroup.position.set(0, 0.02, 0.42);
+    const tongueStemPts = [new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, -0.01, 0.22)];
+    tongueGroup.add(createOrganicTube(tongueStemPts, () => 0.024, 6, 6, snakeTongueMat));
+    [-0.08, 0.08].forEach(tx => {
+      const forkPts = [
+        new THREE.Vector3(0, -0.01, 0.20),
+        new THREE.Vector3(tx * 0.7, -0.03, 0.34),
+        new THREE.Vector3(tx * 1.4, -0.06, 0.48)
+      ];
+      tongueGroup.add(createOrganicTube(forkPts, (u) => 0.022 * (1 - u * 0.78), 8, 6, snakeTongueMat));
     });
     jawPivot.add(tongueGroup);
     animParts.tongue = tongueGroup;
@@ -1374,7 +1464,10 @@ function buildUniqueMonsterMesh(st) {
     headPivot.add(jawPivot);
     animParts.jawPivot = jawPivot;
     animParts.headPivot = headPivot;
-    parentNode.add(headPivot);
+    upperNeckGroup.add(headPivot);
+
+    bodyGroup.add(upperNeckGroup);
+    animParts.serpentSpine = [upperNeckGroup];
   }
 
   // -------------------------------------------------------------------------
@@ -1765,116 +1858,261 @@ function buildUniqueMonsterMesh(st) {
   }
 
   // -------------------------------------------------------------------------
-  // POS 4: 🐺 SERIGALA FENRIR (Sculpted Lupine Spine, Frost-Fur Mane,
-  //        4 Digitigrade Articulated Wolf Legs, Snarling Jaw & Bushy S-Tail)
+  // POS 4: 🐺 SERIGALA ABU-ABU FENRIR (Warna Abu-Abu Serigala Asli: Punggung
+  //        Abu-Abu Tua, Badan Abu-Abu Medium, Dada/Perut/Pipi Abu-Abu Perak,
+  //        Moncong Panjang dengan Hidung Hitam, Telinga Segitiga Tegak & 4 Kaki Serigala)
   // -------------------------------------------------------------------------
   else if (st.monsterType === 'wolf') {
     const wolfRoot = new THREE.Group();
     wolfRoot.position.y = 0.05;
 
-    // Anatomical Lupine Spine (Deep Ribcage tapering to Waist & Muscular Haunches)
+    // Palet Warna Serigala Abu-Abu Asli (Grey Timber Wolf)
+    const wolfDarkGrey = new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.62, metalness: 0.06 });  // Bulu punggung & atas kepala (abu-abu arang tua)
+    const wolfMidGrey = new THREE.MeshStandardMaterial({ color: 0x64748b, roughness: 0.58, metalness: 0.06 });   // Bulu utama tubuh & kaki (abu-abu serigala)
+    const wolfLightGrey = new THREE.MeshStandardMaterial({ color: 0xcbd5e1, roughness: 0.52, metalness: 0.05 }); // Bulu dada, perut, pipi & ujung ekor (abu-abu perak terang)
+    const wolfNoseBlack = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.25, metalness: 0.2 });  // Hidung hitam & kuku serigala
+    const wolfMouthMat = new THREE.MeshStandardMaterial({ color: 0x991b1b, roughness: 0.5 });                    // Rongga mulut & lidah
+    const wolfEyeMat = new THREE.MeshBasicMaterial({ color: 0xf59e0b });                                         // Mata kuning amber serigala
+
+    // 1. Tubuh Quadruped Anatomi Serigala (Dada Bidang -> Pinggang Ramping -> Pinggul Berotot)
     const spinePts = [
-      new THREE.Vector3(0, 1.18, -0.82),
-      new THREE.Vector3(0, 1.15, -0.25),
-      new THREE.Vector3(0, 1.28, 0.38),
-      new THREE.Vector3(0, 1.52, 0.78)
+      new THREE.Vector3(0, 1.16, -0.88),
+      new THREE.Vector3(0, 1.14, -0.28),
+      new THREE.Vector3(0, 1.24, 0.36),
+      new THREE.Vector3(0, 1.38, 0.72)
     ];
     const torsoMesh = createOrganicTube(
       spinePts,
-      (u) => 0.36 + 0.14 * Math.sin(u * Math.PI * 1.1),
-      18,
-      14,
-      secondaryMat,
-      0.95,
-      1.15
+      (u) => 0.36 + 0.12 * Math.sin(u * Math.PI * 1.05),
+      20,
+      16,
+      wolfMidGrey,
+      0.94,
+      1.12
     );
     wolfRoot.add(torsoMesh);
 
-    // Sculpted Frost-Fur Mane Shards around Neck & Shoulders
-    for (let m = 0; m < 10; m++) {
-      const a = (m / 10) * Math.PI * 2;
-      const mPts = [
-        new THREE.Vector3(Math.cos(a) * 0.32, 1.38 + Math.sin(a) * 0.28, 0.55),
-        new THREE.Vector3(Math.cos(a) * 0.58, 1.48 + Math.sin(a) * 0.42, 0.25),
-        new THREE.Vector3(Math.cos(a) * 0.68, 1.52 + Math.sin(a) * 0.48, -0.05)
-      ];
-      wolfRoot.add(createOrganicTube(mPts, (u) => 0.14 * (1 - u * 0.85), 8, 6, primaryMat));
+    // Mantel Bulu Punggung Abu-Abu Tua (Dark Grey Dorsal Saddle Coat)
+    const saddlePts = [
+      new THREE.Vector3(0, 1.28, -0.82),
+      new THREE.Vector3(0, 1.28, -0.22),
+      new THREE.Vector3(0, 1.38, 0.38),
+      new THREE.Vector3(0, 1.50, 0.72)
+    ];
+    const saddleCoat = createOrganicTube(saddlePts, (u) => 0.31 * Math.sin(u * Math.PI * 0.85 + 0.22), 16, 12, wolfDarkGrey, 0.96, 0.62);
+    wolfRoot.add(saddleCoat);
+
+    // Dada & Perut Bawah Berbulu Abu-Abu Perak Terang (Silver-White Chest & Underbelly Ruff)
+    const chestRuff = createSculptedMesh(new THREE.SphereGeometry(0.44, 16, 14), 0.06, wolfLightGrey, 0.88, 1.15, 1.08);
+    chestRuff.position.set(0, 1.12, 0.62);
+    wolfRoot.add(chestRuff);
+
+    const bellyUnder = createSculptedMesh(new THREE.SphereGeometry(0.35, 14, 12), 0.04, wolfLightGrey, 0.78, 0.75, 1.65);
+    bellyUnder.position.set(0, 0.98, -0.10);
+    wolfRoot.add(bellyUnder);
+
+    // Surai Leher Serigala Berlapis Halus (Layered Lupine Neck Ruff — mengarah ke belakang dengan alami)
+    for (let r = -3; r <= 3; r++) {
+      const tuft = createSculptedMesh(new THREE.ConeGeometry(0.14, 0.42, 8), 0.03, Math.abs(r) <= 1 ? wolfDarkGrey : wolfLightGrey);
+      tuft.position.set(r * 0.11, 1.54 - Math.abs(r) * 0.06, 0.56 - Math.abs(r) * 0.04);
+      tuft.rotation.x = -Math.PI * 0.62;
+      tuft.rotation.z = -r * 0.18;
+      wolfRoot.add(tuft);
     }
 
-    // Sculpted Wolf Head, Muzzle, Pointed Ears & Hinged Snarling Jaw
+    // 2. KEPALA SERIGALA ABU-ABU ASLI (Tengkorak, Bulu Pipi Perak, Moncong Panjang, Hidung Hitam & Telinga Segitiga Tegak)
     const headPivot = new THREE.Group();
-    headPivot.position.set(0, 1.68, 0.88);
+    headPivot.position.set(0, 1.58, 0.82);
 
-    const skullPts = [
-      new THREE.Vector3(0, 0, -0.15),
-      new THREE.Vector3(0, 0.06, 0.18),
-      new THREE.Vector3(0, -0.02, 0.62)
+    // Kubah Tengkorak Serigala (Cranium)
+    const cranium = createSculptedMesh(new THREE.SphereGeometry(0.36, 16, 16), 0.04, wolfMidGrey, 1.04, 0.96, 1.12);
+    cranium.position.set(0, 0.06, 0.05);
+    headPivot.add(cranium);
+
+    // Dahi Atas Abu-Abu Tua (Dark Forehead Cap)
+    const foreheadCap = createSculptedMesh(new THREE.SphereGeometry(0.32, 14, 12), 0.03, wolfDarkGrey, 0.98, 0.65, 1.10);
+    foreheadCap.position.set(0, 0.18, 0.08);
+    headPivot.add(foreheadCap);
+
+    // Bulu Pipi Samping Serigala Abu-Abu Perak (Lupine Cheek Ruff Tufts)
+    [-1, 1].forEach(side => {
+      const cheek = createSculptedMesh(new THREE.ConeGeometry(0.18, 0.38, 10), 0.04, wolfLightGrey, 0.65, 1.0, 1.1);
+      cheek.position.set(side * 0.32, -0.02, 0.04);
+      cheek.rotation.z = side * 1.15;
+      cheek.rotation.y = -side * 0.35;
+      headPivot.add(cheek);
+    });
+
+    // MONCONG SERIGALA PANJANG MERUNCING KE DEPAN (Long Canine Snout / Muzzle)
+    const upperMuzzlePts = [
+      new THREE.Vector3(0, 0.04, 0.18),
+      new THREE.Vector3(0, 0.02, 0.48),
+      new THREE.Vector3(0, 0.00, 0.76)
     ];
-    headPivot.add(createOrganicTube(skullPts, (u) => 0.31 * (1 - u * 0.52), 12, 12, secondaryMat, 1.05, 0.92));
+    const upperMuzzle = createOrganicTube(upperMuzzlePts, (u) => 0.22 * (1 - u * 0.36), 12, 12, wolfMidGrey, 0.92, 0.78);
+    headPivot.add(upperMuzzle);
 
-    // Pointed Lupine Ears
-    [-0.2, 0.2].forEach(ex => {
-      const earPts = [
-        new THREE.Vector3(ex, 0.22, -0.02),
-        new THREE.Vector3(ex * 1.35, 0.48, -0.08),
-        new THREE.Vector3(ex * 1.45, 0.65, -0.12)
-      ];
-      headPivot.add(createOrganicTube(earPts, (u) => 0.11 * (1 - u * 0.85), 8, 8, primaryMat));
+    // Batang Hidung Atas Abu-Abu Tua & Bibir Samping Abu-Abu Terang
+    const nasalBridge = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.06, 0.52), wolfDarkGrey);
+    nasalBridge.position.set(0, 0.11, 0.46);
+    nasalBridge.rotation.x = 0.06;
+    headPivot.add(nasalBridge);
+
+    const muzzleCheeks = new THREE.Mesh(new THREE.SphereGeometry(0.18, 12, 10), wolfLightGrey);
+    muzzleCheeks.scale.set(1.05, 0.55, 1.45);
+    muzzleCheeks.position.set(0, -0.03, 0.46);
+    headPivot.add(muzzleCheeks);
+
+    // HIDUNG HITAM SERIGALA DI UJUNG MONCONG (Black Canine Nose)
+    const noseTip = new THREE.Mesh(new THREE.SphereGeometry(0.095, 12, 12), wolfNoseBlack);
+    noseTip.scale.set(1.15, 0.85, 0.95);
+    noseTip.position.set(0, 0.05, 0.78);
+    headPivot.add(noseTip);
+
+    // 2 TELINGA SERIGALA TEGAK SEGITIGA (Erect Pointed Triangular Wolf Ears + Telinga Dalam Perak)
+    [-1, 1].forEach(side => {
+      const earGroup = new THREE.Group();
+      earGroup.position.set(side * 0.22, 0.30, -0.04);
+      earGroup.rotation.z = -side * 0.18;
+      earGroup.rotation.x = 0.12;
+
+      const outerEar = new THREE.Mesh(new THREE.ConeGeometry(0.13, 0.38, 10), wolfDarkGrey);
+      outerEar.scale.set(0.85, 1.0, 0.55);
+      outerEar.position.y = 0.16;
+      earGroup.add(outerEar);
+
+      const innerEar = new THREE.Mesh(new THREE.ConeGeometry(0.085, 0.28, 8), wolfLightGrey);
+      innerEar.scale.set(0.8, 1.0, 0.35);
+      innerEar.position.set(0, 0.14, 0.035);
+      earGroup.add(innerEar);
+
+      headPivot.add(earGroup);
     });
 
-    // Glowing Ice Eyes
-    [-0.15, 0.15].forEach(ex => {
-      const eye = new THREE.Mesh(new THREE.SphereGeometry(0.055, 10, 10), accentMat);
-      eye.position.set(ex, 0.12, 0.24);
+    // Sepasang Mata Kuning Amber Serigala + Alis Garang & Pupil Hitam
+    [-1, 1].forEach(side => {
+      const brow = new THREE.Mesh(new THREE.BoxGeometry(0.13, 0.04, 0.16), wolfDarkGrey);
+      brow.position.set(side * 0.17, 0.18, 0.28);
+      brow.rotation.z = -side * 0.26;
+      brow.rotation.y = side * 0.22;
+      headPivot.add(brow);
+
+      const eye = new THREE.Mesh(new THREE.SphereGeometry(0.058, 12, 12), wolfEyeMat);
+      eye.position.set(side * 0.17, 0.12, 0.29);
       headPivot.add(eye);
+
+      const pupil = new THREE.Mesh(new THREE.SphereGeometry(0.030, 8, 8), wolfNoseBlack);
+      pupil.position.set(side * 0.18, 0.12, 0.34);
+      headPivot.add(pupil);
     });
 
-    // Hinged Lower Wolf Jaw with Fangs
-    const jawPivot = new THREE.Group();
-    jawPivot.position.set(0, -0.1, 0.08);
-    const jawPts = [new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, -0.06, 0.46)];
-    jawPivot.add(createOrganicTube(jawPts, (u) => 0.18 * (1 - u * 0.52), 8, 10, secondaryMat, 0.95, 0.55));
-    [-0.08, 0.08].forEach(fx => {
-      const fang = new THREE.Mesh(new THREE.ConeGeometry(0.032, 0.14, 6), boneMat);
-      fang.position.set(fx, 0.04, 0.38);
-      jawPivot.add(fang);
+    // Taring Atas Serigala (Upper Canine Fangs)
+    [-0.10, 0.10].forEach(fx => {
+      const upperFang = new THREE.Mesh(new THREE.ConeGeometry(0.032, 0.13, 8), boneMat);
+      upperFang.position.set(fx, -0.09, 0.62);
+      upperFang.rotation.x = Math.PI;
+      headPivot.add(upperFang);
     });
+
+    // Rahang Bawah Serigala Menggeram (Hinged Snarling Lower Jaw + Lidah & Taring Bawah)
+    const jawPivot = new THREE.Group();
+    jawPivot.position.set(0, -0.09, 0.16);
+    const jawPts = [
+      new THREE.Vector3(0, 0, 0),
+      new THREE.Vector3(0, -0.05, 0.28),
+      new THREE.Vector3(0, -0.04, 0.54)
+    ];
+    jawPivot.add(createOrganicTube(jawPts, (u) => 0.16 * (1 - u * 0.38), 10, 10, wolfLightGrey, 0.88, 0.52));
+
+    const wolfTongue = new THREE.Mesh(new THREE.SphereGeometry(0.09, 10, 8), wolfMouthMat);
+    wolfTongue.scale.set(0.85, 0.28, 2.2);
+    wolfTongue.position.set(0, 0.0, 0.32);
+    jawPivot.add(wolfTongue);
+
+    [-0.085, 0.085].forEach(fx => {
+      const lowerFang = new THREE.Mesh(new THREE.ConeGeometry(0.028, 0.12, 8), boneMat);
+      lowerFang.position.set(fx, 0.04, 0.46);
+      jawPivot.add(lowerFang);
+    });
+
     headPivot.add(jawPivot);
     animParts.jawPivot = jawPivot;
     animParts.headPivot = headPivot;
     wolfRoot.add(headPivot);
 
-    // 4 Articulated Digitigrade Wolf Legs
+    // 3. 4 KAKI SERIGALA DIGITIGRADE BEROTOT (Bahu/Paha Abu-Abu -> Betis -> Telapak Kaki Perak & Kuku Hitam)
     animParts.wolfLegs = [];
     const legConfigs = [
-      { x: -0.34, y: 1.18, z: 0.55, isFront: true, phase: 0 },
-      { x:  0.34, y: 1.18, z: 0.55, isFront: true, phase: Math.PI },
-      { x: -0.36, y: 1.16, z: -0.68, isFront: false, phase: Math.PI },
-      { x:  0.36, y: 1.16, z: -0.68, isFront: false, phase: 0 }
+      { x: -0.35, y: 1.18, z: 0.54, isFront: true, phase: 0 },
+      { x:  0.35, y: 1.18, z: 0.54, isFront: true, phase: Math.PI },
+      { x: -0.37, y: 1.16, z: -0.68, isFront: false, phase: Math.PI },
+      { x:  0.37, y: 1.16, z: -0.68, isFront: false, phase: 0 }
     ];
     legConfigs.forEach(cfg => {
       const legPivot = new THREE.Group();
       legPivot.position.set(cfg.x, cfg.y, cfg.z);
 
-      const legPts = cfg.isFront
-        ? [new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, -0.58, -0.06), new THREE.Vector3(0, -1.12, 0.08), new THREE.Vector3(0, -1.16, 0.24)]
-        : [new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, -0.52, 0.16), new THREE.Vector3(0, -0.82, -0.14), new THREE.Vector3(0, -1.14, 0.08), new THREE.Vector3(0, -1.16, 0.24)];
+      // Otot Bahu / Paha Atas Serigala
+      const thighMuscle = createSculptedMesh(
+        new THREE.SphereGeometry(cfg.isFront ? 0.21 : 0.25, 12, 12),
+        0.04,
+        wolfMidGrey,
+        0.82,
+        1.35,
+        1.12
+      );
+      thighMuscle.position.set(0, -0.18, cfg.isFront ? -0.02 : -0.04);
+      legPivot.add(thighMuscle);
 
-      legPivot.add(createOrganicTube(legPts, (u) => 0.17 * (1 - u * 0.48), 14, 10, secondaryMat));
+      const legPts = cfg.isFront
+        ? [
+            new THREE.Vector3(0, 0, 0),
+            new THREE.Vector3(0, -0.56, -0.05),
+            new THREE.Vector3(0, -1.06, 0.06),
+            new THREE.Vector3(0, -1.14, 0.20)
+          ]
+        : [
+            new THREE.Vector3(0, 0, 0),
+            new THREE.Vector3(0, -0.48, 0.16),
+            new THREE.Vector3(0, -0.78, -0.16),
+            new THREE.Vector3(0, -1.08, 0.04),
+            new THREE.Vector3(0, -1.14, 0.18)
+          ];
+
+      legPivot.add(createOrganicTube(legPts, (u) => 0.16 * (1 - u * 0.42), 14, 10, wolfMidGrey));
+
+      // Telapak Kaki Serigala (Wolf Paw + 3 Kuku Hitam)
+      const paw = new THREE.Mesh(new THREE.SphereGeometry(0.13, 10, 10), wolfLightGrey);
+      paw.scale.set(0.95, 0.55, 1.25);
+      paw.position.set(0, -1.12, 0.20);
+      legPivot.add(paw);
+
+      [-0.05, 0, 0.05].forEach(cx => {
+        const claw = new THREE.Mesh(new THREE.ConeGeometry(0.022, 0.08, 6), wolfNoseBlack);
+        claw.position.set(cx, -1.13, 0.34);
+        claw.rotation.x = Math.PI / 2;
+        legPivot.add(claw);
+      });
+
       wolfRoot.add(legPivot);
       animParts.wolfLegs.push({ legPivot, phase: cfg.phase });
     });
 
-    // Bushy S-Curved Wolf Tail
+    // 4. EKOR SERIGALA LEBAT BERBULU ABU-ABU & UJUNG PERAK (Bushy Lupine Tail)
     const tailPivot = new THREE.Group();
-    tailPivot.position.set(0, 1.22, -0.85);
+    tailPivot.position.set(0, 1.20, -0.86);
     const tailPts = [
       new THREE.Vector3(0, 0, 0),
-      new THREE.Vector3(0, 0.18, -0.48),
-      new THREE.Vector3(0, -0.05, -0.98),
-      new THREE.Vector3(0, 0.08, -1.38)
+      new THREE.Vector3(0, 0.06, -0.46),
+      new THREE.Vector3(0, -0.16, -0.96),
+      new THREE.Vector3(0, -0.08, -1.36)
     ];
-    tailPivot.add(createOrganicTube(tailPts, (u) => 0.24 * Math.sin(u * Math.PI * 0.85 + 0.25), 14, 10, primaryMat));
+    tailPivot.add(createOrganicTube(tailPts, (u) => 0.25 * Math.sin(u * Math.PI * 0.85 + 0.22), 16, 12, wolfMidGrey));
+    const tailTip = createSculptedMesh(new THREE.ConeGeometry(0.16, 0.42, 10), 0.04, wolfLightGrey);
+    tailTip.position.set(0, -0.05, -1.42);
+    tailTip.rotation.x = -Math.PI * 0.45;
+    tailPivot.add(tailTip);
+
     wolfRoot.add(tailPivot);
     animParts.tailGroup = tailPivot;
 
@@ -2472,114 +2710,285 @@ function buildUniqueMonsterMesh(st) {
   }
 
   // -------------------------------------------------------------------------
-  // POS 8: 🐉 RAJA NAGA BAHAMUT (Final Boss: Sinuous S-Curved Dragon Body,
-  //        Articulated Neck, Horned Dragon Skull with Fiery Hinged Jaw,
-  //        2 Colossal Multi-Fingered Bat-Wings & Whipping Dragon Tail)
+  // POS 8: 🐉 RAJA NAGA MERAH BAHAMUT (Final Boss: Naga Merah Bersisik 3D Lengkap,
+  //        Wajah Naga Merah Garang dengan Mata Slit Emas, Alis Berduri, Moncong
+  //        Berlubang Hidung, Cula Hidung, Rahang Bertaring 12 Gigi, Sisik Perut Emas,
+  //        Barisan Sisik Perisai 3D di Tubuh/Leher/Ekor & Sayap Naga Merah Raksasa)
   // -------------------------------------------------------------------------
   else {
     const dragonRoot = new THREE.Group();
 
-    // 1. Sinuous S-Curved Dragon Body (Chest -> Mid-Torso -> Haunches)
+    // Palet Warna Naga Merah Menyala (Crimson Scaled Red Dragon)
+    const dragonRedMain = new THREE.MeshStandardMaterial({ color: 0xdc2626, roughness: 0.34, metalness: 0.18 });   // Kulit & tubuh naga merah utama
+    const dragonRedDark = new THREE.MeshStandardMaterial({ color: 0x991b1b, roughness: 0.38, metalness: 0.22 });   // Sisik punggung & perisai merah tua (ruby)
+    const dragonScarlet = new THREE.MeshStandardMaterial({ color: 0xef4444, roughness: 0.32, metalness: 0.15, emissive: 0x7f1d1d, emissiveIntensity: 0.22 }); // Selaput sayap & sisik merah menyala
+    const dragonGoldMat = new THREE.MeshStandardMaterial({ color: 0xfbbf24, roughness: 0.28, metalness: 0.55, emissive: 0xd97706, emissiveIntensity: 0.18 }); // Pelat sisik perut & tanduk emas
+    const dragonEyeMat = new THREE.MeshBasicMaterial({ color: 0xfef08a });  // Mata naga kuning emas menyala
+    const dragonPupilMat = new THREE.MeshBasicMaterial({ color: 0x090d16 }); // Pupil celah vertikal hitam
+
+    // Helper Pembuat Keping Sisik Naga 3D (3D Overlapping Diamond/Shield Dragon Scale)
+    function createDragonScalePlate(scaleSize, mat) {
+      const sc = new THREE.Mesh(new THREE.OctahedronGeometry(scaleSize, 0), mat);
+      sc.scale.set(1.15, 0.32, 1.35);
+      sc.castShadow = true;
+      return sc;
+    }
+
+    // 1. Tubuh Naga Merah Berotot S-Curve (Dada Bidang -> Perut -> Pinggul)
     const bodyPts = [
       new THREE.Vector3(0, 0.85, -1.05),
-      new THREE.Vector3(0, 1.25, -0.35),
-      new THREE.Vector3(0, 1.85, 0.25),
-      new THREE.Vector3(0, 2.38, 0.48)
+      new THREE.Vector3(0, 1.22, -0.35),
+      new THREE.Vector3(0, 1.72, 0.25),
+      new THREE.Vector3(0, 2.08, 0.52)
     ];
     const dragonBody = createOrganicTube(
       bodyPts,
-      (u) => 0.58 * Math.sin(u * Math.PI * 0.85 + 0.22),
-      22,
+      (u) => 0.60 * Math.sin(u * Math.PI * 0.85 + 0.22),
+      24,
       16,
-      secondaryMat,
-      1.12,
+      dragonRedMain,
+      1.14,
       1.05
     );
     dragonRoot.add(dragonBody);
 
-    // Golden Armored Ventral Belly Scales
-    const bellyPts = [
-      new THREE.Vector3(0, 0.92, -0.75),
-      new THREE.Vector3(0, 1.32, -0.12),
-      new THREE.Vector3(0, 1.88, 0.42),
-      new THREE.Vector3(0, 2.32, 0.62)
-    ];
-    dragonRoot.add(createOrganicTube(bellyPts, (u) => 0.44 * Math.sin(u * Math.PI * 0.85 + 0.2), 18, 12, primaryMat, 0.95, 0.65));
+    // 10 Pelat Sisik Perut Naga Kuning-Emas Berlapis (Overlapping Golden Armored Ventral Belly Scutes)
+    for (let b = 0; b < 9; b++) {
+      const u = b / 8;
+      const by = 0.92 + u * 1.12;
+      const bz = -0.62 + u * 1.28;
+      const scuteRadius = 0.38 * Math.sin(u * Math.PI * 0.82 + 0.25);
+      const bellyPlate = new THREE.Mesh(new THREE.CylinderGeometry(scuteRadius * 0.92, scuteRadius * 1.04, 0.16, 10), dragonGoldMat);
+      bellyPlate.scale.set(1.15, 1.0, 0.48);
+      bellyPlate.position.set(0, by, bz);
+      bellyPlate.rotation.x = 0.55;
+      dragonRoot.add(bellyPlate);
+    }
 
-    // Glowing Dragon Heart Core
-    const heartCore = new THREE.Mesh(new THREE.OctahedronGeometry(0.32, 1), accentMat);
-    heartCore.position.set(0, 1.98, 0.68);
+    // BARISAN SISIK NAGA 3D DI KIRI, KANAN & PUNGGUNG TUBUH NAGA (3D Overlapping Dragon Armor Scales!)
+    for (let row = 0; row < 7; row++) {
+      const u = (row + 0.4) / 7;
+      const ry = 0.96 + u * 1.08;
+      const rz = -0.88 + u * 1.28;
+      const bodyRad = 0.56 * Math.sin(u * Math.PI * 0.85 + 0.22);
+
+      // 3 Lapis Baris Sisik Samping di setiap sisi (Kiri & Kanan)
+      [-1, 1].forEach(side => {
+        for (let layer = 0; layer < 3; layer++) {
+          const ang = (0.35 + layer * 0.38) * side;
+          const scalePlate = createDragonScalePlate(0.18, (row + layer) % 2 === 0 ? dragonRedDark : dragonScarlet);
+          scalePlate.position.set(
+            Math.sin(ang) * bodyRad * 1.02,
+            ry + Math.cos(ang) * bodyRad * 0.65,
+            rz - layer * 0.06
+          );
+          scalePlate.rotation.z = -ang;
+          scalePlate.rotation.x = 0.45;
+          dragonRoot.add(scalePlate);
+        }
+      });
+
+      // Duri Sisik Punggung Naga (Dorsal Dragon Spine Ridge Spikes)
+      const dorsalSpike = new THREE.Mesh(new THREE.ConeGeometry(0.11, 0.38, 6), row % 2 === 0 ? dragonGoldMat : dragonRedDark);
+      dorsalSpike.position.set(0, ry + bodyRad * 0.82, rz - 0.12);
+      dorsalSpike.rotation.x = -0.58;
+      dragonRoot.add(dorsalSpike);
+    }
+
+    // Inti Jantung Api Naga di Dada
+    const heartCore = new THREE.Mesh(new THREE.OctahedronGeometry(0.28, 1), dragonEyeMat);
+    heartCore.position.set(0, 1.78, 0.72);
     dragonRoot.add(heartCore);
     animParts.heartCore = heartCore;
 
-    // 2. 4 Clawed Muscular Dragon Legs
+    // 2. 4 Kaki Naga Merah Berotot Kekar Lengkap dengan Sisik Paha & Cakar Tajam
     [
-      [-0.58, 1.15, -0.55],
-      [ 0.58, 1.15, -0.55],
-      [-0.52, 1.82,  0.32],
-      [ 0.52, 1.82,  0.32]
+      [-0.60, 1.15, -0.55],
+      [ 0.60, 1.15, -0.55],
+      [-0.54, 1.72,  0.34],
+      [ 0.54, 1.72,  0.34]
     ].forEach(([lx, ly, lz], idx) => {
       const isRear = idx < 2;
+      const side = lx < 0 ? -1 : 1;
       const legPts = isRear
-        ? [new THREE.Vector3(lx, ly, lz), new THREE.Vector3(lx * 1.25, 0.58, lz + 0.22), new THREE.Vector3(lx * 1.1, 0.08, lz + 0.48)]
-        : [new THREE.Vector3(lx, ly, lz), new THREE.Vector3(lx * 1.35, 1.35, lz + 0.35), new THREE.Vector3(lx * 1.15, 0.95, lz + 0.68)];
-      dragonRoot.add(createOrganicTube(legPts, (u) => (isRear ? 0.28 : 0.21) * (1 - u * 0.45), 10, 10, secondaryMat));
+        ? [new THREE.Vector3(lx, ly, lz), new THREE.Vector3(lx * 1.28, 0.58, lz + 0.22), new THREE.Vector3(lx * 1.12, 0.08, lz + 0.50)]
+        : [new THREE.Vector3(lx, ly, lz), new THREE.Vector3(lx * 1.38, 1.25, lz + 0.35), new THREE.Vector3(lx * 1.16, 0.78, lz + 0.68)];
+      dragonRoot.add(createOrganicTube(legPts, (u) => (isRear ? 0.29 : 0.22) * (1 - u * 0.42), 12, 10, dragonRedMain));
+
+      // Sisik Pelindung Bahu/Paha Kaki Naga
+      for (let ls = 0; ls < 3; ls++) {
+        const legScale = createDragonScalePlate(0.15, dragonRedDark);
+        legScale.position.set(lx * 1.25 + side * 0.08, ly - ls * 0.22, lz + ls * 0.10);
+        legScale.rotation.z = -side * 0.95;
+        dragonRoot.add(legScale);
+      }
+
+      // 3 Cakar Kaki Naga Putih Gading
+      [-0.10, 0, 0.10].forEach(cx => {
+        const claw = new THREE.Mesh(new THREE.ConeGeometry(0.045, 0.22, 6), boneMat);
+        const endPt = legPts[2];
+        claw.position.set(endPt.x + cx, endPt.y, endPt.z + 0.16);
+        claw.rotation.x = Math.PI * 0.42;
+        dragonRoot.add(claw);
+      });
     });
 
-    // 3. Articulated Dragon Neck & Majestic Horned Dragon Head
+    // 3. LEHER BERSISIK & WAJAH NAGA MERAH YANG SANGAT JELAS MENGHADAP PEMAIN!
     const headPivot = new THREE.Group();
-    headPivot.position.set(0, 2.45, 0.52);
+    // Posisi diturunkan sedikit agar Wajah Naga 100% terlihat jelas di bawah label nama!
+    headPivot.position.set(0, 2.02, 0.56);
 
     const neckPts = [
       new THREE.Vector3(0, 0, 0),
-      new THREE.Vector3(0, 0.45, 0.12),
-      new THREE.Vector3(0, 0.82, 0.38)
+      new THREE.Vector3(0, 0.34, 0.16),
+      new THREE.Vector3(0, 0.62, 0.42)
     ];
-    headPivot.add(createOrganicTube(neckPts, (u) => 0.38 * (1 - u * 0.25), 12, 12, secondaryMat));
+    headPivot.add(createOrganicTube(neckPts, (u) => 0.38 * (1 - u * 0.22), 14, 12, dragonRedMain));
 
-    // Dragon Skull & Upper Snout
+    // Sisik Leher Samping & Duri Punggung Leher Naga
+    for (let ns = 0; ns < 4; ns++) {
+      const nu = (ns + 0.3) / 4;
+      [-1, 1].forEach(side => {
+        const nScale = createDragonScalePlate(0.14, dragonRedDark);
+        nScale.position.set(side * 0.32, nu * 0.56, nu * 0.36);
+        nScale.rotation.z = -side * 1.1;
+        headPivot.add(nScale);
+      });
+      const nSpike = new THREE.Mesh(new THREE.ConeGeometry(0.08, 0.28, 6), dragonGoldMat);
+      nSpike.position.set(0, nu * 0.58 + 0.12, nu * 0.36 - 0.28);
+      nSpike.rotation.x = -0.65;
+      headPivot.add(nSpike);
+    }
+
+    // KEPALA & WAJAH NAGA MERAH LENGKAP (Tengkorak, Alis Berduri, Mata Kuning Slit, Moncong, Hidung, Cula & Rahang Bertaring)
     const skullGroup = new THREE.Group();
-    skullGroup.position.set(0, 0.85, 0.42);
-    const snoutPts = [
-      new THREE.Vector3(0, 0.06, -0.18),
-      new THREE.Vector3(0, 0.12, 0.25),
-      new THREE.Vector3(0, 0.04, 0.82)
-    ];
-    skullGroup.add(createOrganicTube(snoutPts, (u) => 0.42 * (1 - u * 0.48), 14, 12, secondaryMat, 1.12, 0.82));
+    skullGroup.position.set(0, 0.64, 0.46);
+    skullGroup.rotation.x = 0.18; // Menunduk sedikit agar wajah, mata & moncong naga langsung menatap pemain!
 
-    // 4 Swept-Back Golden Dragon Horns
+    // Kubah Tengkorak & Pipi Naga Berzirah Sisik Merah
+    const cranium = createSculptedMesh(new THREE.SphereGeometry(0.42, 16, 14), 0.05, dragonRedMain, 1.16, 0.88, 1.15);
+    cranium.position.set(0, 0.08, 0.05);
+    skullGroup.add(cranium);
+
+    // Pelat Sisik Dahi Naga Merah Tua
+    for (let fs = 0; fs < 3; fs++) {
+      const fPlate = createDragonScalePlate(0.16 - fs * 0.02, dragonRedDark);
+      fPlate.position.set(0, 0.28 - fs * 0.04, 0.12 + fs * 0.22);
+      fPlate.rotation.x = 0.22;
+      skullGroup.add(fPlate);
+    }
+
+    // Moncong Atas Naga Merah yang Panjang & Gagah (Sculpted Red Dragon Snout)
+    const snoutPts = [
+      new THREE.Vector3(0, 0.04, 0.05),
+      new THREE.Vector3(0, 0.06, 0.45),
+      new THREE.Vector3(0, 0.02, 0.88)
+    ];
+    skullGroup.add(createOrganicTube(snoutPts, (u) => 0.36 * (1 - u * 0.35), 14, 14, dragonRedMain, 1.12, 0.78));
+
+    // CULA HIDUNG NAGA EMAS di Ujung Atas Moncong (Golden Dragon Nasal Horn)
+    const nasalHorn = new THREE.Mesh(new THREE.ConeGeometry(0.085, 0.32, 8), dragonGoldMat);
+    nasalHorn.position.set(0, 0.24, 0.78);
+    nasalHorn.rotation.x = -0.25;
+    skullGroup.add(nasalHorn);
+
+    // 2 Tonjolan Lubang Hidung Naga di Ujung Moncong Depan (Flared Dragon Nostrils)
+    [-1, 1].forEach(side => {
+      const nostrilBoss = new THREE.Mesh(new THREE.SphereGeometry(0.09, 10, 10), dragonRedDark);
+      nostrilBoss.position.set(side * 0.16, 0.10, 0.78);
+      skullGroup.add(nostrilBoss);
+
+      const nostrilHole = new THREE.Mesh(new THREE.SphereGeometry(0.048, 8, 8), dragonPupilMat);
+      nostrilHole.position.set(side * 0.17, 0.10, 0.84);
+      skullGroup.add(nostrilHole);
+    });
+
+    // SEPASANG MATA NAGA KUNING MENYALA + PUPIL VERTIKAL HITAM & ALIS NAGA BERDURI!
+    [-1, 1].forEach(side => {
+      // Alis Naga Tebal Berduri (Armored Supraorbital Brow Ridge)
+      const browPts = [
+        new THREE.Vector3(side * 0.16, 0.26, 0.36),
+        new THREE.Vector3(side * 0.36, 0.30, 0.16),
+        new THREE.Vector3(side * 0.48, 0.36, -0.08)
+      ];
+      skullGroup.add(createOrganicTube(browPts, (u) => 0.09 * (1 - u * 0.4), 8, 8, dragonRedDark));
+
+      // Bola Mata Naga Kuning Emas Besar agar Wajah Sangat Terlihat Hidup
+      const eye = new THREE.Mesh(new THREE.SphereGeometry(0.11, 14, 14), dragonEyeMat);
+      eye.position.set(side * 0.29, 0.15, 0.26);
+      skullGroup.add(eye);
+
+      // Pupil Vertikal Hitam Khas Naga (Vertical Dragon Slit Pupil)
+      const pupil = new THREE.Mesh(new THREE.BoxGeometry(0.035, 0.16, 0.06), dragonPupilMat);
+      pupil.position.set(side * 0.35, 0.15, 0.33);
+      pupil.rotation.y = side * 0.38;
+      skullGroup.add(pupil);
+
+      // Duri Pipi Samping Wajah Naga (Cheek Frill Spikes)
+      [-0.05, 0.12].forEach((cz, cIdx) => {
+        const cheekSpike = new THREE.Mesh(new THREE.ConeGeometry(0.06, 0.24, 6), boneMat);
+        cheekSpike.position.set(side * 0.44, -0.02 + cIdx * 0.08, cz);
+        cheekSpike.rotation.z = -side * 1.15;
+        cheekSpike.rotation.x = -0.35;
+        skullGroup.add(cheekSpike);
+      });
+    });
+
+    // Barisan 6 Gigi Taring Naga Atas (Upper Dragon Fangs)
+    [-1, 1].forEach(side => {
+      [0.36, 0.56, 0.74].forEach((fz, fIdx) => {
+        const fang = new THREE.Mesh(new THREE.ConeGeometry(0.042, fIdx === 2 ? 0.22 : 0.16, 8), boneMat);
+        fang.position.set(side * (0.24 - fIdx * 0.03), -0.10, fz);
+        fang.rotation.x = Math.PI;
+        skullGroup.add(fang);
+      });
+    });
+
+    // 4 Tanduk Mahkota Naga Melengkung Gagah ke Belakang (Swept-Back Crown Dragon Horns)
     [-1, 1].forEach(side => {
       const mainHornPts = [
-        new THREE.Vector3(side * 0.24, 0.22, -0.05),
-        new THREE.Vector3(side * 0.52, 0.58, -0.48),
-        new THREE.Vector3(side * 0.68, 0.98, -0.95)
+        new THREE.Vector3(side * 0.26, 0.26, -0.04),
+        new THREE.Vector3(side * 0.56, 0.62, -0.46),
+        new THREE.Vector3(side * 0.72, 1.04, -0.92)
       ];
-      skullGroup.add(createOrganicTube(mainHornPts, (u) => 0.15 * (1 - u * 0.88), 12, 10, primaryMat));
+      skullGroup.add(createOrganicTube(mainHornPts, (u) => 0.16 * (1 - u * 0.86), 14, 10, dragonGoldMat));
 
       const subHornPts = [
-        new THREE.Vector3(side * 0.28, 0.08, 0.02),
-        new THREE.Vector3(side * 0.58, 0.22, -0.35),
-        new THREE.Vector3(side * 0.72, 0.38, -0.68)
+        new THREE.Vector3(side * 0.34, 0.10, 0.02),
+        new THREE.Vector3(side * 0.64, 0.26, -0.36),
+        new THREE.Vector3(side * 0.78, 0.44, -0.70)
       ];
-      skullGroup.add(createOrganicTube(subHornPts, (u) => 0.095 * (1 - u * 0.88), 10, 8, boneMat));
+      skullGroup.add(createOrganicTube(subHornPts, (u) => 0.10 * (1 - u * 0.86), 10, 8, boneMat));
     });
 
-    // Glowing Dragon Eyes
-    [-0.22, 0.22].forEach(ex => {
-      const eye = new THREE.Mesh(new THREE.SphereGeometry(0.075, 10, 10), accentMat);
-      eye.position.set(ex, 0.18, 0.28);
-      skullGroup.add(eye);
-    });
-
-    // Hinged Fiery Lower Jaw with Fangs
+    // Rahang Bawah Naga Merah Berengsel (Hinged Fiery Lower Jaw + 6 Gigi Taring Bawah + Semburan Magma)
     const jawPivot = new THREE.Group();
     jawPivot.position.set(0, -0.08, 0.08);
-    const jawPts = [new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, -0.08, 0.68)];
-    jawPivot.add(createOrganicTube(jawPts, (u) => 0.3 * (1 - u * 0.52), 10, 10, primaryMat, 1.0, 0.55));
+    const jawPts = [
+      new THREE.Vector3(0, 0, 0),
+      new THREE.Vector3(0, -0.08, 0.38),
+      new THREE.Vector3(0, -0.06, 0.76)
+    ];
+    jawPivot.add(createOrganicTube(jawPts, (u) => 0.31 * (1 - u * 0.42), 12, 12, dragonRedDark, 1.05, 0.55));
 
-    // Glowing Magma Throat Core inside mouth
-    const throatGlow = new THREE.Mesh(new THREE.SphereGeometry(0.16, 10, 10), accentMat);
-    throatGlow.position.set(0, 0.04, 0.25);
+    // Dagu Berduri Emas di Bawah Rahang Naga
+    const chinSpike = new THREE.Mesh(new THREE.ConeGeometry(0.07, 0.22, 6), dragonGoldMat);
+    chinSpike.position.set(0, -0.20, 0.68);
+    chinSpike.rotation.x = Math.PI * 0.78;
+    jawPivot.add(chinSpike);
+
+    // 6 Gigi Taring Rahang Bawah
+    [-1, 1].forEach(side => {
+      [0.28, 0.48, 0.66].forEach((fz, fIdx) => {
+        const lFang = new THREE.Mesh(new THREE.ConeGeometry(0.038, fIdx === 2 ? 0.19 : 0.14, 8), boneMat);
+        lFang.position.set(side * (0.21 - fIdx * 0.03), 0.04, fz);
+        jawPivot.add(lFang);
+      });
+    });
+
+    // Bola Bara Api Magma di Dalam Mulut Naga
+    const throatGlow = new THREE.Mesh(new THREE.SphereGeometry(0.18, 12, 12), dragonEyeMat);
+    throatGlow.position.set(0, 0.05, 0.30);
     jawPivot.add(throatGlow);
 
     skullGroup.add(jawPivot);
@@ -2588,40 +2997,40 @@ function buildUniqueMonsterMesh(st) {
     animParts.headPivot = headPivot;
     animParts.jawPivot = jawPivot;
 
-    // 4. 2 Colossal 2-Stage Articulated Bat-Like Dragon Wings
+    // 4. 2 SAYAP NAGA MERAH RAKSASA BERSELAPUT MERAH MENYALA (Crimson & Scarlet Bat-Wings)
     function buildDragonWing(sideSign) {
       const shoulderPivot = new THREE.Group();
-      shoulderPivot.position.set(sideSign * 0.52, 2.15, 0.15);
+      shoulderPivot.position.set(sideSign * 0.54, 1.92, 0.18);
 
-      // Inner Wing Arm Bone
+      // Tulang Lengan Sayap Dalam Merah Tua + Sisik Bahu Sayap
       const armPts = [
         new THREE.Vector3(0, 0, 0),
-        new THREE.Vector3(sideSign * 0.85, 0.55, -0.08),
-        new THREE.Vector3(sideSign * 1.55, 0.82, -0.15)
+        new THREE.Vector3(sideSign * 0.88, 0.56, -0.08),
+        new THREE.Vector3(sideSign * 1.58, 0.84, -0.15)
       ];
-      shoulderPivot.add(createOrganicTube(armPts, (u) => 0.16 * (1 - u * 0.25), 10, 8, primaryMat));
+      shoulderPivot.add(createOrganicTube(armPts, (u) => 0.17 * (1 - u * 0.24), 10, 8, dragonRedDark));
 
-      // Inner Wing Membrane Webbing
+      // Selaput Sayap Dalam Merah Menyala
       const innerWebPts = [
-        new THREE.Vector3(sideSign * 0.15, -0.25, -0.1),
-        new THREE.Vector3(sideSign * 0.85, 0.12, -0.22),
-        new THREE.Vector3(sideSign * 1.48, 0.38, -0.28)
+        new THREE.Vector3(sideSign * 0.15, -0.25, -0.10),
+        new THREE.Vector3(sideSign * 0.88, 0.14, -0.22),
+        new THREE.Vector3(sideSign * 1.50, 0.40, -0.28)
       ];
-      shoulderPivot.add(createOrganicTube(innerWebPts, (u) => 0.48 * Math.sin(u * Math.PI * 0.85 + 0.2), 12, 8, accentMat, 1.0, 0.12));
+      shoulderPivot.add(createOrganicTube(innerWebPts, (u) => 0.50 * Math.sin(u * Math.PI * 0.85 + 0.2), 12, 8, dragonScarlet, 1.0, 0.12));
 
-      // Outer Wing Wrist Joint + 4 Radiating Wing Fingers & Membranes
+      // Sendi Pergelangan Sayap Luar + 4 Jari Sayap & Selaput Merah
       const wristPivot = new THREE.Group();
-      wristPivot.position.set(sideSign * 1.55, 0.82, -0.15);
+      wristPivot.position.set(sideSign * 1.58, 0.84, -0.15);
 
-      // Wing Thumb Claw at Apex
-      const thumbPts = [new THREE.Vector3(0, 0, 0), new THREE.Vector3(sideSign * 0.18, 0.32, 0.18)];
-      wristPivot.add(createOrganicTube(thumbPts, (u) => 0.08 * (1 - u * 0.85), 6, 6, boneMat));
+      // Cakar Jempol Sayap Emas
+      const thumbPts = [new THREE.Vector3(0, 0, 0), new THREE.Vector3(sideSign * 0.20, 0.35, 0.18)];
+      wristPivot.add(createOrganicTube(thumbPts, (u) => 0.085 * (1 - u * 0.85), 6, 6, dragonGoldMat));
 
       const fingerTargets = [
-        [sideSign * 1.65, 0.35, -0.25],
-        [sideSign * 1.45, -0.28, -0.32],
-        [sideSign * 1.05, -0.85, -0.35],
-        [sideSign * 0.45, -1.15, -0.28]
+        [sideSign * 1.68, 0.36, -0.25],
+        [sideSign * 1.48, -0.28, -0.32],
+        [sideSign * 1.08, -0.86, -0.35],
+        [sideSign * 0.46, -1.16, -0.28]
       ];
       fingerTargets.forEach((ft, fIdx) => {
         const fPts = [
@@ -2629,9 +3038,8 @@ function buildUniqueMonsterMesh(st) {
           new THREE.Vector3(ft[0] * 0.55, ft[1] * 0.45 + 0.08, ft[2] * 0.5),
           new THREE.Vector3(ft[0], ft[1], ft[2])
         ];
-        wristPivot.add(createOrganicTube(fPts, (u) => 0.095 * (1 - u * 0.78), 10, 8, primaryMat));
+        wristPivot.add(createOrganicTube(fPts, (u) => 0.095 * (1 - u * 0.78), 10, 8, dragonRedDark));
 
-        // Membrane panel between fingers
         if (fIdx < fingerTargets.length - 1) {
           const nextFt = fingerTargets[fIdx + 1];
           const webPts = [
@@ -2639,7 +3047,7 @@ function buildUniqueMonsterMesh(st) {
             new THREE.Vector3((ft[0] + nextFt[0]) * 0.35, (ft[1] + nextFt[1]) * 0.35, -0.22),
             new THREE.Vector3((ft[0] + nextFt[0]) * 0.48, (ft[1] + nextFt[1]) * 0.48, -0.30)
           ];
-          wristPivot.add(createOrganicTube(webPts, (u) => 0.36 * u + 0.05, 10, 6, accentMat, 1.4, 0.12));
+          wristPivot.add(createOrganicTube(webPts, (u) => 0.38 * u + 0.06, 10, 6, dragonScarlet, 1.45, 0.12));
         }
       });
 
@@ -2656,19 +3064,29 @@ function buildUniqueMonsterMesh(st) {
     animParts.wristL = dWingL.wristPivot;
     animParts.wristR = dWingR.wristPivot;
 
-    // 5. Whipping Segmented Dragon Tail with Flame-Spade Tip
+    // 5. EKOR NAGA MERAH BERSISIK & BERDURI DENGAN UJUNG TOMBAK NAGA EMAS
     const tailPivot = new THREE.Group();
     tailPivot.position.set(0, 0.85, -1.02);
     const tailPts = [
       new THREE.Vector3(0, 0, 0),
-      new THREE.Vector3(0.28, -0.38, -0.75),
-      new THREE.Vector3(-0.22, -0.52, -1.55),
-      new THREE.Vector3(0.15, -0.25, -2.25)
+      new THREE.Vector3(0.28, -0.36, -0.75),
+      new THREE.Vector3(-0.22, -0.48, -1.55),
+      new THREE.Vector3(0.15, -0.22, -2.25)
     ];
-    tailPivot.add(createOrganicTube(tailPts, (u) => 0.38 * (1 - u * 0.78), 18, 12, secondaryMat));
-    const tailBlade = new THREE.Mesh(new THREE.OctahedronGeometry(0.32, 0), accentMat);
-    tailBlade.scale.set(0.75, 0.35, 1.5);
-    tailBlade.position.set(0.15, -0.25, -2.35);
+    tailPivot.add(createOrganicTube(tailPts, (u) => 0.38 * (1 - u * 0.76), 18, 12, dragonRedMain));
+
+    // Barisan Sisik & Duri di Sepanjang Ekor Naga
+    for (let ts = 0; ts < 5; ts++) {
+      const tu = (ts + 0.4) / 5;
+      const tSpike = new THREE.Mesh(new THREE.ConeGeometry(0.08 * (1 - tu * 0.4), 0.26 * (1 - tu * 0.3), 6), dragonGoldMat);
+      tSpike.position.set(Math.sin(tu * Math.PI * 2) * 0.12, -0.18 - Math.sin(tu * Math.PI) * 0.18, -tu * 2.05);
+      tSpike.rotation.x = -0.45;
+      tailPivot.add(tSpike);
+    }
+
+    const tailBlade = new THREE.Mesh(new THREE.OctahedronGeometry(0.34, 0), dragonGoldMat);
+    tailBlade.scale.set(0.85, 0.32, 1.55);
+    tailBlade.position.set(0.15, -0.22, -2.35);
     tailPivot.add(tailBlade);
     dragonRoot.add(tailPivot);
     animParts.tailGroup = tailPivot;

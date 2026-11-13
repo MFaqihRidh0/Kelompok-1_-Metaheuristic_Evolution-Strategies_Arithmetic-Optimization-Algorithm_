@@ -20,7 +20,7 @@ Diurutkan berdasarkan kontribusi jumlah commit di repositori GitHub (`git shortl
 
 | Nama | NRP | Jumlah Commit di GitHub |
 | :--- | :---: | :---: |
-| **M. Faqih Ridho** | 5027241123 | 42 |
+| **M. Faqih Ridho** | 5027241123 | 43 |
 | **Dimas Satya A** | 5027241032 | 0 |
 | **Hanif Mawla Faizi** | 5027241064 | 0 |
 | **Muhammad Ardiansyah Tri Wibowo** | 5027241091 | 0 |
@@ -39,14 +39,14 @@ Diurutkan berdasarkan kontribusi jumlah commit di repositori GitHub (`git shortl
   - Setiap Pos dijaga oleh monster (100 HP) yang dapat dikalahkan dengan **2x serangan** (`J / Klik Kiri`: 🔥 Jurus Api 50 HP + `K / Klik Kanan`: ⚡ Jurus Listrik 50 HP, atau `L / Spasi`: 💥 Ultimate 100 HP).
   - Saat kalah, monster roboh menjadi mayat tetap di arena dengan lencana **`🔓 [O] / Klik : Buka Slide`**, dan membuka **Jendela Slide Mengambang di Tengah Layar** (dilengkapi tombol **Layar Penuh `⛶`** dan **Tutup `✕`**).
 - **8 Karakter Monster 3D Organik Unik di Sepanjang Rute Berkelok (*S-Curve Trail*):**
-  1. **Pos 1 — 🐍 Ular Kobra Abyssal:** Tubuh ular bersegmen dengan tudung kobra, taring berbisa, dan lidah bercabang.
+  1. **Pos 1 — 🐍 Ular Kobra Abyssal:** Tubuh & leher S-curve utuh mulus tanpa potongan bertumpuk, tudung kobra lebar menyatu, kepala ular segitiga pipih dengan mata *slit-pupil* kuning, taring berbisa panjang, dan lidah merah bercabang dua.
   2. **Pos 2 — 🦅 Elang Raja Langit:** Warna coklat elang asli, kepala & ekor kipas putih bersih, paruh bengkok kuning emas, serta sayap berlapis 3 baris bulu lebar membulat.
   3. **Pos 3 — 🕷️ Laba-Laba Jaringan:** 8 kaki beruas multi-sendi dengan gerakan *tetrapod gait* dan capit mandibula.
-  4. **Pos 4 — 🐺 Serigala Cyber Fenrir:** Anatomi *quadruped* organik dengan moncong bertaring dan ekor berbulu.
+  4. **Pos 4 — 🐺 Serigala Abu-Abu Fenrir:** Anatomi serigala *quadruped* asli berwarna abu-abu (*charcoal/slate/silver-grey*), moncong serigala panjang berhidung hitam, telinga segitiga tegak, rahang bertaring, dan ekor lebat berujung perak.
   5. **Pos 5 — 🦂 Kalajengking Besi:** 2 capit besar yang menjepit dan ekor melengkung bersegmen dengan sengat.
   6. **Pos 6 — 👹 Minotaur Dataset:** Otot dada kekar, tanduk banteng melengkung, serta lengan berotot multi-sendi lengkap dengan gelang pelindung dan **tangan 5 jari** yang menggenggam Kapak Perang Raksasa.
   7. **Pos 7 — 🐙 Kraken Gurita Raksasa:** Bentuk **gurita raksasa berwarna coklat** dengan kantung kepala/mantel bulat besar bertotol coklat, 2 mata gurita berlensa horizontal, corong *siphon*, dan **8 tentakel gurita coklat melengkung** lengkap dengan barisan alat hisap (*suction cups*).
-  8. **Pos 8 — 🐉 Raja Naga Bahamut (Final Boss):** Naga raksasa bersayap kelelawar dengan rahang menyemburkan bara api.
+  8. **Pos 8 — 🐉 Raja Naga Merah Bahamut (Final Boss):** Naga merah menyala bersisik perisai 3D berlapis di tubuh/leher/ekor, sisik perut emas, serta wajah naga merah lengkap dengan alis berduri, mata *slit-pupil* kuning emas, cula & lubang hidung, 12 taring tajam, dan 4 tanduk mahkota.
 - **Kamera Orbit 360° Stabil & Panorama Langit Malam Berbulan Purnama:**
   - Kamera mendukung rotasi **360° penuh** yang stabil (*damped spherical coordinates*) menggunakan *geser 2 jari di touchpad*, *drag mouse*, atau tombol `Q / E`, serta *zoom in/out* dan pembatas jalan otomatis agar karakter tidak keluar rute.
   - Dilengkapi panorama pegunungan 360°, hutan pohon & tebing batu di tepi jalan, 3 Menara Datacenter (Surabaya, Jakarta, Yogyakarta), kubah bintang, dan **Bulan Purnama bersinar lengkap dengan kawah & halo cahaya** di langit game.

@@ -127,14 +127,14 @@ const ENEMY_STATIONS = [
     posNum: 4,
     monsterType: "wolf",
     icon: "🐺",
-    name: "POS 4 • SERIGALA FENRIR",
-    enemyTitle: "Frostbite Arithmetic Fenrir",
+    name: "POS 4 • SERIGALA ABU-ABU FENRIR",
+    enemyTitle: "Alpha Grey Timber Wolf",
     slideTitle: "Slide 4: Matematika AOA (MOA, MOP, ÷, ×, -, +)",
     x: -10,
     z: -98,
     faceAngle: -0.85,
-    color: 0x38bdf8,
-    accent: 0xe0f2fe,
+    color: 0x64748b,
+    accent: 0xfbbf24,
     scale: 1.25
   },
   {
@@ -187,14 +187,14 @@ const ENEMY_STATIONS = [
     posNum: 8,
     monsterType: "dragon",
     icon: "🐉",
-    name: "POS 8 • RAJA NAGA BAHAMUT",
-    enemyTitle: "Final Boss: Ancient Cyber-Dragon",
+    name: "POS 8 • RAJA NAGA MERAH BAHAMUT",
+    enemyTitle: "Final Boss: Crimson Scaled Dragon",
     slideTitle: "Slide 8: Kesimpulan Akademik & Konsol Simulator",
     x: 0,
     z: -240,
     faceAngle: 0,
-    color: 0xfbbf24,
-    accent: 0xef4444,
+    color: 0xdc2626,
+    accent: 0xfbbf24,
     scale: 1.55
   }
 ];
