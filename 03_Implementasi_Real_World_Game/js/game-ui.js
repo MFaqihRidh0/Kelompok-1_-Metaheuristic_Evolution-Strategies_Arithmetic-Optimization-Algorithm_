@@ -64,6 +64,17 @@ function openSlideWindow(slideIdx) {
   const bodyEl = document.getElementById('slideWindowBody');
   if (bodyEl) bodyEl.scrollTop = 0;
 
+  // Inisialisasi & nyalakan Panggung 3D Datacenter pada jendela slide
+  if (typeof DatacenterStage3D !== 'undefined') {
+    const stageCanvas = document.getElementById('embeddedThreeCanvas');
+    if (stageCanvas) {
+      DatacenterStage3D.init(stageCanvas);
+      DatacenterStage3D.start();
+      setTimeout(() => DatacenterStage3D.resize(), 60);
+      setTimeout(() => DatacenterStage3D.resize(), 200);
+    }
+  }
+
   updateSimDashboardUI();
 }
 
@@ -71,6 +82,11 @@ function closeSlideWindow() {
   const overlay = document.getElementById('slideModalOverlay');
   const wasActive = overlay && overlay.classList.contains('active');
   if (overlay) overlay.classList.remove('active');
+
+  // Hentikan loop render 3D Datacenter saat slide ditutup untuk hemat FPS arena game
+  if (typeof DatacenterStage3D !== 'undefined') {
+    DatacenterStage3D.stop();
+  }
 
   // Nyalakan kembali suara game saat jendela presentasi ditutup dan kembali ke arena!
   if (wasActive && typeof CloudAudio !== 'undefined' && CloudAudio.resumeFromPresentation) {
@@ -86,6 +102,10 @@ function toggleSlideFullscreen() {
   const isFull = win.classList.toggle('fullscreen-mode');
   if (btn) {
     btn.innerText = isFull ? '🗗 Ukuran Mengambang' : '⛶ Layar Penuh';
+  }
+  if (typeof DatacenterStage3D !== 'undefined') {
+    setTimeout(() => DatacenterStage3D.resize(), 100);
+    setTimeout(() => DatacenterStage3D.resize(), 300);
   }
 }
 
@@ -153,6 +173,11 @@ function triggerEmbeddedSimulation() {
   const env = document.getElementById('envSelect').value;
   const targetMakespan = BENCHMARK_DATA[env][dataset][algo].makespan;
 
+  // Picu simulasi 3D pengiriman tugas melengkung dari Cloud Dispatcher ke 3 Datacenter
+  if (typeof DatacenterStage3D !== 'undefined') {
+    DatacenterStage3D.runSimulation(algo, parseInt(dataset) || 100);
+  }
+
   if (simClockTimer) clearInterval(simClockTimer);
   simClockValue = 0;
   const step = targetMakespan / 28;
@@ -174,7 +199,16 @@ function resetEmbeddedSimulation() {
   document.getElementById('clockValue').innerText = '0.00s';
   document.getElementById('algoSelect').value = 'aoa';
   document.getElementById('datasetSelect').value = '100';
+  if (typeof DatacenterStage3D !== 'undefined') {
+    DatacenterStage3D.clearTasks();
+  }
   updateSimDashboardUI();
+}
+
+function setEmbedded3DMode(mode) {
+  if (typeof DatacenterStage3D !== 'undefined') {
+    DatacenterStage3D.setMode(mode);
+  }
 }
 
 function updateSimDashboardUI() {

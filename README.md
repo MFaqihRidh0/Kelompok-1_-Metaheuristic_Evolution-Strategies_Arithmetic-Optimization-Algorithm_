@@ -79,7 +79,9 @@ Diurutkan berdasarkan kontribusi jumlah commit di repositori GitHub (`git shortl
 │   ├── js/
 │   │   ├── data.js                   # Data benchmark 100-500 cloudlets, 8 Pos, & 349 baris kode Python
 │   │   ├── audio.js                  # WebAudio Cloud Ops Synth BGM & SFX (auto-pause saat slide buka)
+│   │   ├── datacenter-sim-3d.js      # Panggung 3D tersemat: 3 Datacenter, Cloud Dispatcher, Drone & Tugas Melayang
 │   │   ├── game-engine.js            # Engine 3D: Rute S-Curve, Kamera 360°, Bulan, Hero, & 8 Monster
+│   │   ├── game-ui.js                # HUD, Slide Modal Mengambang, Konsol Simulasi & Sinkronisasi Stage 3D
 │   │   ├── scene3d.js                # Three.js visualisasi 3 Datacenter (Mode Standar)
 │   │   ├── simulation.js             # Logika simulator KPI & progress bar Datacenter
 │   │   └── presentation.js           # Navigasi slide deck Mode Standar

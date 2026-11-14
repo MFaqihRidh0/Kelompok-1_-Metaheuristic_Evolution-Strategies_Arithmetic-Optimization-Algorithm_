@@ -8,8 +8,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@700&family=Nunito:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 
-  <!-- Three.js & Howler.js via CDN -->
+  <!-- Three.js, OrbitControls & Howler.js via CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.min.js"></script>
 
   <link rel="stylesheet" href="css/game.css">
@@ -143,7 +144,7 @@
         </div>
       </div>
 
-      <!-- Window Scrollable Content Body (Slide Content + Live Simulator Console) -->
+      <!-- Window Scrollable Content Body (Slide Content + 3D Datacenter Stage + Live Simulator Console) -->
       <div class="window-body" id="slideWindowBody">
         
       <!-- SLIDE POS 1: Pembukaan & Topologi VM -->
@@ -552,6 +553,30 @@ mop = <span class="syn-num">1.0</span> - (math.pow(t, <span class="syn-num">1.0<
         </div>
       </div>
 
+
+        <!-- Panggung Simulasi 3D Datacenter & Cloud Dispatcher Tersemat -->
+        <div class="embedded-dc-stage">
+          <div style="position:absolute; top:8px; left:12px; right:12px; display:flex; justify-content:space-between; align-items:center; z-index:10; pointer-events:none;">
+            <div style="background:rgba(255,255,255,0.92); backdrop-filter:blur(6px); padding:4px 12px; border-radius:999px; font-size:11px; font-weight:800; color:#0f172a; border:1px solid #cbd5e1; display:flex; align-items:center; gap:6px;">
+              <span style="width:8px; height:8px; border-radius:50%; background:#0284c7; display:inline-block;"></span>
+              <span id="embeddedStageTitle">🌐 Panggung 3D: Topologi 3 Datacenter &amp; Cloud Dispatcher</span>
+            </div>
+            <div style="display:flex; gap:6px; pointer-events:auto;">
+              <button class="stage-mode-btn active" id="btnModeEmbeddedTopo" onclick="setEmbedded3DMode('topology')">Topologi DC</button>
+              <button class="stage-mode-btn" id="btnModeEmbeddedExplore" onclick="setEmbedded3DMode('aoa-explore')">AOA Eksplorasi (÷, ×)</button>
+              <button class="stage-mode-btn" id="btnModeEmbeddedExploit" onclick="setEmbedded3DMode('aoa-exploit')">AOA Eksploitasi (-, +)</button>
+            </div>
+          </div>
+          <div id="embeddedThreeCanvas" style="width:100%; height:100%;"></div>
+          <div style="position:absolute; bottom:8px; left:12px; right:12px; display:flex; justify-content:space-between; align-items:center; z-index:10; pointer-events:none;">
+            <div style="background:rgba(15,23,42,0.85); color:#f8fafc; font-size:10px; font-family:'JetBrains Mono',monospace; padding:3px 10px; border-radius:6px;">
+              Surabaya (6.000 MIPS) &bull; Jakarta (3.600 MIPS) &bull; Yogyakarta (800 MIPS)
+            </div>
+            <div style="background:rgba(255,255,255,0.88); color:#475569; font-size:9.5px; font-weight:700; padding:3px 8px; border-radius:6px;">
+              🖐️ Orbit: Klik + Drag | Zoom: Scroll
+            </div>
+          </div>
+        </div>
 
         <!-- Embedded Live Simulator Console inside Floating Window -->
         <div class="sim-dashboard">
@@ -1132,6 +1157,7 @@ mop = <span class="syn-num">1.0</span> - (math.pow(t, <span class="syn-num">1.0<
   <!-- Game Scripts -->
   <script src="js/data.js"></script>
   <script src="js/audio.js"></script>
+  <script src="js/datacenter-sim-3d.js"></script>
   <script src="js/game-engine.js"></script>
   <script src="js/game-ui.js"></script>
 </body>
