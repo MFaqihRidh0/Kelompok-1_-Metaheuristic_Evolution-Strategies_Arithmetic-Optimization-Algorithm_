@@ -154,12 +154,17 @@ NETWORK_LATENCY = {
 
 <span class="syn-com"># Simulasi Waktu Transfer File I/O + Latensi Jaringan Fisik di Setiap VM</span>
 <span class="syn-kw">for</span> task <span class="syn-kw">in</span> tasks:
+    <span class="syn-com"># 1. Cek latensi ping fisik antarkota dari Surabaya ke DC VM</span>
     lat = NETWORK_LATENCY.get((<span class="syn-str">"DC_Surabaya"</span>, vm.dc_name), <span class="syn-num">0.01</span>)
-    <span class="syn-com"># Waktu Transfer I/O = (Ukuran File Input / Bandwidth) + Latensi Ping</span>
+    <span class="syn-com"># 2. Waktu transfer data I/O = (Ukuran MB / Bandwidth MBps) + Latensi Ping</span>
     tx_time = (task.input_size_mb / (vm.bw_mbps / <span class="syn-num">8.0</span>)) + lat
+    <span class="syn-com"># 3. Waktu mulai: tunggu data tiba DAN VM selesai proses tugas sebelumnya</span>
     start_time = max(current_clock, tx_time)
+    <span class="syn-com"># 4. Waktu komputasi murni CPU = Panjang Instruksi MI / MIPS VM</span>
     exec_time = vm.execution_time(task.length_mi)
+    <span class="syn-com"># 5. Waktu selesai = Waktu mulai + Durasi eksekusi CPU</span>
     finish_time = start_time + exec_time
+    <span class="syn-com"># 6. Geser jam antrean VM saat ini ke waktu selesai tugas</span>
     current_clock = finish_time</code></pre>
           </div>
         </div>

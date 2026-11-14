@@ -138,14 +138,19 @@ def evaluate_schedule(schedule: List[int], cloudlets: List[Cloudlet], vms: List[
         current_clock = 0.0
 
         for task in tasks:
-            # Latensi antarkota + waktu transfer file
+            # 1. Cek latensi ping fisik antarkota dari Surabaya ke DC VM
             lat = NETWORK_LATENCY.get(("DC_Surabaya", vm.dc_name), 0.01)
+            # 2. Waktu transfer data I/O = (Ukuran MB / Bandwidth MBps) + Latensi Ping
             tx_time = (task.input_size_mb / (vm.bw_mbps / 8.0)) + lat
 
+            # 3. Waktu mulai: tunggu sampai data tiba DAN VM selesai proses tugas sebelumnya
             start_time = max(current_clock, tx_time)
+            # 4. Waktu komputasi murni CPU = Panjang Instruksi MI / MIPS VM
             exec_time = vm.execution_time(task.length_mi)
+            # 5. Waktu selesai = Waktu mulai + Durasi eksekusi CPU
             finish_time = start_time + exec_time
 
+            # 6. Geser jam antrean VM saat ini ke waktu selesai tugas
             current_clock = finish_time
             vm_busy_times[vm_id] += exec_time
 

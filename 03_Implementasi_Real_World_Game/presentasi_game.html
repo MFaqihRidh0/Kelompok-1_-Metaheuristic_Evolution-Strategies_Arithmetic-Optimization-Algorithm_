@@ -274,12 +274,17 @@ NETWORK_LATENCY = {
 
 <span class="syn-com"># Simulasi Waktu Transfer File I/O + Latensi Jaringan Fisik di Setiap VM</span>
 <span class="syn-kw">for</span> task <span class="syn-kw">in</span> tasks:
+    <span class="syn-com"># 1. Cek latensi ping fisik antarkota dari Surabaya ke DC VM</span>
     lat = NETWORK_LATENCY.get((<span class="syn-str">"DC_Surabaya"</span>, vm.dc_name), <span class="syn-num">0.01</span>)
-    <span class="syn-com"># Waktu Transfer I/O = (Ukuran File Input / Bandwidth) + Latensi Ping</span>
+    <span class="syn-com"># 2. Waktu transfer data I/O = (Ukuran MB / Bandwidth MBps) + Latensi Ping</span>
     tx_time = (task.input_size_mb / (vm.bw_mbps / <span class="syn-num">8.0</span>)) + lat
+    <span class="syn-com"># 3. Waktu mulai: tunggu data tiba DAN VM selesai proses tugas sebelumnya</span>
     start_time = max(current_clock, tx_time)
+    <span class="syn-com"># 4. Waktu komputasi murni CPU = Panjang Instruksi MI / MIPS VM</span>
     exec_time = vm.execution_time(task.length_mi)
+    <span class="syn-com"># 5. Waktu selesai = Waktu mulai + Durasi eksekusi CPU</span>
     finish_time = start_time + exec_time
+    <span class="syn-com"># 6. Geser jam antrean VM saat ini ke waktu selesai tugas</span>
     current_clock = finish_time</code></pre>
           </div>
         </div>
@@ -941,215 +946,220 @@ mop = <span class="syn-num">1.0</span> - (math.pow(t, <span class="syn-num">1.0<
 <span style="color:#64748b;user-select:none;">138 | </span>        current_clock = 0.0
 <span style="color:#64748b;user-select:none;">139 | </span>
 <span style="color:#64748b;user-select:none;">140 | </span>        for task in tasks:
-<span style="color:#64748b;user-select:none;">141 | </span>            # Latensi antarkota + waktu transfer file
+<span style="color:#64748b;user-select:none;">141 | </span>            # 1. Cek latensi ping fisik antarkota dari Surabaya ke DC VM
 <span style="color:#64748b;user-select:none;">142 | </span>            lat = NETWORK_LATENCY.get(("DC_Surabaya", vm.dc_name), 0.01)
-<span style="color:#64748b;user-select:none;">143 | </span>            tx_time = (task.input_size_mb / (vm.bw_mbps / 8.0)) + lat
-<span style="color:#64748b;user-select:none;">144 | </span>
-<span style="color:#64748b;user-select:none;">145 | </span>            start_time = max(current_clock, tx_time)
-<span style="color:#64748b;user-select:none;">146 | </span>            exec_time = vm.execution_time(task.length_mi)
-<span style="color:#64748b;user-select:none;">147 | </span>            finish_time = start_time + exec_time
-<span style="color:#64748b;user-select:none;">148 | </span>
-<span style="color:#64748b;user-select:none;">149 | </span>            current_clock = finish_time
-<span style="color:#64748b;user-select:none;">150 | </span>            vm_busy_times[vm_id] += exec_time
-<span style="color:#64748b;user-select:none;">151 | </span>
-<span style="color:#64748b;user-select:none;">152 | </span>            total_proc_cost += exec_time * 0.03
-<span style="color:#64748b;user-select:none;">153 | </span>            total_tx_cost += (task.input_size_mb + task.output_size_mb) * 0.001
-<span style="color:#64748b;user-select:none;">154 | </span>
-<span style="color:#64748b;user-select:none;">155 | </span>        vm_finish_times[vm_id] = current_clock
+<span style="color:#64748b;user-select:none;">143 | </span>            # 2. Waktu transfer data I/O = (Ukuran MB / Bandwidth MBps) + Latensi Ping
+<span style="color:#64748b;user-select:none;">144 | </span>            tx_time = (task.input_size_mb / (vm.bw_mbps / 8.0)) + lat
+<span style="color:#64748b;user-select:none;">145 | </span>
+<span style="color:#64748b;user-select:none;">146 | </span>            # 3. Waktu mulai: tunggu sampai data tiba DAN VM selesai proses tugas sebelumnya
+<span style="color:#64748b;user-select:none;">147 | </span>            start_time = max(current_clock, tx_time)
+<span style="color:#64748b;user-select:none;">148 | </span>            # 4. Waktu komputasi murni CPU = Panjang Instruksi MI / MIPS VM
+<span style="color:#64748b;user-select:none;">149 | </span>            exec_time = vm.execution_time(task.length_mi)
+<span style="color:#64748b;user-select:none;">150 | </span>            # 5. Waktu selesai = Waktu mulai + Durasi eksekusi CPU
+<span style="color:#64748b;user-select:none;">151 | </span>            finish_time = start_time + exec_time
+<span style="color:#64748b;user-select:none;">152 | </span>
+<span style="color:#64748b;user-select:none;">153 | </span>            # 6. Geser jam antrean VM saat ini ke waktu selesai tugas
+<span style="color:#64748b;user-select:none;">154 | </span>            current_clock = finish_time
+<span style="color:#64748b;user-select:none;">155 | </span>            vm_busy_times[vm_id] += exec_time
 <span style="color:#64748b;user-select:none;">156 | </span>
-<span style="color:#64748b;user-select:none;">157 | </span>    makespan = max(vm_finish_times.values()) if vm_finish_times else 0.0
-<span style="color:#64748b;user-select:none;">158 | </span>    throughput = len(cloudlets) / makespan if makespan &gt; 0 else 0.0
-<span style="color:#64748b;user-select:none;">159 | </span>    avg_util = (sum(vm_busy_times.values()) / (num_vms * makespan) * 100.0) if makespan &gt; 0 else 0.0
-<span style="color:#64748b;user-select:none;">160 | </span>
-<span style="color:#64748b;user-select:none;">161 | </span>    avg_busy = sum(vm_busy_times.values()) / num_vms if num_vms &gt; 0 else 1.0
-<span style="color:#64748b;user-select:none;">162 | </span>    max_busy = max(vm_busy_times.values()) if vm_busy_times else 0.0
-<span style="color:#64748b;user-select:none;">163 | </span>    min_busy = min(vm_busy_times.values()) if vm_busy_times else 0.0
-<span style="color:#64748b;user-select:none;">164 | </span>    lbi = (max_busy - min_busy) / avg_busy if avg_busy &gt; 0 else 0.0
+<span style="color:#64748b;user-select:none;">157 | </span>            total_proc_cost += exec_time * 0.03
+<span style="color:#64748b;user-select:none;">158 | </span>            total_tx_cost += (task.input_size_mb + task.output_size_mb) * 0.001
+<span style="color:#64748b;user-select:none;">159 | </span>
+<span style="color:#64748b;user-select:none;">160 | </span>        vm_finish_times[vm_id] = current_clock
+<span style="color:#64748b;user-select:none;">161 | </span>
+<span style="color:#64748b;user-select:none;">162 | </span>    makespan = max(vm_finish_times.values()) if vm_finish_times else 0.0
+<span style="color:#64748b;user-select:none;">163 | </span>    throughput = len(cloudlets) / makespan if makespan &gt; 0 else 0.0
+<span style="color:#64748b;user-select:none;">164 | </span>    avg_util = (sum(vm_busy_times.values()) / (num_vms * makespan) * 100.0) if makespan &gt; 0 else 0.0
 <span style="color:#64748b;user-select:none;">165 | </span>
-<span style="color:#64748b;user-select:none;">166 | </span>    total_cost = total_proc_cost + (makespan * 0.03 * num_vms * 0.1) + total_tx_cost
-<span style="color:#64748b;user-select:none;">167 | </span>
-<span style="color:#64748b;user-select:none;">168 | </span>    return EvalResult(makespan, throughput, avg_util, lbi, total_cost)
-<span style="color:#64748b;user-select:none;">169 | </span>
+<span style="color:#64748b;user-select:none;">166 | </span>    avg_busy = sum(vm_busy_times.values()) / num_vms if num_vms &gt; 0 else 1.0
+<span style="color:#64748b;user-select:none;">167 | </span>    max_busy = max(vm_busy_times.values()) if vm_busy_times else 0.0
+<span style="color:#64748b;user-select:none;">168 | </span>    min_busy = min(vm_busy_times.values()) if vm_busy_times else 0.0
+<span style="color:#64748b;user-select:none;">169 | </span>    lbi = (max_busy - min_busy) / avg_busy if avg_busy &gt; 0 else 0.0
 <span style="color:#64748b;user-select:none;">170 | </span>
-<span style="color:#64748b;user-select:none;">171 | </span># ==============================================================================
-<span style="color:#64748b;user-select:none;">172 | </span># 4. ALGORITMA PENJADWALAN
-<span style="color:#64748b;user-select:none;">173 | </span># ==============================================================================
+<span style="color:#64748b;user-select:none;">171 | </span>    total_cost = total_proc_cost + (makespan * 0.03 * num_vms * 0.1) + total_tx_cost
+<span style="color:#64748b;user-select:none;">172 | </span>
+<span style="color:#64748b;user-select:none;">173 | </span>    return EvalResult(makespan, throughput, avg_util, lbi, total_cost)
 <span style="color:#64748b;user-select:none;">174 | </span>
-<span style="color:#64748b;user-select:none;">175 | </span>def schedule_random(cloudlets: List[Cloudlet], vms: List[VM], seed: int) -&gt; List[int]:
-<span style="color:#64748b;user-select:none;">176 | </span>    """1. Random Scheduling (Baseline Minggu 3)"""
-<span style="color:#64748b;user-select:none;">177 | </span>    rnd = random.Random(seed)
-<span style="color:#64748b;user-select:none;">178 | </span>    return [rnd.randint(0, len(vms) - 1) for _ in cloudlets]
+<span style="color:#64748b;user-select:none;">175 | </span>
+<span style="color:#64748b;user-select:none;">176 | </span># ==============================================================================
+<span style="color:#64748b;user-select:none;">177 | </span># 4. ALGORITMA PENJADWALAN
+<span style="color:#64748b;user-select:none;">178 | </span># ==============================================================================
 <span style="color:#64748b;user-select:none;">179 | </span>
-<span style="color:#64748b;user-select:none;">180 | </span>
-<span style="color:#64748b;user-select:none;">181 | </span>class AOAScheduler:
-<span style="color:#64748b;user-select:none;">182 | </span>    """2. Arithmetic Optimization Algorithm (AOA) - Abualigah et al. (2021)"""
-<span style="color:#64748b;user-select:none;">183 | </span>    def __init__(self, cloudlets: List[Cloudlet], vms: List[VM], pop_size: int = 30, max_iter: int = 50, seed: int = 42):
-<span style="color:#64748b;user-select:none;">184 | </span>        self.cloudlets = cloudlets
-<span style="color:#64748b;user-select:none;">185 | </span>        self.vms = vms
-<span style="color:#64748b;user-select:none;">186 | </span>        self.num_tasks = len(cloudlets)
-<span style="color:#64748b;user-select:none;">187 | </span>        self.num_vms = len(vms)
-<span style="color:#64748b;user-select:none;">188 | </span>        self.pop_size = pop_size
-<span style="color:#64748b;user-select:none;">189 | </span>        self.max_iter = max_iter
-<span style="color:#64748b;user-select:none;">190 | </span>        self.alpha = 5.0
-<span style="color:#64748b;user-select:none;">191 | </span>        self.mu_rate = 0.499
-<span style="color:#64748b;user-select:none;">192 | </span>        self.rnd = random.Random(seed)
-<span style="color:#64748b;user-select:none;">193 | </span>
-<span style="color:#64748b;user-select:none;">194 | </span>    def optimize(self) -&gt; Tuple[List[int], EvalResult]:
-<span style="color:#64748b;user-select:none;">195 | </span>        lb, ub = 0, self.num_vms - 1
-<span style="color:#64748b;user-select:none;">196 | </span>
-<span style="color:#64748b;user-select:none;">197 | </span>        # 1. Inisialisasi Populasi Agen [pop_size x num_tasks]
-<span style="color:#64748b;user-select:none;">198 | </span>        population = [[self.rnd.randint(lb, ub) for _ in range(self.num_tasks)] for _ in range(self.pop_size)]
-<span style="color:#64748b;user-select:none;">199 | </span>
-<span style="color:#64748b;user-select:none;">200 | </span>        best_schedule = population[0]
-<span style="color:#64748b;user-select:none;">201 | </span>        best_result = evaluate_schedule(best_schedule, self.cloudlets, self.vms)
-<span style="color:#64748b;user-select:none;">202 | </span>        best_fitness = best_result.makespan
-<span style="color:#64748b;user-select:none;">203 | </span>
-<span style="color:#64748b;user-select:none;">204 | </span>        for ind in population:
-<span style="color:#64748b;user-select:none;">205 | </span>            res = evaluate_schedule(ind, self.cloudlets, self.vms)
-<span style="color:#64748b;user-select:none;">206 | </span>            if res.makespan &lt; best_fitness:
-<span style="color:#64748b;user-select:none;">207 | </span>                best_fitness = res.makespan
-<span style="color:#64748b;user-select:none;">208 | </span>                best_schedule = list(ind)
-<span style="color:#64748b;user-select:none;">209 | </span>                best_result = res
-<span style="color:#64748b;user-select:none;">210 | </span>
-<span style="color:#64748b;user-select:none;">211 | </span>        # 2. Siklus Iterasi AOA
-<span style="color:#64748b;user-select:none;">212 | </span>        for t in range(1, self.max_iter + 1):
-<span style="color:#64748b;user-select:none;">213 | </span>            # Math Optimizer Accelerated (MOA)
-<span style="color:#64748b;user-select:none;">214 | </span>            moa = 0.2 + t * ((0.9 - 0.2) / self.max_iter)
+<span style="color:#64748b;user-select:none;">180 | </span>def schedule_random(cloudlets: List[Cloudlet], vms: List[VM], seed: int) -&gt; List[int]:
+<span style="color:#64748b;user-select:none;">181 | </span>    """1. Random Scheduling (Baseline Minggu 3)"""
+<span style="color:#64748b;user-select:none;">182 | </span>    rnd = random.Random(seed)
+<span style="color:#64748b;user-select:none;">183 | </span>    return [rnd.randint(0, len(vms) - 1) for _ in cloudlets]
+<span style="color:#64748b;user-select:none;">184 | </span>
+<span style="color:#64748b;user-select:none;">185 | </span>
+<span style="color:#64748b;user-select:none;">186 | </span>class AOAScheduler:
+<span style="color:#64748b;user-select:none;">187 | </span>    """2. Arithmetic Optimization Algorithm (AOA) - Abualigah et al. (2021)"""
+<span style="color:#64748b;user-select:none;">188 | </span>    def __init__(self, cloudlets: List[Cloudlet], vms: List[VM], pop_size: int = 30, max_iter: int = 50, seed: int = 42):
+<span style="color:#64748b;user-select:none;">189 | </span>        self.cloudlets = cloudlets
+<span style="color:#64748b;user-select:none;">190 | </span>        self.vms = vms
+<span style="color:#64748b;user-select:none;">191 | </span>        self.num_tasks = len(cloudlets)
+<span style="color:#64748b;user-select:none;">192 | </span>        self.num_vms = len(vms)
+<span style="color:#64748b;user-select:none;">193 | </span>        self.pop_size = pop_size
+<span style="color:#64748b;user-select:none;">194 | </span>        self.max_iter = max_iter
+<span style="color:#64748b;user-select:none;">195 | </span>        self.alpha = 5.0
+<span style="color:#64748b;user-select:none;">196 | </span>        self.mu_rate = 0.499
+<span style="color:#64748b;user-select:none;">197 | </span>        self.rnd = random.Random(seed)
+<span style="color:#64748b;user-select:none;">198 | </span>
+<span style="color:#64748b;user-select:none;">199 | </span>    def optimize(self) -&gt; Tuple[List[int], EvalResult]:
+<span style="color:#64748b;user-select:none;">200 | </span>        lb, ub = 0, self.num_vms - 1
+<span style="color:#64748b;user-select:none;">201 | </span>
+<span style="color:#64748b;user-select:none;">202 | </span>        # 1. Inisialisasi Populasi Agen [pop_size x num_tasks]
+<span style="color:#64748b;user-select:none;">203 | </span>        population = [[self.rnd.randint(lb, ub) for _ in range(self.num_tasks)] for _ in range(self.pop_size)]
+<span style="color:#64748b;user-select:none;">204 | </span>
+<span style="color:#64748b;user-select:none;">205 | </span>        best_schedule = population[0]
+<span style="color:#64748b;user-select:none;">206 | </span>        best_result = evaluate_schedule(best_schedule, self.cloudlets, self.vms)
+<span style="color:#64748b;user-select:none;">207 | </span>        best_fitness = best_result.makespan
+<span style="color:#64748b;user-select:none;">208 | </span>
+<span style="color:#64748b;user-select:none;">209 | </span>        for ind in population:
+<span style="color:#64748b;user-select:none;">210 | </span>            res = evaluate_schedule(ind, self.cloudlets, self.vms)
+<span style="color:#64748b;user-select:none;">211 | </span>            if res.makespan &lt; best_fitness:
+<span style="color:#64748b;user-select:none;">212 | </span>                best_fitness = res.makespan
+<span style="color:#64748b;user-select:none;">213 | </span>                best_schedule = list(ind)
+<span style="color:#64748b;user-select:none;">214 | </span>                best_result = res
 <span style="color:#64748b;user-select:none;">215 | </span>
-<span style="color:#64748b;user-select:none;">216 | </span>            # Math Optimizer Probability (MOP)
-<span style="color:#64748b;user-select:none;">217 | </span>            mop = 1.0 - (math.pow(t, 1.0 / self.alpha) / math.pow(self.max_iter, 1.0 / self.alpha))
-<span style="color:#64748b;user-select:none;">218 | </span>
-<span style="color:#64748b;user-select:none;">219 | </span>            for i in range(self.pop_size):
-<span style="color:#64748b;user-select:none;">220 | </span>                new_ind = list(population[i])
-<span style="color:#64748b;user-select:none;">221 | </span>
-<span style="color:#64748b;user-select:none;">222 | </span>                for j in range(self.num_tasks):
-<span style="color:#64748b;user-select:none;">223 | </span>                    r1, r2, r3 = self.rnd.random(), self.rnd.random(), self.rnd.random()
-<span style="color:#64748b;user-select:none;">224 | </span>                    perturb = (ub - lb) * self.mu_rate * (self.rnd.random() - 0.5) * 2.0
-<span style="color:#64748b;user-select:none;">225 | </span>
-<span style="color:#64748b;user-select:none;">226 | </span>                    if r1 &gt; moa:
-<span style="color:#64748b;user-select:none;">227 | </span>                        # Fase Eksplorasi: Pembagian (/) dan Perkalian (*)
-<span style="color:#64748b;user-select:none;">228 | </span>                        if r2 &lt; 0.5:
-<span style="color:#64748b;user-select:none;">229 | </span>                            val = best_schedule[j] / (mop + 1e-5) * (1.0 + perturb * 0.1)
-<span style="color:#64748b;user-select:none;">230 | </span>                        else:
-<span style="color:#64748b;user-select:none;">231 | </span>                            val = best_schedule[j] * mop * (1.0 + perturb * 0.1)
-<span style="color:#64748b;user-select:none;">232 | </span>                    else:
-<span style="color:#64748b;user-select:none;">233 | </span>                        # Fase Eksploitasi: Pengurangan (-) dan Penambahan (+)
-<span style="color:#64748b;user-select:none;">234 | </span>                        if r3 &lt; 0.5:
-<span style="color:#64748b;user-select:none;">235 | </span>                            val = best_schedule[j] - mop * perturb
-<span style="color:#64748b;user-select:none;">236 | </span>                        else:
-<span style="color:#64748b;user-select:none;">237 | </span>                            val = best_schedule[j] + mop * perturb
-<span style="color:#64748b;user-select:none;">238 | </span>
-<span style="color:#64748b;user-select:none;">239 | </span>                    vm_idx = int(round(val))
-<span style="color:#64748b;user-select:none;">240 | </span>                    vm_idx = max(lb, min(ub, vm_idx))
-<span style="color:#64748b;user-select:none;">241 | </span>                    new_ind[j] = vm_idx
-<span style="color:#64748b;user-select:none;">242 | </span>
-<span style="color:#64748b;user-select:none;">243 | </span>                res = evaluate_schedule(new_ind, self.cloudlets, self.vms)
-<span style="color:#64748b;user-select:none;">244 | </span>                if res.makespan &lt; best_fitness:
-<span style="color:#64748b;user-select:none;">245 | </span>                    best_fitness = res.makespan
-<span style="color:#64748b;user-select:none;">246 | </span>                    best_schedule = list(new_ind)
-<span style="color:#64748b;user-select:none;">247 | </span>                    best_result = res
-<span style="color:#64748b;user-select:none;">248 | </span>
-<span style="color:#64748b;user-select:none;">249 | </span>                population[i] = new_ind
-<span style="color:#64748b;user-select:none;">250 | </span>
-<span style="color:#64748b;user-select:none;">251 | </span>        return best_schedule, best_result
-<span style="color:#64748b;user-select:none;">252 | </span>
+<span style="color:#64748b;user-select:none;">216 | </span>        # 2. Siklus Iterasi AOA
+<span style="color:#64748b;user-select:none;">217 | </span>        for t in range(1, self.max_iter + 1):
+<span style="color:#64748b;user-select:none;">218 | </span>            # Math Optimizer Accelerated (MOA)
+<span style="color:#64748b;user-select:none;">219 | </span>            moa = 0.2 + t * ((0.9 - 0.2) / self.max_iter)
+<span style="color:#64748b;user-select:none;">220 | </span>
+<span style="color:#64748b;user-select:none;">221 | </span>            # Math Optimizer Probability (MOP)
+<span style="color:#64748b;user-select:none;">222 | </span>            mop = 1.0 - (math.pow(t, 1.0 / self.alpha) / math.pow(self.max_iter, 1.0 / self.alpha))
+<span style="color:#64748b;user-select:none;">223 | </span>
+<span style="color:#64748b;user-select:none;">224 | </span>            for i in range(self.pop_size):
+<span style="color:#64748b;user-select:none;">225 | </span>                new_ind = list(population[i])
+<span style="color:#64748b;user-select:none;">226 | </span>
+<span style="color:#64748b;user-select:none;">227 | </span>                for j in range(self.num_tasks):
+<span style="color:#64748b;user-select:none;">228 | </span>                    r1, r2, r3 = self.rnd.random(), self.rnd.random(), self.rnd.random()
+<span style="color:#64748b;user-select:none;">229 | </span>                    perturb = (ub - lb) * self.mu_rate * (self.rnd.random() - 0.5) * 2.0
+<span style="color:#64748b;user-select:none;">230 | </span>
+<span style="color:#64748b;user-select:none;">231 | </span>                    if r1 &gt; moa:
+<span style="color:#64748b;user-select:none;">232 | </span>                        # Fase Eksplorasi: Pembagian (/) dan Perkalian (*)
+<span style="color:#64748b;user-select:none;">233 | </span>                        if r2 &lt; 0.5:
+<span style="color:#64748b;user-select:none;">234 | </span>                            val = best_schedule[j] / (mop + 1e-5) * (1.0 + perturb * 0.1)
+<span style="color:#64748b;user-select:none;">235 | </span>                        else:
+<span style="color:#64748b;user-select:none;">236 | </span>                            val = best_schedule[j] * mop * (1.0 + perturb * 0.1)
+<span style="color:#64748b;user-select:none;">237 | </span>                    else:
+<span style="color:#64748b;user-select:none;">238 | </span>                        # Fase Eksploitasi: Pengurangan (-) dan Penambahan (+)
+<span style="color:#64748b;user-select:none;">239 | </span>                        if r3 &lt; 0.5:
+<span style="color:#64748b;user-select:none;">240 | </span>                            val = best_schedule[j] - mop * perturb
+<span style="color:#64748b;user-select:none;">241 | </span>                        else:
+<span style="color:#64748b;user-select:none;">242 | </span>                            val = best_schedule[j] + mop * perturb
+<span style="color:#64748b;user-select:none;">243 | </span>
+<span style="color:#64748b;user-select:none;">244 | </span>                    vm_idx = int(round(val))
+<span style="color:#64748b;user-select:none;">245 | </span>                    vm_idx = max(lb, min(ub, vm_idx))
+<span style="color:#64748b;user-select:none;">246 | </span>                    new_ind[j] = vm_idx
+<span style="color:#64748b;user-select:none;">247 | </span>
+<span style="color:#64748b;user-select:none;">248 | </span>                res = evaluate_schedule(new_ind, self.cloudlets, self.vms)
+<span style="color:#64748b;user-select:none;">249 | </span>                if res.makespan &lt; best_fitness:
+<span style="color:#64748b;user-select:none;">250 | </span>                    best_fitness = res.makespan
+<span style="color:#64748b;user-select:none;">251 | </span>                    best_schedule = list(new_ind)
+<span style="color:#64748b;user-select:none;">252 | </span>                    best_result = res
 <span style="color:#64748b;user-select:none;">253 | </span>
-<span style="color:#64748b;user-select:none;">254 | </span># ==============================================================================
-<span style="color:#64748b;user-select:none;">255 | </span># 5. FUNGSI UTAMA &amp; EKSEKUSI DATASET MINGGU 3
-<span style="color:#64748b;user-select:none;">256 | </span># ==============================================================================
+<span style="color:#64748b;user-select:none;">254 | </span>                population[i] = new_ind
+<span style="color:#64748b;user-select:none;">255 | </span>
+<span style="color:#64748b;user-select:none;">256 | </span>        return best_schedule, best_result
 <span style="color:#64748b;user-select:none;">257 | </span>
-<span style="color:#64748b;user-select:none;">258 | </span>def main():
-<span style="color:#64748b;user-select:none;">259 | </span>    print("=" * 80)
-<span style="color:#64748b;user-select:none;">260 | </span>    print("   PROGRAM PENJADWALAN CLOUD: RANDOM SCHEDULING VS AOA YANG BARU")
-<span style="color:#64748b;user-select:none;">261 | </span>    print("   Infrastruktur: 3 Datacenter (Surabaya, Jakarta, Yogya) | 10 VM Heterogen")
-<span style="color:#64748b;user-select:none;">262 | </span>    print("   Dataset: Menguji dataset_100cloudlet.csv s.d. dataset_500cloudlet.csv")
-<span style="color:#64748b;user-select:none;">263 | </span>    print("=" * 80)
-<span style="color:#64748b;user-select:none;">264 | </span>
-<span style="color:#64748b;user-select:none;">265 | </span>    vms = build_datacenter_vms()
-<span style="color:#64748b;user-select:none;">266 | </span>    scenarios = [100, 200, 300, 400, 500]
-<span style="color:#64748b;user-select:none;">267 | </span>    runs = 10
-<span style="color:#64748b;user-select:none;">268 | </span>
-<span style="color:#64748b;user-select:none;">269 | </span>    summary_rows = []
-<span style="color:#64748b;user-select:none;">270 | </span>
-<span style="color:#64748b;user-select:none;">271 | </span>    for n in scenarios:
-<span style="color:#64748b;user-select:none;">272 | </span>        csv_file = f"dataset_{n}cloudlet.csv"
-<span style="color:#64748b;user-select:none;">273 | </span>        if not os.path.exists(csv_file) and not os.path.exists(os.path.join("datasets", csv_file)):
-<span style="color:#64748b;user-select:none;">274 | </span>            print(f"[WARN] File {csv_file} tidak ditemukan. Melewati skenario {n}.")
-<span style="color:#64748b;user-select:none;">275 | </span>            continue
-<span style="color:#64748b;user-select:none;">276 | </span>
-<span style="color:#64748b;user-select:none;">277 | </span>        cloudlets = load_dataset_csv(csv_file)
-<span style="color:#64748b;user-select:none;">278 | </span>        print(f"\n&gt;&gt;&gt; Memproses Skenario: {n} Cloudlets ({len(cloudlets)} tugas terbaca dari {csv_file})")
-<span style="color:#64748b;user-select:none;">279 | </span>
-<span style="color:#64748b;user-select:none;">280 | </span>        # 1. Eksekusi Random Scheduling (10 runs)
-<span style="color:#64748b;user-select:none;">281 | </span>        rnd_makespans, rnd_throughputs, rnd_utils, rnd_lbis, rnd_costs = [], [], [], [], []
-<span style="color:#64748b;user-select:none;">282 | </span>        t0 = time.time()
-<span style="color:#64748b;user-select:none;">283 | </span>        for r in range(1, runs + 1):
-<span style="color:#64748b;user-select:none;">284 | </span>            sched = schedule_random(cloudlets, vms, seed=r)
-<span style="color:#64748b;user-select:none;">285 | </span>            res = evaluate_schedule(sched, cloudlets, vms)
-<span style="color:#64748b;user-select:none;">286 | </span>            rnd_makespans.append(res.makespan)
-<span style="color:#64748b;user-select:none;">287 | </span>            rnd_throughputs.append(res.throughput)
-<span style="color:#64748b;user-select:none;">288 | </span>            rnd_utils.append(res.avg_utilization)
-<span style="color:#64748b;user-select:none;">289 | </span>            rnd_lbis.append(res.load_balancing_index)
-<span style="color:#64748b;user-select:none;">290 | </span>            rnd_costs.append(res.total_cost)
-<span style="color:#64748b;user-select:none;">291 | </span>        dur_rnd = time.time() - t0
-<span style="color:#64748b;user-select:none;">292 | </span>        print(f"    [RANDOM] 10 Runs selesai dalam {dur_rnd:.2f}s | Avg Makespan: {sum(rnd_makespans)/runs:.2f}s | Avg LBI: {sum(rnd_lbis)/runs:.2f}")
-<span style="color:#64748b;user-select:none;">293 | </span>
-<span style="color:#64748b;user-select:none;">294 | </span>        # 2. Eksekusi AOA yang Baru (10 runs)
-<span style="color:#64748b;user-select:none;">295 | </span>        aoa_makespans, aoa_throughputs, aoa_utils, aoa_lbis, aoa_costs = [], [], [], [], []
-<span style="color:#64748b;user-select:none;">296 | </span>        t0 = time.time()
-<span style="color:#64748b;user-select:none;">297 | </span>        for r in range(1, runs + 1):
-<span style="color:#64748b;user-select:none;">298 | </span>            aoa = AOAScheduler(cloudlets, vms, pop_size=30, max_iter=50, seed=r)
-<span style="color:#64748b;user-select:none;">299 | </span>            best_sched, res = aoa.optimize()
-<span style="color:#64748b;user-select:none;">300 | </span>            aoa_makespans.append(res.makespan)
-<span style="color:#64748b;user-select:none;">301 | </span>            aoa_throughputs.append(res.throughput)
-<span style="color:#64748b;user-select:none;">302 | </span>            aoa_utils.append(res.avg_utilization)
-<span style="color:#64748b;user-select:none;">303 | </span>            aoa_lbis.append(res.load_balancing_index)
-<span style="color:#64748b;user-select:none;">304 | </span>            aoa_costs.append(res.total_cost)
-<span style="color:#64748b;user-select:none;">305 | </span>        dur_aoa = time.time() - t0
-<span style="color:#64748b;user-select:none;">306 | </span>        print(f"    [AOA]    10 Runs selesai dalam {dur_aoa:.2f}s | Avg Makespan: {sum(aoa_makespans)/runs:.2f}s | Avg LBI: {sum(aoa_lbis)/runs:.2f}")
-<span style="color:#64748b;user-select:none;">307 | </span>
-<span style="color:#64748b;user-select:none;">308 | </span>        # Hitung Persentase Perbaikan
-<span style="color:#64748b;user-select:none;">309 | </span>        mean_rnd_ms = sum(rnd_makespans) / runs
-<span style="color:#64748b;user-select:none;">310 | </span>        mean_aoa_ms = sum(aoa_makespans) / runs
-<span style="color:#64748b;user-select:none;">311 | </span>        impr_ms = ((mean_rnd_ms - mean_aoa_ms) / mean_rnd_ms) * 100.0
+<span style="color:#64748b;user-select:none;">258 | </span>
+<span style="color:#64748b;user-select:none;">259 | </span># ==============================================================================
+<span style="color:#64748b;user-select:none;">260 | </span># 5. FUNGSI UTAMA &amp; EKSEKUSI DATASET MINGGU 3
+<span style="color:#64748b;user-select:none;">261 | </span># ==============================================================================
+<span style="color:#64748b;user-select:none;">262 | </span>
+<span style="color:#64748b;user-select:none;">263 | </span>def main():
+<span style="color:#64748b;user-select:none;">264 | </span>    print("=" * 80)
+<span style="color:#64748b;user-select:none;">265 | </span>    print("   PROGRAM PENJADWALAN CLOUD: RANDOM SCHEDULING VS AOA YANG BARU")
+<span style="color:#64748b;user-select:none;">266 | </span>    print("   Infrastruktur: 3 Datacenter (Surabaya, Jakarta, Yogya) | 10 VM Heterogen")
+<span style="color:#64748b;user-select:none;">267 | </span>    print("   Dataset: Menguji dataset_100cloudlet.csv s.d. dataset_500cloudlet.csv")
+<span style="color:#64748b;user-select:none;">268 | </span>    print("=" * 80)
+<span style="color:#64748b;user-select:none;">269 | </span>
+<span style="color:#64748b;user-select:none;">270 | </span>    vms = build_datacenter_vms()
+<span style="color:#64748b;user-select:none;">271 | </span>    scenarios = [100, 200, 300, 400, 500]
+<span style="color:#64748b;user-select:none;">272 | </span>    runs = 10
+<span style="color:#64748b;user-select:none;">273 | </span>
+<span style="color:#64748b;user-select:none;">274 | </span>    summary_rows = []
+<span style="color:#64748b;user-select:none;">275 | </span>
+<span style="color:#64748b;user-select:none;">276 | </span>    for n in scenarios:
+<span style="color:#64748b;user-select:none;">277 | </span>        csv_file = f"dataset_{n}cloudlet.csv"
+<span style="color:#64748b;user-select:none;">278 | </span>        if not os.path.exists(csv_file) and not os.path.exists(os.path.join("datasets", csv_file)):
+<span style="color:#64748b;user-select:none;">279 | </span>            print(f"[WARN] File {csv_file} tidak ditemukan. Melewati skenario {n}.")
+<span style="color:#64748b;user-select:none;">280 | </span>            continue
+<span style="color:#64748b;user-select:none;">281 | </span>
+<span style="color:#64748b;user-select:none;">282 | </span>        cloudlets = load_dataset_csv(csv_file)
+<span style="color:#64748b;user-select:none;">283 | </span>        print(f"\n&gt;&gt;&gt; Memproses Skenario: {n} Cloudlets ({len(cloudlets)} tugas terbaca dari {csv_file})")
+<span style="color:#64748b;user-select:none;">284 | </span>
+<span style="color:#64748b;user-select:none;">285 | </span>        # 1. Eksekusi Random Scheduling (10 runs)
+<span style="color:#64748b;user-select:none;">286 | </span>        rnd_makespans, rnd_throughputs, rnd_utils, rnd_lbis, rnd_costs = [], [], [], [], []
+<span style="color:#64748b;user-select:none;">287 | </span>        t0 = time.time()
+<span style="color:#64748b;user-select:none;">288 | </span>        for r in range(1, runs + 1):
+<span style="color:#64748b;user-select:none;">289 | </span>            sched = schedule_random(cloudlets, vms, seed=r)
+<span style="color:#64748b;user-select:none;">290 | </span>            res = evaluate_schedule(sched, cloudlets, vms)
+<span style="color:#64748b;user-select:none;">291 | </span>            rnd_makespans.append(res.makespan)
+<span style="color:#64748b;user-select:none;">292 | </span>            rnd_throughputs.append(res.throughput)
+<span style="color:#64748b;user-select:none;">293 | </span>            rnd_utils.append(res.avg_utilization)
+<span style="color:#64748b;user-select:none;">294 | </span>            rnd_lbis.append(res.load_balancing_index)
+<span style="color:#64748b;user-select:none;">295 | </span>            rnd_costs.append(res.total_cost)
+<span style="color:#64748b;user-select:none;">296 | </span>        dur_rnd = time.time() - t0
+<span style="color:#64748b;user-select:none;">297 | </span>        print(f"    [RANDOM] 10 Runs selesai dalam {dur_rnd:.2f}s | Avg Makespan: {sum(rnd_makespans)/runs:.2f}s | Avg LBI: {sum(rnd_lbis)/runs:.2f}")
+<span style="color:#64748b;user-select:none;">298 | </span>
+<span style="color:#64748b;user-select:none;">299 | </span>        # 2. Eksekusi AOA yang Baru (10 runs)
+<span style="color:#64748b;user-select:none;">300 | </span>        aoa_makespans, aoa_throughputs, aoa_utils, aoa_lbis, aoa_costs = [], [], [], [], []
+<span style="color:#64748b;user-select:none;">301 | </span>        t0 = time.time()
+<span style="color:#64748b;user-select:none;">302 | </span>        for r in range(1, runs + 1):
+<span style="color:#64748b;user-select:none;">303 | </span>            aoa = AOAScheduler(cloudlets, vms, pop_size=30, max_iter=50, seed=r)
+<span style="color:#64748b;user-select:none;">304 | </span>            best_sched, res = aoa.optimize()
+<span style="color:#64748b;user-select:none;">305 | </span>            aoa_makespans.append(res.makespan)
+<span style="color:#64748b;user-select:none;">306 | </span>            aoa_throughputs.append(res.throughput)
+<span style="color:#64748b;user-select:none;">307 | </span>            aoa_utils.append(res.avg_utilization)
+<span style="color:#64748b;user-select:none;">308 | </span>            aoa_lbis.append(res.load_balancing_index)
+<span style="color:#64748b;user-select:none;">309 | </span>            aoa_costs.append(res.total_cost)
+<span style="color:#64748b;user-select:none;">310 | </span>        dur_aoa = time.time() - t0
+<span style="color:#64748b;user-select:none;">311 | </span>        print(f"    [AOA]    10 Runs selesai dalam {dur_aoa:.2f}s | Avg Makespan: {sum(aoa_makespans)/runs:.2f}s | Avg LBI: {sum(aoa_lbis)/runs:.2f}")
 <span style="color:#64748b;user-select:none;">312 | </span>
-<span style="color:#64748b;user-select:none;">313 | </span>        summary_rows.append({
-<span style="color:#64748b;user-select:none;">314 | </span>            "Skenario": n,
-<span style="color:#64748b;user-select:none;">315 | </span>            "Rnd_Makespan": f"{mean_rnd_ms:.2f}s",
-<span style="color:#64748b;user-select:none;">316 | </span>            "AOA_Makespan": f"{mean_aoa_ms:.2f}s",
-<span style="color:#64748b;user-select:none;">317 | </span>            "Peningkatan_Makespan": f"-{impr_ms:.1f}%",
-<span style="color:#64748b;user-select:none;">318 | </span>            "Rnd_Throughput": f"{sum(rnd_throughputs)/runs:.2f} t/s",
-<span style="color:#64748b;user-select:none;">319 | </span>            "AOA_Throughput": f"{sum(aoa_throughputs)/runs:.2f} t/s",
-<span style="color:#64748b;user-select:none;">320 | </span>            "Rnd_LBI": f"{sum(rnd_lbis)/runs:.2f}",
-<span style="color:#64748b;user-select:none;">321 | </span>            "AOA_LBI": f"{sum(aoa_lbis)/runs:.2f}",
-<span style="color:#64748b;user-select:none;">322 | </span>            "Rnd_Cost": f"${sum(rnd_costs)/runs:.2f}",
-<span style="color:#64748b;user-select:none;">323 | </span>            "AOA_Cost": f"${sum(aoa_costs)/runs:.2f}",
-<span style="color:#64748b;user-select:none;">324 | </span>        })
-<span style="color:#64748b;user-select:none;">325 | </span>
-<span style="color:#64748b;user-select:none;">326 | </span>    # Cetak Tabel Perbandingan Akhir
-<span style="color:#64748b;user-select:none;">327 | </span>    print("\n" + "=" * 90)
-<span style="color:#64748b;user-select:none;">328 | </span>    print("                    TABEL KOMPARASI AKHIR HASIL EKSEKUSI DATASET")
-<span style="color:#64748b;user-select:none;">329 | </span>    print("=" * 90)
-<span style="color:#64748b;user-select:none;">330 | </span>    header = f"{'Tasks':&lt;8} | {'Makespan Random':&lt;16} | {'Makespan AOA':&lt;16} | {'Perbaikan (%)':&lt;14} | {'LBI AOA':&lt;8} | {'Hemat Biaya'}"
-<span style="color:#64748b;user-select:none;">331 | </span>    print(header)
-<span style="color:#64748b;user-select:none;">332 | </span>    print("-" * 90)
-<span style="color:#64748b;user-select:none;">333 | </span>    for r in summary_rows:
-<span style="color:#64748b;user-select:none;">334 | </span>        print(f"{r['Skenario']:&lt;8} | {r['Rnd_Makespan']:&lt;16} | {r['AOA_Makespan']:&lt;16} | {r['Peningkatan_Makespan']:&lt;14} | {r['AOA_LBI']:&lt;8} | {r['AOA_Cost']}")
-<span style="color:#64748b;user-select:none;">335 | </span>    print("=" * 90)
-<span style="color:#64748b;user-select:none;">336 | </span>
-<span style="color:#64748b;user-select:none;">337 | </span>    # Simpan ke CSV
-<span style="color:#64748b;user-select:none;">338 | </span>    out_csv = "hasil_program_aoa_vs_random.csv"
-<span style="color:#64748b;user-select:none;">339 | </span>    with open(out_csv, mode="w", newline="", encoding="utf-8") as f:
-<span style="color:#64748b;user-select:none;">340 | </span>        writer = csv.DictWriter(f, fieldnames=list(summary_rows[0].keys()))
-<span style="color:#64748b;user-select:none;">341 | </span>        writer.writeheader()
-<span style="color:#64748b;user-select:none;">342 | </span>        writer.writerows(summary_rows)
-<span style="color:#64748b;user-select:none;">343 | </span>    print(f"\n[OK] Ringkasan komparasi berhasil disimpan ke berkas: {out_csv}")
-<span style="color:#64748b;user-select:none;">344 | </span>
-<span style="color:#64748b;user-select:none;">345 | </span>
-<span style="color:#64748b;user-select:none;">346 | </span>if __name__ == "__main__":
-<span style="color:#64748b;user-select:none;">347 | </span>    main()
-<span style="color:#64748b;user-select:none;">348 | </span>
-<span style="color:#64748b;user-select:none;">349 | </span></code></pre>
+<span style="color:#64748b;user-select:none;">313 | </span>        # Hitung Persentase Perbaikan
+<span style="color:#64748b;user-select:none;">314 | </span>        mean_rnd_ms = sum(rnd_makespans) / runs
+<span style="color:#64748b;user-select:none;">315 | </span>        mean_aoa_ms = sum(aoa_makespans) / runs
+<span style="color:#64748b;user-select:none;">316 | </span>        impr_ms = ((mean_rnd_ms - mean_aoa_ms) / mean_rnd_ms) * 100.0
+<span style="color:#64748b;user-select:none;">317 | </span>
+<span style="color:#64748b;user-select:none;">318 | </span>        summary_rows.append({
+<span style="color:#64748b;user-select:none;">319 | </span>            "Skenario": n,
+<span style="color:#64748b;user-select:none;">320 | </span>            "Rnd_Makespan": f"{mean_rnd_ms:.2f}s",
+<span style="color:#64748b;user-select:none;">321 | </span>            "AOA_Makespan": f"{mean_aoa_ms:.2f}s",
+<span style="color:#64748b;user-select:none;">322 | </span>            "Peningkatan_Makespan": f"-{impr_ms:.1f}%",
+<span style="color:#64748b;user-select:none;">323 | </span>            "Rnd_Throughput": f"{sum(rnd_throughputs)/runs:.2f} t/s",
+<span style="color:#64748b;user-select:none;">324 | </span>            "AOA_Throughput": f"{sum(aoa_throughputs)/runs:.2f} t/s",
+<span style="color:#64748b;user-select:none;">325 | </span>            "Rnd_LBI": f"{sum(rnd_lbis)/runs:.2f}",
+<span style="color:#64748b;user-select:none;">326 | </span>            "AOA_LBI": f"{sum(aoa_lbis)/runs:.2f}",
+<span style="color:#64748b;user-select:none;">327 | </span>            "Rnd_Cost": f"${sum(rnd_costs)/runs:.2f}",
+<span style="color:#64748b;user-select:none;">328 | </span>            "AOA_Cost": f"${sum(aoa_costs)/runs:.2f}",
+<span style="color:#64748b;user-select:none;">329 | </span>        })
+<span style="color:#64748b;user-select:none;">330 | </span>
+<span style="color:#64748b;user-select:none;">331 | </span>    # Cetak Tabel Perbandingan Akhir
+<span style="color:#64748b;user-select:none;">332 | </span>    print("\n" + "=" * 90)
+<span style="color:#64748b;user-select:none;">333 | </span>    print("                    TABEL KOMPARASI AKHIR HASIL EKSEKUSI DATASET")
+<span style="color:#64748b;user-select:none;">334 | </span>    print("=" * 90)
+<span style="color:#64748b;user-select:none;">335 | </span>    header = f"{'Tasks':&lt;8} | {'Makespan Random':&lt;16} | {'Makespan AOA':&lt;16} | {'Perbaikan (%)':&lt;14} | {'LBI AOA':&lt;8} | {'Hemat Biaya'}"
+<span style="color:#64748b;user-select:none;">336 | </span>    print(header)
+<span style="color:#64748b;user-select:none;">337 | </span>    print("-" * 90)
+<span style="color:#64748b;user-select:none;">338 | </span>    for r in summary_rows:
+<span style="color:#64748b;user-select:none;">339 | </span>        print(f"{r['Skenario']:&lt;8} | {r['Rnd_Makespan']:&lt;16} | {r['AOA_Makespan']:&lt;16} | {r['Peningkatan_Makespan']:&lt;14} | {r['AOA_LBI']:&lt;8} | {r['AOA_Cost']}")
+<span style="color:#64748b;user-select:none;">340 | </span>    print("=" * 90)
+<span style="color:#64748b;user-select:none;">341 | </span>
+<span style="color:#64748b;user-select:none;">342 | </span>    # Simpan ke CSV
+<span style="color:#64748b;user-select:none;">343 | </span>    out_csv = "hasil_program_aoa_vs_random.csv"
+<span style="color:#64748b;user-select:none;">344 | </span>    with open(out_csv, mode="w", newline="", encoding="utf-8") as f:
+<span style="color:#64748b;user-select:none;">345 | </span>        writer = csv.DictWriter(f, fieldnames=list(summary_rows[0].keys()))
+<span style="color:#64748b;user-select:none;">346 | </span>        writer.writeheader()
+<span style="color:#64748b;user-select:none;">347 | </span>        writer.writerows(summary_rows)
+<span style="color:#64748b;user-select:none;">348 | </span>    print(f"\n[OK] Ringkasan komparasi berhasil disimpan ke berkas: {out_csv}")
+<span style="color:#64748b;user-select:none;">349 | </span>
+<span style="color:#64748b;user-select:none;">350 | </span>
+<span style="color:#64748b;user-select:none;">351 | </span>if __name__ == "__main__":
+<span style="color:#64748b;user-select:none;">352 | </span>    main()
+<span style="color:#64748b;user-select:none;">353 | </span>
+<span style="color:#64748b;user-select:none;">354 | </span></code></pre>
       </div>
     </div>
   </div>
