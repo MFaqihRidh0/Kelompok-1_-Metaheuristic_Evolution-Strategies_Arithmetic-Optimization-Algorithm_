@@ -311,10 +311,10 @@ mop = <span class="syn-num">1.0</span> - (math.pow(t, <span class="syn-num">1.0<
         </div>
       </div>
 
-      <!-- Slide 7: Hasil Komparasi Benchmark Riil -->
+      <!-- Slide 7: Hasil Komparasi Benchmark Riil & Kesimpulan Akademik -->
       <div class="slide" data-3d-mode="aoa-exploit">
-        <span class="slide-tag">BAGIAN 06 &bull; VALIDASI DUA LINGKUNGAN</span>
-        <h2 style="font-size:20px; margin-bottom:4px;">Hasil Ujicoba Empiris: Simulator CloudSim &amp; Real-World</h2>
+        <span class="slide-tag">BAGIAN 06 &bull; VALIDASI EMPIRIS &amp; KESIMPULAN</span>
+        <h2 style="font-size:20px; margin-bottom:4px;">Hasil Ujicoba Empiris &amp; Kesimpulan Akademik</h2>
         <p style="font-size:12px; margin-bottom:6px;">Pengujian 10 independent runs per skenario membuktikan AOA unggul konsisten di kedua lingkungan:</p>
 
         <h4 style="font-size: 11.5px; color: var(--coffee-950); margin-top: 6px; margin-bottom: 3px;">
@@ -416,23 +416,19 @@ mop = <span class="syn-num">1.0</span> - (math.pow(t, <span class="syn-num">1.0<
             </tr>
           </tbody>
         </table>
-      </div>
 
-      <!-- Slide 8: Kesimpulan & Live Demo Ready -->
-      <div class="slide" data-3d-mode="topology">
-        <span class="slide-tag">BAGIAN 07 &bull; KESIMPULAN &amp; Q&amp;A</span>
-        <h2 style="font-size:20px; margin-bottom:4px;">Kesimpulan Akademik &amp; Sesi Tanya Jawab</h2>
-        
-        <ul style="padding-left: 18px; margin-top: 8px; font-size: 12.5px; line-height: 1.65;">
-          <li><strong>Random Scheduling Terbukti Tidak Layak:</strong> Menimbulkan antrean macet di VM kecil dan membiarkan VM besar menganggur.</li>
-          <li><strong>AOA yang Baru Terbukti Unggul Mutlak:</strong> Berhasil menyeimbangkan beban komputasi dan memangkas waktu proses hingga <strong>53.4%</strong>.</li>
-          <li><strong>Stabilitas Teruji:</strong> Standar deviasi yang rendah di 10 pengujian membuktikan AOA konvergen secara stabil dan bukan hasil kebetulan.</li>
-          <li><strong>Dua Implementasi Tersedia:</strong> Program Python Real-World (<code>program_aoa_vs_random.py</code>) dan Java CloudSim 7.0.1 (<code>AOASchedulingSim.java</code>) siap dieksekusi langsung.</li>
-        </ul>
+        <div class="card" style="margin-top: 10px; border-left: 3px solid #10b981; padding:8px 10px;">
+          <h4 style="font-size:11.5px; margin-bottom:3px; color:#065f46;">🎯 Kesimpulan Akademik Kunci</h4>
+          <ul style="padding-left: 16px; font-size: 11px; line-height: 1.6; margin:0;">
+            <li><strong>Random Scheduling Terbukti Tidak Layak:</strong> Antrean macet di VM kecil (Yogyakarta) dan VM Surabaya menganggur.</li>
+            <li><strong>AOA Unggul Konsisten:</strong> Memangkas Makespan hingga <strong>56.1% (CloudSim)</strong> dan <strong>53.4% (Real-World)</strong> serta stabil di 10 pengujian.</li>
+            <li><strong>Dua Implementasi Tersedia:</strong> Program Python Real-World (<code>program_aoa_vs_random.py</code>) dan Java CloudSim 7.0.1 (<code>AOASchedulingSim.java</code>).</li>
+          </ul>
+        </div>
 
-        <div class="card" style="margin-top: 10px; background: #e0f2fe; border-color: #bae6fd; padding:10px 12px;">
-          <h4 style="color: #0369a1; font-size:12px; margin-bottom:3px;">🖥️ Pilihan Perintah Menjalankan Program:</h4>
-          <p style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #0c4a6e; font-weight: 700; line-height: 1.6; margin:0;">
+        <div class="card" style="margin-top: 8px; background: #e0f2fe; border-color: #bae6fd; padding:8px 10px;">
+          <h4 style="color: #0369a1; font-size:11.5px; margin-bottom:2px;">🖥️ Pilihan Perintah Menjalankan Program:</h4>
+          <p style="font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: #0c4a6e; font-weight: 700; line-height: 1.5; margin:0;">
             1. Python Real-World: <code>python program_aoa_vs_random.py</code><br>
             2. Java CloudSim 7.0.1: <code>mvn compile exec:java</code><br>
             3. Menu Interaktif: Klik ganda <code>run.bat</code>

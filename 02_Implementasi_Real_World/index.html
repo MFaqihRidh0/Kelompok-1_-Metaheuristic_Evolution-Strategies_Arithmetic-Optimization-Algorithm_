@@ -445,10 +445,10 @@ mop = <span class="syn-num">1.0</span> - (math.pow(t, <span class="syn-num">1.0<
         </div>
       </div>
 
-      <!-- SLIDE POS 7: Hasil Komparasi Benchmark Riil -->
+      <!-- SLIDE POS 7: Hasil Komparasi Benchmark Riil & Kesimpulan Akademik -->
       <div class="game-slide-pane" id="gameSlide_6" style="display:none;">
-        <span class="slide-tag">POS 07 &bull; BAGIAN 06 &bull; VALIDASI DUA LINGKUNGAN</span>
-        <h2 style="font-size:22px; font-weight:800; margin-bottom:4px;">Hasil Ujicoba Empiris: Simulator CloudSim &amp; Real-World</h2>
+        <span class="slide-tag">POS 07 &bull; BAGIAN 06 &bull; VALIDASI EMPIRIS &amp; KESIMPULAN</span>
+        <h2 style="font-size:22px; font-weight:800; margin-bottom:4px;">Hasil Ujicoba Empiris &amp; Kesimpulan Akademik</h2>
         <p style="font-size:13px; margin-bottom:8px;">Pengujian 10 independent runs per skenario membuktikan AOA unggul konsisten di kedua lingkungan:</p>
 
         <h4 style="font-size: 12px; color: var(--coffee-950); margin-bottom: 4px;">
@@ -512,7 +512,7 @@ mop = <span class="syn-num">1.0</span> - (math.pow(t, <span class="syn-num">1.0<
         <h4 style="font-size: 12px; color: var(--coffee-950); margin-bottom: 4px;">
           🅱️ Hasil pada Real-World Dispatcher dengan Latensi Geografis (Tugas 5, 6):
         </h4>
-        <table>
+        <table style="margin-bottom: 12px;">
           <thead>
             <tr>
               <th>Tasks</th>
@@ -550,27 +550,40 @@ mop = <span class="syn-num">1.0</span> - (math.pow(t, <span class="syn-num">1.0<
             </tr>
           </tbody>
         </table>
-      </div>
 
-      <!-- SLIDE POS 8: Kesimpulan & Live Demo Ready -->
-      <div class="game-slide-pane" id="gameSlide_7" style="display:none;">
-        <span class="slide-tag">POS 08 &bull; BAGIAN 07 &bull; KESIMPULAN &amp; Q&amp;A</span>
-        <h2 style="font-size:22px; font-weight:800; margin-bottom:6px;">Kesimpulan Akademik &amp; Sesi Tanya Jawab</h2>
-        
-        <ul style="padding-left: 20px; font-size: 13px; line-height: 1.7; color: var(--coffee-800);">
-          <li><strong>Random Scheduling Terbukti Tidak Layak:</strong> Menimbulkan antrean macet di VM kecil dan membiarkan VM besar menganggur.</li>
-          <li><strong>AOA yang Baru Terbukti Unggul Mutlak:</strong> Berhasil menyeimbangkan beban komputasi dan memangkas waktu proses hingga <strong>56.1% (CloudSim)</strong> dan <strong>53.4% (Real-World)</strong>.</li>
-          <li><strong>Stabilitas Teruji:</strong> Standar deviasi yang rendah di 10 pengujian membuktikan AOA konvergen secara stabil dan bukan hasil kebetulan.</li>
-          <li><strong>Dua Implementasi Tersedia:</strong> Program Python Real-World (<code>program_aoa_vs_random.py</code>) dan Java CloudSim 7.0.1 (<code>AOASchedulingSim.java</code>) siap dieksekusi langsung.</li>
-        </ul>
+        <div class="card" style="margin-bottom: 10px; border-left: 4px solid #10b981;">
+          <h4 style="font-size:12.5px; margin-bottom:4px; color:#065f46;">🎯 Kesimpulan Akademik Akhir</h4>
+          <ul style="padding-left: 18px; font-size: 11.5px; line-height: 1.6; margin:0; color: #1e293b;">
+            <li><strong>Random Terbukti Tidak Layak:</strong> Memicu bottleneck parah di VM kecil Yogyakarta dan membiarkan VM Surabaya menganggur.</li>
+            <li><strong>AOA Unggul Konsisten:</strong> Memangkas Makespan hingga <strong>56.1% (CloudSim)</strong> dan <strong>53.4% (Real-World)</strong> serta terbukti stabil di 10 pengujian.</li>
+            <li><strong>Dua Implementasi Tersedia:</strong> Script Python Real-World (<code>program_aoa_vs_random.py</code>) dan Java CloudSim 7.0.1 (<code>AOASchedulingSim.java</code>).</li>
+          </ul>
+        </div>
 
-        <div class="card" style="margin-top: 10px; background: #e0f2fe; border-color: #bae6fd;">
-          <h4 style="color: #0369a1; font-size:12.5px; margin-bottom:4px;">🖥️ Pilihan Perintah Menjalankan Program:</h4>
-          <p style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: #0c4a6e; font-weight: 700; line-height: 1.65; margin:0;">
+        <div class="card" style="background: #e0f2fe; border-color: #bae6fd; margin-bottom: 10px;">
+          <h4 style="color: #0369a1; font-size:12px; margin-bottom:3px;">🖥️ Pilihan Perintah Menjalankan Program:</h4>
+          <p style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #0c4a6e; font-weight: 700; line-height: 1.5; margin:0;">
             1. Python Real-World: <code>python program_aoa_vs_random.py</code><br>
             2. Java CloudSim 7.0.1: <code>mvn compile exec:java</code><br>
             3. Menu Interaktif: Klik ganda <code>run.bat</code>
           </p>
+        </div>
+
+        <div style="display:flex; gap:8px; margin-top:10px; flex-wrap:wrap;">
+          <button class="btn-win-ctrl" style="background:#fef2f2; border-color:#fca5a5; color:#991b1b;" onclick="runEmbeddedAlgo('random')">
+            ⚠️ Uji Coba Random di Simulator Bawah
+          </button>
+          <button class="btn-win-ctrl" style="background:#ecfdf5; border-color:#86efac; color:#166534;" onclick="runEmbeddedAlgo('aoa')">
+            ✨ Uji Coba AOA di Simulator Bawah
+          </button>
+          <button class="btn-win-ctrl" style="background:#f0f9ff; border-color:#7dd3fc; color:#075985;" onclick="openFullCodeModal()">
+            📄 Buka Source Code Utuh (349 Baris)
+          </button>
+        </div>
+
+        <div class="takeaway-box" style="margin-top:10px;">
+          <div class="takeaway-tag">INTI KESIMPULAN AKHIR</div>
+          <div class="takeaway-text">AOA secara terbukti ilmiah dan empiris menyelesaikan inefisiensi Random Scheduling di CloudSim maupun jaringan riil antarkota dengan Makespan terpangkas hingga 56.1%.</div>
         </div>
       </div>
 
@@ -719,7 +732,7 @@ mop = <span class="syn-num">1.0</span> - (math.pow(t, <span class="syn-num">1.0<
         </div>
 
         <div style="font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:800; color:var(--coffee-600);" id="winFooterCounter">
-          Slide Pos 1 / 8
+          Slide Pos 1 / 7
         </div>
 
         <button class="btn-hud-primary" onclick="closeAndWalkNext()">
@@ -770,7 +783,7 @@ mop = <span class="syn-num">1.0</span> - (math.pow(t, <span class="syn-num">1.0<
             </p>
             <h4>KONTRIBUSI KELOMPOK 1</h4>
             <p>
-              Arena Pertarungan 3D AOA vs Random Scheduling, 8 Pos Robot Dummy dengan fitur buka ulang slide dari mayat musuh (<code>[O]</code>), integrasi program Python 349 baris, simulator CloudSim 7.0.1, dan pengujian 100–500 Cloudlets.
+              Arena Pertarungan 3D AOA vs Random Scheduling, 7 Pos Monster Pertarungan dengan fitur buka ulang slide dari mayat musuh (<code>[O]</code>), integrasi program Python 349 baris, simulator CloudSim 7.0.1, dan pengujian 100–500 Cloudlets.
             </p>
             <h4>KREDIT PIHAK KETIGA</h4>
             <p>

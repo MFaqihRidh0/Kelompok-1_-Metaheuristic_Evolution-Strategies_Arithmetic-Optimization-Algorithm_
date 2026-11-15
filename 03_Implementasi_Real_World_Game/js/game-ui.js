@@ -27,13 +27,13 @@ function updateQuestHudProgress() {
   const descEl = document.getElementById('questProgressDesc');
   if (!titleEl || !descEl) return;
 
-  titleEl.innerText = `Arena Training • ${defeatedCount}/8 Musuh Dikalahkan`;
+  titleEl.innerText = `Arena Training • ${defeatedCount}/${ENEMY_STATIONS.length} Musuh Dikalahkan`;
 
   const nextEn = enemyObjects.find(e => !e.defeated);
   if (nextEn) {
     descEl.innerHTML = `Target Berikutnya: <strong>${nextEn.station.name}</strong>. Serang 2x dengan <strong>🔥 Api [J]</strong> & <strong>⚡ Listrik [K]</strong> untuk membuka Slide ${nextEn.station.posNum}!`;
   } else {
-    descEl.innerHTML = `🎉 <strong>Seluruh 8 Pos Musuh Telah Dikalahkan!</strong> Dekati mayat musuh & tekan <strong>[O]</strong> untuk membuka kembali slide mana pun.`;
+    descEl.innerHTML = `🎉 <strong>Seluruh ${ENEMY_STATIONS.length} Pos Musuh Telah Dikalahkan!</strong> Dekati mayat musuh & tekan <strong>[O]</strong> untuk membuka kembali slide mana pun.`;
   }
   renderTeleportList();
 }
@@ -59,7 +59,7 @@ function openSlideWindow(slideIdx) {
   const st = ENEMY_STATIONS[slideIdx];
   document.getElementById('winStationBadge').innerText = `+ POS ${st.posNum} TERBUKA • ${st.name}`;
   document.getElementById('winStationTitle').innerText = st.slideTitle;
-  document.getElementById('winFooterCounter').innerText = `Slide Pos ${st.posNum} / 8`;
+  document.getElementById('winFooterCounter').innerText = `Slide Pos ${st.posNum} / ${ENEMY_STATIONS.length}`;
 
   const bodyEl = document.getElementById('slideWindowBody');
   if (bodyEl) bodyEl.scrollTop = 0;

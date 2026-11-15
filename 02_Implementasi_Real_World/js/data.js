@@ -67,14 +67,12 @@ const ROAD_WAYPOINTS = [
   { x: 46,  z: -126 }, // POS 5: Kalajengking Besi
   { x: 58,  z: -148 }, // Tikungan Tebing Timur Laut
   { x: 42,  z: -170 }, // POS 6: Minotaur Dataset
-  { x: 14,  z: -186 }, // Tikungan Belok Kiri menuju Rawa Kristal
-  { x: -16, z: -202 }, // POS 7: Hydra Kraken
-  { x: -6,  z: -220 }, // Jalur Lurus Menuju Kuil Boss Terakhir
-  { x: 0,   z: -240 }  // POS 8: Raja Naga Bahamut (Final Boss Sanctuary)
+  { x: 18,  z: -192 }, // Tikungan Belok Kiri Menuju Altar Boss Naga
+  { x: 0,   z: -220 }  // POS 7: Raja Naga Bahamut (Final Boss Sanctuary)
 ];
 
 // ============================================================================
-// 3. KONFIGURASI 8 POS MONSTER UNIK DI SEPANJANG RUTE BERKELOK (POS 1 - POS 8)
+// 3. KONFIGURASI 7 POS MONSTER UNIK DI SEPANJANG RUTE BERKELOK (POS 1 - POS 7)
 // ============================================================================
 const ENEMY_STATIONS = [
   {
@@ -170,28 +168,13 @@ const ENEMY_STATIONS = [
   {
     id: 6,
     posNum: 7,
-    monsterType: "hydra",
-    icon: "🐙",
-    name: "POS 7 • KRAKEN GURITA RAKSASA",
-    enemyTitle: "Colossal Brown Octopus Kraken",
-    slideTitle: "Slide 7: Tabel Hasil Empiris CloudSim & Real-World",
-    x: -16,
-    z: -202,
-    faceAngle: 0.85,
-    color: 0x7c3f1d,
-    accent: 0xfbbf24,
-    scale: 1.38
-  },
-  {
-    id: 7,
-    posNum: 8,
     monsterType: "dragon",
     icon: "🐉",
-    name: "POS 8 • RAJA NAGA MERAH BAHAMUT",
+    name: "POS 7 • RAJA NAGA MERAH BAHAMUT",
     enemyTitle: "Final Boss: Crimson Scaled Dragon",
-    slideTitle: "Slide 8: Kesimpulan Akademik & Konsol Simulator",
+    slideTitle: "Slide 7: Hasil Empiris & Kesimpulan Akademik",
     x: 0,
-    z: -240,
+    z: -220,
     faceAngle: 0,
     color: 0xdc2626,
     accent: 0xfbbf24,
