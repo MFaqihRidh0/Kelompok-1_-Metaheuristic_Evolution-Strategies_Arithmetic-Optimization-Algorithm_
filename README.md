@@ -16,16 +16,16 @@
 
 ## 👥 Anggota Kelompok 1
 
-Diurutkan berdasarkan kontribusi jumlah commit di repositori GitHub (`git shortlog -sn`):
+Diurutkan berdasarkan NRP:
 
-| Nama | NRP | Jumlah Commit di GitHub |
-| :--- | :---: | :---: |
-| **M. Faqih Ridho** | 5027241123 | 44 |
-| **Dimas Satya A** | 5027241032 | 0 |
-| **Hanif Mawla Faizi** | 5027241064 | 0 |
-| **Muhammad Ardiansyah Tri Wibowo** | 5027241091 | 0 |
-| **Elgracito Iryanda Endia** | 5027231057 | 0 |
-| **Moch. Rizki Masrullah** | 5027241038 | 0 |
+| No | Nama | NRP |
+| :---: | :--- | :---: |
+| 1 | **Elgracito Iryanda Endia** | 5027231057 |
+| 2 | **Dimas Satya A** | 5027241032 |
+| 3 | **Moch. Rizki Masrullah** | 5027241038 |
+| 4 | **Hanif Mawla Faizi** | 5027241064 |
+| 5 | **Muhammad Ardiansyah Tri Wibowo** | 5027241091 |
+| 6 | **M. Faqih Ridho** | 5027241123 |
 
 ---
 
@@ -38,15 +38,14 @@ Diurutkan berdasarkan kontribusi jumlah commit di repositori GitHub (`git shortl
 - **Sistem Pertarungan Cepat 2-Hit & Buka Materi (`[O]`):**
   - Setiap Pos dijaga oleh monster (100 HP) yang dapat dikalahkan dengan **2x serangan** (`Tombol J`: 🔥 Jurus Api 50 HP + `Tombol K`: ⚡ Jurus Listrik 50 HP, atau `Tombol L`: 💥 Ultimate 100 HP).
   - Saat kalah, monster roboh menjadi mayat tetap di arena dengan lencana **`🔓 [O] / Klik : Buka Slide`**, dan membuka **Jendela Slide Mengambang di Tengah Layar** (dilengkapi tombol **Layar Penuh `⛶`** dan **Tutup `✕`**).
-- **8 Karakter Monster 3D Organik Unik di Sepanjang Rute Berkelok (*S-Curve Trail*):**
-  1. **Pos 1 — 🐍 Ular Kobra Abyssal:** Tubuh & leher S-curve utuh mulus tanpa potongan bertumpuk, tudung kobra lebar menyatu, kepala ular segitiga pipih dengan mata *slit-pupil* kuning, taring berbisa panjang, dan lidah merah bercabang dua.
-  2. **Pos 2 — 🦅 Elang Raja Langit:** Warna coklat elang asli, kepala & ekor kipas putih bersih, paruh bengkok kuning emas, serta sayap berlapis 3 baris bulu lebar membulat.
-  3. **Pos 3 — 🕷️ Laba-Laba Jaringan:** 8 kaki beruas multi-sendi dengan gerakan *tetrapod gait* dan capit mandibula.
-  4. **Pos 4 — 🐺 Serigala Abu-Abu Fenrir:** Anatomi serigala *quadruped* asli berwarna abu-abu (*charcoal/slate/silver-grey*), moncong serigala panjang berhidung hitam, telinga segitiga tegak, rahang bertaring, dan ekor lebat berujung perak.
-  5. **Pos 5 — 🦂 Kalajengking Besi:** 2 capit besar yang menjepit dan ekor melengkung bersegmen dengan sengat.
-  6. **Pos 6 — 👹 Minotaur Dataset:** Otot dada kekar, tanduk banteng melengkung, serta lengan berotot multi-sendi lengkap dengan gelang pelindung dan **tangan 5 jari** yang menggenggam Kapak Perang Raksasa.
-  7. **Pos 7 — 🐙 Kraken Gurita Raksasa:** Bentuk **gurita raksasa berwarna coklat** dengan kantung kepala/mantel bulat besar bertotol coklat, 2 mata gurita berlensa horizontal, corong *siphon*, dan **8 tentakel gurita coklat melengkung** lengkap dengan barisan alat hisap (*suction cups*).
-  8. **Pos 8 — 🐉 Raja Naga Merah Bahamut (Final Boss):** Naga merah menyala bersisik perisai 3D berlapis di tubuh/leher/ekor, sisik perut emas, serta wajah naga merah lengkap dengan alis berduri, mata *slit-pupil* kuning emas, cula & lubang hidung, 12 taring tajam, dan 4 tanduk mahkota.
+- **7 Karakter Monster 3D Organik Unik di Sepanjang Rute Berkelok (*S-Curve Trail*):**
+  1. **Pos 1 — 🐍 Ular Kobra Abyssal (Slide 1: Komparasi Kinerja & Topologi 10 VM):** Tubuh & leher S-curve utuh mulus tanpa potongan bertumpuk, tudung kobra lebar menyatu, kepala ular segitiga pipih dengan mata *slit-pupil* kuning, taring berbisa panjang, dan lidah merah bercabang dua.
+  2. **Pos 2 — 🦅 Elang Raja Langit (Slide 2: Inefisiensi Fatal Random Scheduling):** Warna coklat elang asli, kepala & ekor kipas putih bersih, paruh bengkok kuning emas, serta sayap berlapis 3 baris bulu lebar membulat.
+  3. **Pos 3 — 🕷️ Laba-Laba Latensi (Slide 3: Arsitektur 3 DC & Latensi Geografis):** 8 kaki beruas multi-sendi dengan gerakan *tetrapod gait* dan capit mandibula.
+  4. **Pos 4 — 🐺 Serigala Abu-Abu Fenrir (Slide 4: Matematika AOA yang Baru):** Anatomi serigala *quadruped* asli berwarna abu-abu (*charcoal/slate/silver-grey*), moncong serigala panjang berhidung hitam, telinga segitiga tegak, rahang bertaring, dan ekor lebat berujung perak.
+  5. **Pos 5 — 🦂 Kalajengking Besi (Slide 5: Evaluator Metrik & Deployment Real-World):** 2 capit besar yang menjepit dan ekor melengkung bersegmen dengan sengat.
+  6. **Pos 6 — 👹 Minotaur Dataset (Slide 6: Metodologi Loop 10 Runs & Parser CSV):** Otot dada kekar, tanduk banteng melengkung, serta lengan berotot multi-sendi lengkap dengan gelang pelindung dan **tangan 5 jari** yang menggenggam Kapak Perang Raksasa.
+  7. **Pos 7 — 🐉 Raja Naga Merah Bahamut (Final Boss: Slide 7 — Hasil Validasi Empiris & Kesimpulan Akademik):** Penggabungan materi validasi komparasi empiris dan kesimpulan akademik dijaga langsung oleh Raja Naga merah menyala bersisik perisai 3D berlapis di tubuh/leher/ekor, sisik perut emas, alis berduri, mata *slit-pupil* kuning emas, cula & lubang hidung, 12 taring tajam, dan 4 tanduk mahkota.
 - **Kamera Orbit 360° Stabil & Panorama Langit Malam Berbulan Purnama:**
   - Kamera mendukung rotasi **360° penuh** yang stabil (*damped spherical coordinates*) menggunakan *geser 2 jari di touchpad*, *drag mouse*, atau tombol `Q / E`, serta *zoom in/out* dan pembatas jalan otomatis agar karakter tidak keluar rute.
   - Dilengkapi panorama pegunungan 360°, hutan pohon & tebing batu di tepi jalan, 3 Menara Datacenter (Surabaya, Jakarta, Yogyakarta), kubah bintang, dan **Bulan Purnama bersinar lengkap dengan kawah & halo cahaya** di langit game.
@@ -59,6 +58,16 @@ Diurutkan berdasarkan kontribusi jumlah commit di repositori GitHub (`git shortl
 - Python Real-World Dispatcher: `program_aoa_vs_random.py` (349 baris, 10 *independent runs*)
 - Java CloudSim 7.0.1 Simulation: `AOASchedulingSim.java`
 - Dataset ilmiah riil: `dataset_100cloudlet.csv` s.d. `dataset_500cloudlet.csv`
+
+### 4. 📖 Dokumentasi Kode Bersih & Inti Pembelajaran (Slide 4 & Slide 5)
+- **Slide 4 (Optimasi AOA):** Komentar kode berfokus pada esensi matematika tanpa baris berlebih:
+  1. *Transisi Otomatis (MOA & MOP):* Sakelar matematis yang menggeser algoritma dari Eksplorasi global (0.2) ke Eksploitasi presisi (0.9).
+  2. *Operator Aritmatika:* Eksplorasi menggunakan perkalian ($\times$) dan pembagian ($\div$) untuk lompatan ruang solusi; Eksploitasi menggunakan penambahan ($+$) dan pengurangan ($-$) untuk memadatkan tugas ke VM Surabaya (6.000 MIPS).
+  3. *Diskritisasi & Elitisme:* Konversi bilangan kontinu ke indeks VM bulat `[0..9]` serta penyimpanan solusi terbaik berdasarkan nilai Makespan tercepat.
+- **Slide 5 (Evaluator Fitness Real-World):** Komentar kode difokuskan pada 3 metrik objektif:
+  1. *Makespan:* Waktu penyelesaian VM paling akhir ($T_{\max}$).
+  2. *Load Balancing Index (LBI):* Rasio ketimpangan beban kerja komputasi antarmesin (semakin kecil, beban semakin merata).
+  3. *Total Biaya Sewa ($):* Akumulasi biaya komputasi CPU aktif ($0.03/s), sewa server *idle*, dan biaya transfer data jaringan antarkota.
 
 ---
 
@@ -77,10 +86,10 @@ Diurutkan berdasarkan kontribusi jumlah commit di repositori GitHub (`git shortl
 │   │   ├── game.css                  # Styling HUD Game 3D, Floating Slide Modal, & Corpse Badge
 │   │   └── style.css                 # Styling Mode Presentasi Standar & Simulator
 │   ├── js/
-│   │   ├── data.js                   # Data benchmark 100-500 cloudlets, 8 Pos, & 349 baris kode Python
+│   │   ├── data.js                   # Data benchmark 100-500 cloudlets, 7 Pos monster, & 349 baris kode Python
 │   │   ├── audio.js                  # WebAudio Cloud Ops Synth BGM & SFX (auto-pause saat slide buka)
 │   │   ├── datacenter-sim-3d.js      # Panggung 3D tersemat: 3 Datacenter, Cloud Dispatcher, Drone & Tugas Melayang
-│   │   ├── game-engine.js            # Engine 3D: Rute S-Curve, Kamera 360°, Bulan, Hero, & 8 Monster
+│   │   ├── game-engine.js            # Engine 3D: Rute S-Curve, Kamera 360°, Bulan, Hero, & 7 Monster Unik
 │   │   ├── game-ui.js                # HUD, Slide Modal Mengambang, Konsol Simulasi & Sinkronisasi Stage 3D
 │   │   ├── scene3d.js                # Three.js visualisasi 3 Datacenter (Mode Standar)
 │   │   ├── simulation.js             # Logika simulator KPI & progress bar Datacenter

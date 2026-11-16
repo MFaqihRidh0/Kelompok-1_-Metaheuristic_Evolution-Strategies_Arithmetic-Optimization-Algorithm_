@@ -11,13 +11,13 @@ Adaptasi edukatif terinspirasi dari **Folio 2025 karya Bruno Simon** dan konsep 
 ## 2. Kontribusi Kelompok 1 (SOKA - ITS)
 * **Algoritma & Implementasi Riil:** Implementasi penuh *Arithmetic Optimization Algorithm (AOA)* vs *Baseline Random Scheduling* pada Python (`program_aoa_vs_random.py` — 349 baris) dan Java CloudSim Plus 7.0.1 (`AOASchedulingSim.java`).
 * **3D Elemental Combat & World Design:** Dunia 3D *AOA Sanctuary*, karakter *Cyber-Mage* dengan sistem kombo **Jurus Api (🔥 Perkalian/Penambahan)** & **Jurus Listrik (⚡ Pembagian/Pengurangan)**, 8 *Robot/Golem Training Dummies* beserta sistem interaksi mayat (`[O] Buka Presentasi`), serta 3 Menara Datacenter (Surabaya, Jakarta, Yogyakarta).
-* **Anggota Kelompok 1:**
-  1. **M. Faqih Ridho** — 5027241123
+* **Anggota Kelompok 1 (Urut NRP):**
+  1. **Elgracito Iryanda Endia** — 5027231057
   2. **Dimas Satya A** — 5027241032
-  3. **Hanif Mawla Faizi** — 5027241064
-  4. **Muhammad Ardiansyah Tri Wibowo** — 5027241091
-  5. **Elgracito Iryanda Endia** — 5027231057
-  6. **Moch. Rizki Nasrullah** — 5027241038
+  3. **Moch. Rizki Masrullah** — 5027241038
+  4. **Hanif Mawla Faizi** — 5027241064
+  5. **Muhammad Ardiansyah Tri Wibowo** — 5027241091
+  6. **M. Faqih Ridho** — 5027241123
 
 ---
 
