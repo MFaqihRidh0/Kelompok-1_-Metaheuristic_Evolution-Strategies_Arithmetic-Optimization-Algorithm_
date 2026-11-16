@@ -299,15 +299,15 @@ NETWORK_LATENCY = {
       <div class="game-slide-pane" id="gameSlide_3" style="display:none;">
         <span class="slide-tag">POS 04 &bull; BAGIAN 03 &bull; MATEMATIKA AOA YANG BARU</span>
         <h2 style="font-size:22px; font-weight:800; margin-bottom:4px;">Mengapa Memilih AOA? Keunggulan 4 Operator Aritmatika</h2>
-        <p style="font-size:13px; margin-bottom:10px;">AOA (Abualigah et al., 2021) mengoptimalkan alokasi dengan dua fase matematis yang adaptif (dilambangkan dengan Jurus Listrik ⚡ untuk Eksplorasi &amp; Jurus Api 🔥 untuk Eksploitasi):</p>
+        <p style="font-size:13px; margin-bottom:10px;">AOA (Abualigah et al., 2021) mengoptimalkan alokasi dengan dua fase matematis yang adaptif:</p>
 
         <div class="grid-2" style="margin-bottom: 10px;">
           <div class="card" style="border-left: 4px solid #0284c7;">
-            <h4 style="font-size:12.5px; margin-bottom:3px;">⚡ 1. Eksplorasi Global (&divide;, &times;)</h4>
+            <h4 style="font-size:12.5px; margin-bottom:3px;">1. Eksplorasi Global (&divide;, &times;)</h4>
             <p style="font-size:11.5px; margin:0;">Mencegah jebakan <em>local optima</em> dengan lonjakan diversifikasi acak berskala besar pada iterasi awal di seluruh VM.</p>
           </div>
           <div class="card" style="border-left: 4px solid #10b981;">
-            <h4 style="font-size:12.5px; margin-bottom:3px;">🔥 2. Eksploitasi Presisi (-, +)</h4>
+            <h4 style="font-size:12.5px; margin-bottom:3px;">2. Eksploitasi Presisi (-, +)</h4>
             <p style="font-size:11.5px; margin:0;">Mengerucutkan tugas berat secara presisi ke VM Surabaya (6.000 MIPS) guna memangkas Makespan hingga 53,4%.</p>
           </div>
         </div>
@@ -322,10 +322,10 @@ NETWORK_LATENCY = {
             </button>
           </div>
           <div class="code-scroll-area" style="max-height: 185px;">
-            <pre><code><span class="syn-com"># 1. Math Optimizer Accelerated (MOA): Penentu transisi Eksplorasi -&gt; Eksploitasi</span>
+            <pre><code><span class="syn-com"># 1. Sakelar transisi otomatis: 0.2 di awal (Eksplorasi) naik ke 0.9 di akhir (Eksploitasi)</span>
 moa = <span class="syn-num">0.2</span> + t * ((<span class="syn-num">0.9</span> - <span class="syn-num">0.2</span>) / self.max_iter)
 
-<span class="syn-com"># 2. Math Optimizer Probability (MOP): Koefisien presisi penyesuaian posisi</span>
+<span class="syn-com"># 2. Koefisien MOP: Pedal gas presisi (langkah lebar melompat -&gt; mengecil halus)</span>
 mop = <span class="syn-num">1.0</span> - (math.pow(t, <span class="syn-num">1.0</span> / self.alpha) / math.pow(self.max_iter, <span class="syn-num">1.0</span> / self.alpha))
 
 <span class="syn-kw">for</span> i <span class="syn-kw">in</span> range(self.pop_size):
@@ -335,16 +335,16 @@ mop = <span class="syn-num">1.0</span> - (math.pow(t, <span class="syn-num">1.0<
         perturb = (ub - lb) * self.mu_rate * (self.rnd.random() - <span class="syn-num">0.5</span>) * <span class="syn-num">2.0</span>
 
         <span class="syn-kw">if</span> r1 &gt; moa:
-            <span class="syn-com"># ⚡ FASE EKSPLORASI LUAS: Operator Pembagian (/) dan Perkalian (*)</span>
+            <span class="syn-com"># Eksplorasi (Bagi &amp; Kali): Loncatan nilai besar agar tidak terjebak solusi lokal</span>
             val = best_schedule[j] / (mop + <span class="syn-num">1e-5</span>) * (<span class="syn-num">1.0</span> + perturb * <span class="syn-num">0.1</span>) <span class="syn-kw">if</span> r2 &lt; <span class="syn-num">0.5</span>                   <span class="syn-kw">else</span> best_schedule[j] * mop * (<span class="syn-num">1.0</span> + perturb * <span class="syn-num">0.1</span>)
         <span class="syn-kw">else</span>:
-            <span class="syn-com"># 🔥 FASE EKSPLOITASI INTENSIF: Operator Pengurangan (-) dan Penambahan (+)</span>
+            <span class="syn-com"># Eksploitasi (Kurang &amp; Tambah): Pergeseran nilai halus untuk fokuskan tugas berat ke VM Surabaya</span>
             val = best_schedule[j] - mop * perturb <span class="syn-kw">if</span> r3 &lt; <span class="syn-num">0.5</span>                   <span class="syn-kw">else</span> best_schedule[j] + mop * perturb
 
-        <span class="syn-com"># Continuous-to-Discrete Mapping: Bulatkan ke Indeks VM valid [0..9]</span>
+        <span class="syn-com"># Pemetaan diskrit: Bulatkan pecahan desimal matematika menjadi nomor VM valid [0..9]</span>
         new_ind[j] = max(<span class="syn-num">0</span>, min(<span class="syn-num">9</span>, int(round(val))))
 
-    <span class="syn-com"># Update Best Solution bila Makespan jadwal baru lebih singkat</span>
+    <span class="syn-com"># Elitisme: Simpan jadwal baru hanya jika Makespan lebih singkat dari rekor terbaik sebelumnya</span>
     res = evaluate_schedule(new_ind, self.cloudlets, self.vms)
     <span class="syn-kw">if</span> res.makespan &lt; best_fitness:
         best_fitness = res.makespan
@@ -375,20 +375,20 @@ mop = <span class="syn-num">1.0</span> - (math.pow(t, <span class="syn-num">1.0<
           </div>
           <div class="code-scroll-area" style="max-height: 215px;">
             <pre><code><span class="syn-kw">def</span> <span class="syn-fn">evaluate_schedule</span>(schedule: List[<span class="syn-kw">int</span>], cloudlets: List[Cloudlet], vms: List[VM]) -&gt; EvalResult:
-    <span class="syn-com"># 1. Kelompokkan tugas ke VM masing-masing sesuai indeks jadwal</span>
+    <span class="syn-com"># Kelompokkan tugas ke VM masing-masing sesuai indeks jadwal</span>
     vm_tasks = {vm.id: [] <span class="syn-kw">for</span> vm <span class="syn-kw">in</span> vms}
     <span class="syn-kw">for</span> task_idx, vm_id <span class="syn-kw">in</span> enumerate(schedule):
         vm_tasks[vm_id].append(cloudlets[task_idx])
 
-    <span class="syn-com"># 2. Makespan = Waktu penyelesaian VM paling lambat (T_max)</span>
+    <span class="syn-com"># 1. Makespan: Waktu selesai keseluruhan sistem (waktu VM yang paling terakhir beres)</span>
     makespan = max(vm_finish_times.values())
-    throughput = len(cloudlets) / makespan  <span class="syn-com"># Tugas selesai per detik</span>
+    throughput = len(cloudlets) / makespan  <span class="syn-com"># Kecepatan: tugas selesai per detik</span>
     
-    <span class="syn-com"># 3. Load Balancing Index (LBI) = (Beban Maks - Beban Min) / Rata-rata Beban</span>
+    <span class="syn-com"># 2. Load Balancing Index (LBI): Ukuran ketimpangan beban kerja (makin kecil makin merata)</span>
     avg_busy = sum(vm_busy_times.values()) / len(vms)
     lbi = (max(vm_busy_times.values()) - min(vm_busy_times.values())) / avg_busy
     
-    <span class="syn-com"># 4. Total Biaya Sewa ($) = Komputasi CPU ($0.03/s) + Sewa Server + Transfer I/O</span>
+    <span class="syn-com"># 3. Total Biaya Sewa ($): Komputasi CPU aktif ($0.03/s) + Sewa server idle + Transfer data I/O</span>
     total_cost = total_proc_cost + (makespan * <span class="syn-num">0.03</span> * len(vms) * <span class="syn-num">0.1</span>) + total_tx_cost
     <span class="syn-kw">return</span> EvalResult(makespan, throughput, avg_util, lbi, total_cost)</code></pre>
           </div>
